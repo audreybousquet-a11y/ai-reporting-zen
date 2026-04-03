@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, BarChart3, MessageSquare } from "lucide-react";
+import { ArrowRight, MessageSquare } from "lucide-react";
+import demoScreenshot from "@/assets/demo-screenshot.png";
 
 const HeroSection = () => (
   <section className="relative pt-32 pb-20 md:pt-40 md:pb-32 overflow-hidden">
