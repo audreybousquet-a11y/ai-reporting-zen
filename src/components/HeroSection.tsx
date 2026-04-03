@@ -3,7 +3,7 @@ import { ArrowRight, MessageSquare } from "lucide-react";
 import demoScreenshot from "@/assets/demo-screenshot.png";
 
 const HeroSection = () => (
-  <section className="relative pt-32 pb-20 md:pt-40 md:pb-32 overflow-hidden">
+  <section className="relative pt-32 pb-10 md:pt-40 md:pb-16 overflow-hidden">
     <div className="absolute inset-0 hero-gradient opacity-[0.04]" />
     <div className="container mx-auto px-4 relative">
       <div className="max-w-3xl mx-auto text-center">
