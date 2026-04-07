@@ -420,31 +420,34 @@ with st.sidebar:
             col1, col2 = st.columns([6, 1])
             with col1:
                 if st.button(f"▶ {fav['titre'][:35]}", key=f"fav_{i}", use_container_width=True):
-                    try:
-                        result = executer_sql(st.session_state.db_conn, fav["sql"])
-                        fig = generer_graphique_v2(result, fav["viz_config"])
-                        commentaire = generer_commentaire_v2(result, fav["viz_config"])
-                        st.session_state.historique.insert(0, {
-                            "id": str(uuid.uuid4()),
-                            "question": f"⭐ {fav['titre']}",
-                            "sql": fav["sql"],
-                            "viz_config": fav["viz_config"].copy(),
-                            "result": result,
-                            "fig": fig,
-                            "commentaire": commentaire,
-                            "ts": datetime.now().strftime("%H:%M"),
-                            "fav_titre": fav["titre"],
-                        })
-                        st.session_state.question_prefill = fav.get("question", "")
-                        st.session_state.page = "app"
-                        st.rerun()
-                    except sqlite3.Error as e:
-                        st.error(f"❌ Ce favori contient un SQL invalide : {e}")
-                        st.caption("💡 Ce favori a peut-être été créé avec une autre source de données. Supprimez-le ou réexécutez la question originale.")
-                        with st.expander("🔍 SQL du favori"):
-                            st.code(fav["sql"], language="sql")
-                    except Exception as e:
-                        st.error(f"❌ Erreur : {e}")
+                    if not st.session_state.db_conn:
+                        st.warning("Chargez une source de données avant d'utiliser les favoris.")
+                    else:
+                        try:
+                            result = executer_sql(st.session_state.db_conn, fav["sql"])
+                            fig = generer_graphique_v2(result, fav["viz_config"])
+                            commentaire = generer_commentaire_v2(result, fav["viz_config"])
+                            st.session_state.historique.insert(0, {
+                                "id": str(uuid.uuid4()),
+                                "question": f"⭐ {fav['titre']}",
+                                "sql": fav["sql"],
+                                "viz_config": fav["viz_config"].copy(),
+                                "result": result,
+                                "fig": fig,
+                                "commentaire": commentaire,
+                                "ts": datetime.now().strftime("%H:%M"),
+                                "fav_titre": fav["titre"],
+                            })
+                            st.session_state.question_prefill = fav.get("question", "")
+                            st.session_state.page = "app"
+                            st.rerun()
+                        except sqlite3.Error as e:
+                            st.error(f"❌ Ce favori contient un SQL invalide : {e}")
+                            st.caption("💡 Ce favori a peut-être été créé avec une autre source de données. Supprimez-le ou réexécutez la question originale.")
+                            with st.expander("🔍 SQL du favori"):
+                                st.code(fav["sql"], language="sql")
+                        except Exception as e:
+                            st.error(f"❌ Erreur : {e}")
             with col2:
                 if st.button("⋯", key=f"opts_fav_{i}", use_container_width=True):
                     current = st.session_state.get(f"editing_fav_{i}", False)
