@@ -5,18 +5,71 @@ import { Mail, Phone } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
+// EmailJS config — remplace ces valeurs par les tiennes sur emailjs.com
+const EMAILJS_SERVICE_ID = "service_aria";
+const EMAILJS_TEMPLATE_ID = "template_aria_contact";
+const EMAILJS_PUBLIC_KEY = "VOTRE_CLE_PUBLIQUE_EMAILJS";
+
 const ContactSection = () => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => {
+
+    const form = e.target as HTMLFormElement;
+    const data = new FormData(form);
+
+    const templateParams = {
+      from_prenom: data.get("prenom") as string,
+      from_nom: data.get("nom") as string,
+      from_email: data.get("email") as string,
+      from_entreprise: data.get("entreprise") as string,
+      message: data.get("message") as string,
+      to_email: "audreybousquet@abcarre.fr",
+    };
+
+    try {
+      const response = await fetch(
+        `https://api.emailjs.com/api/v1.0/email/send`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            service_id: EMAILJS_SERVICE_ID,
+            template_id: EMAILJS_TEMPLATE_ID,
+            user_id: EMAILJS_PUBLIC_KEY,
+            template_params: templateParams,
+          }),
+        }
+      );
+
+      if (response.ok) {
+        toast({
+          title: "Message envoyé !",
+          description: "Nous reviendrons vers vous rapidement.",
+        });
+        form.reset();
+      } else {
+        throw new Error("Échec de l'envoi");
+      }
+    } catch {
+      // Fallback : ouvrir le client mail avec les données pré-remplies
+      const subject = encodeURIComponent(
+        `Demande de démo AR.IA — ${templateParams.from_prenom} ${templateParams.from_nom} (${templateParams.from_entreprise})`
+      );
+      const body = encodeURIComponent(
+        `Prénom : ${templateParams.from_prenom}\nNom : ${templateParams.from_nom}\nEmail : ${templateParams.from_email}\nEntreprise : ${templateParams.from_entreprise}\n\nMessage :\n${templateParams.message}`
+      );
+      window.location.href = `mailto:audreybousquet@abcarre.fr?subject=${subject}&body=${body}`;
+      toast({
+        title: "Redirection vers votre client mail",
+        description: "Votre message a été pré-rempli.",
+      });
+    } finally {
       setLoading(false);
-      toast({ title: "Message envoyé !", description: "Nous reviendrons vers vous rapidement." });
-      (e.target as HTMLFormElement).reset();
-    }, 800);
+    }
   };
 
   return (
@@ -41,12 +94,12 @@ const ContactSection = () => {
           </div>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
-              <Input placeholder="Prénom" required />
-              <Input placeholder="Nom" required />
+              <Input name="prenom" placeholder="Prénom" required />
+              <Input name="nom" placeholder="Nom" required />
             </div>
-            <Input type="email" placeholder="Email professionnel" required />
-            <Input placeholder="Entreprise" required />
-            <Textarea placeholder="Votre message ou besoin..." rows={4} />
+            <Input name="email" type="email" placeholder="Email professionnel" required />
+            <Input name="entreprise" placeholder="Entreprise" required />
+            <Textarea name="message" placeholder="Votre message ou besoin..." rows={4} />
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Envoi en cours..." : "Envoyer ma demande"}
             </Button>
