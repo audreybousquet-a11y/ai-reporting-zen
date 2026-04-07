@@ -20,8 +20,8 @@ const HeroSection = () => (
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Button size="lg" className="text-base px-8" asChild>
-            <a href="https://app.ar-ia.fr" target="_blank" rel="noopener noreferrer">
-              Voir la démonstration
+            <a href="#contact">
+              Demander une démonstration
               <ArrowRight className="ml-2 h-5 w-5" />
             </a>
           </Button>
