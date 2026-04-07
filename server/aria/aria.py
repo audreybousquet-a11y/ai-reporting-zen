@@ -113,31 +113,42 @@ _PASSWORD = os.environ.get("ARIA_PASSWORD", "aria2024")
 
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
+if "logout_redirect" not in st.session_state:
+    st.session_state.logout_redirect = False
+
+if st.session_state.logout_redirect:
+    st.session_state.logout_redirect = False
+    st.markdown('<meta http-equiv="refresh" content="0;url=https://ar-ia.fr">', unsafe_allow_html=True)
+    st.stop()
 
 if not st.session_state.authenticated:
     st.markdown("""
     <style>
-    #MainMenu, header, footer { visibility: hidden; }
-    .login-box { max-width: 360px; margin: 10vh auto; padding: 40px; background: white;
-                 border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.12); }
-    .login-title { font-size: 2rem; font-weight: 800; text-align: center; margin-bottom: 4px; }
-    .login-sub { color: #64748b; text-align: center; font-size: 0.85rem; margin-bottom: 24px; }
+    #MainMenu, header, footer, [data-testid="stSidebar"] { visibility: hidden; }
+    .stApp { background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%); }
     </style>
-    <div class="login-box">
-      <div class="login-title">AR<span style="color:#2563eb">.</span>IA</div>
-      <div class="login-sub">Intelligence artificielle pour vos données</div>
-    </div>
     """, unsafe_allow_html=True)
-    with st.form("login_form"):
-        username = st.text_input("Identifiant")
-        password = st.text_input("Mot de passe", type="password")
-        submitted = st.form_submit_button("Se connecter", use_container_width=True)
-        if submitted:
-            if username == _LOGIN and password == _PASSWORD:
-                st.session_state.authenticated = True
-                st.rerun()
-            else:
-                st.error("Identifiants incorrects")
+    st.markdown("<br><br>", unsafe_allow_html=True)
+    _, col, _ = st.columns([1, 1, 1])
+    with col:
+        st.markdown("""
+        <div style="text-align:center;margin-bottom:24px;">
+          <span style="font-size:2.5rem;font-weight:800;color:white;letter-spacing:-1px;">
+            AR<span style="color:#3b82f6">.</span>IA
+          </span><br>
+          <span style="color:#94a3b8;font-size:0.85rem;">Intelligence artificielle pour vos données</span>
+        </div>
+        """, unsafe_allow_html=True)
+        with st.form("login_form"):
+            username = st.text_input("Identifiant")
+            password = st.text_input("Mot de passe", type="password")
+            submitted = st.form_submit_button("Se connecter", use_container_width=True)
+            if submitted:
+                if username == _LOGIN and password == _PASSWORD:
+                    st.session_state.authenticated = True
+                    st.rerun()
+                else:
+                    st.error("Identifiants incorrects")
     st.stop()
 
 charger_css(st.session_state.theme)
@@ -332,6 +343,7 @@ with st.sidebar:
 
     if st.button("🔴 Déconnexion", use_container_width=True, type="secondary"):
         st.session_state.authenticated = False
+        st.session_state.logout_redirect = True
         st.rerun()
 
     if st.session_state.source_label:
