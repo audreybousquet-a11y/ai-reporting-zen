@@ -160,6 +160,15 @@ if not st.session_state.authenticated:
             with lc:
                 st.image(logo_path, use_container_width=True)
         st.markdown('<p style="text-align:center;color:#2D9583;font-size:0.9rem;margin-bottom:20px;">Intelligence artificielle pour vos données</p>', unsafe_allow_html=True)
+        st.markdown("""
+        <script>
+        setTimeout(function() {
+            document.querySelectorAll('input[type=text], input[type=password]').forEach(function(el) {
+                el.setAttribute('autocomplete', 'off');
+            });
+        }, 500);
+        </script>
+        """, unsafe_allow_html=True)
         with st.form("login_form"):
             username = st.text_input("Identifiant")
             password = st.text_input("Mot de passe", type="password")
