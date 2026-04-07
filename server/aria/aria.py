@@ -97,7 +97,7 @@ def init_state():
         "upload_key": 0,
         "just_reset": False,
         "sources_traitees": [],
-        "theme": "dark",
+        "theme": "light",
         "question_prefill": "",
         "clear_input": False,
         "dashboards": [],
@@ -201,6 +201,7 @@ if not st.session_state.authenticated:
 charger_css(st.session_state.theme)
 _theme = st.session_state.theme
 COLORS = COLORS_DEYTIME if _theme == "deytime" else (COLORS_DARK if _theme == "dark" else COLORS_LIGHT)
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # CHARGEMENT INITIAL DES SOURCES
@@ -329,6 +330,19 @@ if sources and st.session_state.mcd is None and not st.session_state.just_reset:
         except Exception as e:
             st.error(f"Erreur chargement source : {e}")
 
+
+# ─── AUTO-CHARGEMENT PREMIÈRE SOURCE ─────────────────────────────────────────
+if not st.session_state.mcd and "auto_source_init" not in st.session_state:
+    st.session_state.auto_source_init = True
+    _sources = charger_sources()
+    if _sources:
+        _s = _sources[0]
+        if os.path.exists(os.path.normpath(_s["path"])) and charger_mcd(_s["label"]):
+            charger_source(_s)
+            st.session_state.page = "app"
+            st.rerun()
+    else:
+        st.session_state.page = "parametres"
 
 # ─────────────────────────────────────────────────────────────────────────────
 # SIDEBAR
