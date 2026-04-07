@@ -1,9 +1,16 @@
 import { Database, MessageSquare, BarChart3 } from "lucide-react";
 
 const steps = [
-  { num: "1", icon: Database, title: "Connectez vos données", desc: "Reliez votre base de données en quelques clics. AR.IA crée automatiquement le modèle conceptuel." },
-  { num: "2", icon: MessageSquare, title: "Posez votre question", desc: "Formulez votre demande en langage naturel : « Quel est mon CA par mois en 2025 ? »" },
-  { num: "3", icon: BarChart3, title: "Obtenez la réponse", desc: "Recevez instantanément un visuel clair — KPI, graphique ou tableau — exportable en Excel." },
+  { num: "1", icon: Database, title: "Connectez vos données", desc: "Reliez votre base de données en quelques clics. AR.IA crée automatiquement le modèle conceptuel.", examples: null },
+  {
+    num: "2", icon: MessageSquare, title: "Posez votre question", desc: "Formulez votre demande en langage naturel, comme vous le feriez à un collègue.",
+    examples: [
+      "Quel est mon CA par commercial en 2025 ?",
+      "Quels sont mes 10 meilleurs clients ?",
+      "Montre l'évolution des ventes par mois.",
+    ]
+  },
+  { num: "3", icon: BarChart3, title: "Obtenez la réponse", desc: "Recevez instantanément un visuel clair — KPI, graphique ou tableau — exportable en Excel.", examples: null },
 ];
 
 const HowItWorksSection = () => (
@@ -21,7 +28,16 @@ const HowItWorksSection = () => (
             </div>
             <span className="text-xs font-bold uppercase tracking-widest text-primary mb-2 block">Étape {s.num}</span>
             <h3 className="font-semibold text-foreground text-lg mb-2">{s.title}</h3>
-            <p className="text-sm text-muted-foreground leading-relaxed">{s.desc}</p>
+            <p className="text-sm text-muted-foreground leading-relaxed mb-3">{s.desc}</p>
+            {s.examples && (
+              <ul className="space-y-1.5 mt-3">
+                {s.examples.map((ex) => (
+                  <li key={ex} className="text-xs bg-secondary text-secondary-foreground rounded-lg px-3 py-1.5 italic">
+                    « {ex} »
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         ))}
       </div>
