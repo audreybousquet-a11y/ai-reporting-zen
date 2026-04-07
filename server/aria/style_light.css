@@ -189,8 +189,15 @@ hr { border-color: var(--border) !important; opacity: 0.7 !important; }
 [data-testid="stDataFrame"] { border: 1px solid var(--border) !important; border-radius: 12px !important; overflow: hidden !important; box-shadow: 0 2px 8px rgba(58,164,138,0.06) !important; }
 [data-testid="stFileUploader"] { background-color: var(--bg-card2) !important; border: 2px dashed var(--border-light) !important; border-radius: 12px !important; }
 [data-testid="stFileUploaderDropzone"] { background-color: #e8f4f1 !important; border-radius: 10px !important; }
-[data-testid="stFileUploaderDropzone"] small { color: #1a3030 !important; }
-[data-testid="stFileUploaderDropzone"] button { background-color: #3AA48A !important; color: #ffffff !important; border: none !important; }
+[data-testid="stFileUploaderDropzone"] small,
+[data-testid="stFileUploaderDropzone"] small *,
+[data-testid="stFileUploaderDropzone"] span,
+[data-testid="stFileUploaderDropzone"] p { color: #1a3030 !important; }
+[data-testid="stFileUploaderDropzone"] button,
+[data-testid="stFileUploaderDropzone"] button span,
+[data-testid="stFileUploaderDropzone"] [kind="secondary"],
+[data-testid="stFileUploaderDropzone"] [data-testid="baseButton-secondary"] { background-color: #3AA48A !important; color: #ffffff !important; border: none !important; }
+[data-testid="stFileUploaderDropzone"] button span { color: #ffffff !important; }
 [data-testid="stFileUploaderDropzone"] button:hover { background-color: #2d8270 !important; }
 
 /* ── ZONE PRINCIPALE ── */
