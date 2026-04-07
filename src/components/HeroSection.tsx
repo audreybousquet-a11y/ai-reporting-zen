@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, BarChart3, MessageSquare } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 const HeroSection = () => (
   <section className="relative pt-32 pb-20 md:pt-40 md:pb-32 overflow-hidden">
@@ -29,15 +29,12 @@ const HeroSection = () => (
           </Button>
         </div>
       </div>
-      <div className="mt-16 flex justify-center gap-8 text-muted-foreground">
-        <div className="flex items-center gap-2 text-sm">
-          <BarChart3 className="h-5 w-5 text-primary" />
-          Graphiques & tableaux
-        </div>
-        <div className="flex items-center gap-2 text-sm">
-          <MessageSquare className="h-5 w-5 text-primary" />
-          Langage naturel
-        </div>
+      <div className="mt-16 flex justify-center">
+        <img
+          src="/src/assets/localhost_85012_.png"
+          alt="Aperçu de l'interface AR.IA"
+          className="rounded-2xl shadow-2xl shadow-primary/20 border border-border w-full max-w-4xl"
+        />
       </div>
     </div>
   </section>
