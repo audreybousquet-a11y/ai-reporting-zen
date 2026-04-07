@@ -49,9 +49,12 @@ APP_IMPORT_DATETIME = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 # ─── CONFIG PAGE ──────────────────────────────────────────────────────────────
 
+_favicon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "Logo_blanc.png")
+_favicon = _favicon_path if os.path.exists(_favicon_path) else "🅰"
+
 st.set_page_config(
     page_title="ar.ia",
-    page_icon="🅰",
+    page_icon=_favicon,
     layout="wide",
     initial_sidebar_state="expanded"
 )
