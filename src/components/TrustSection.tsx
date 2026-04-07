@@ -33,9 +33,16 @@ const TrustSection = () => (
       </div>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
         {items.map((item) => (
-          <div key={item.title} className="flex flex-col items-center text-center bg-card rounded-xl p-6 border shadow-sm">
-            <div className="h-12 w-12 rounded-full bg-secondary flex items-center justify-center mb-4">
-              <item.icon className="h-6 w-6 text-primary" />
+          <div
+            key={item.title}
+            className="group flex flex-col items-center text-center bg-card rounded-xl p-6 border shadow-sm
+                       transition-all duration-300 cursor-default
+                       hover:-translate-y-2 hover:shadow-xl hover:shadow-primary/20 hover:border-primary/40"
+          >
+            <div className="h-12 w-12 rounded-full bg-secondary flex items-center justify-center mb-4
+                            transition-all duration-300
+                            group-hover:scale-110 group-hover:bg-primary">
+              <item.icon className="h-6 w-6 text-primary transition-colors duration-300 group-hover:text-primary-foreground" />
             </div>
             <h3 className="font-semibold text-foreground mb-2">{item.title}</h3>
             <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
