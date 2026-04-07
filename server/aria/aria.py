@@ -125,14 +125,30 @@ if not st.session_state.authenticated:
     st.markdown("""
     <style>
     #MainMenu, header, footer, [data-testid="stSidebar"] { visibility: hidden; }
-    .stApp { background: #f8fafc; }
-    .stTextInput input { border-radius: 8px; }
+    .stApp { background: #f0fdf4; }
+    div[data-testid="stForm"] {
+        background: white;
+        border-radius: 16px;
+        padding: 32px;
+        box-shadow: 0 4px 24px rgba(22,163,74,0.10);
+        border: 1px solid #bbf7d0;
+    }
+    .stTextInput label { color: #15803d !important; font-weight: 600 !important; }
+    .stTextInput input {
+        border: 2px solid #16a34a !important;
+        border-radius: 8px !important;
+        background: white !important;
+    }
+    .stTextInput input:focus { border-color: #15803d !important; box-shadow: 0 0 0 3px rgba(22,163,74,0.15) !important; }
     .stFormSubmitButton button {
-        background-color: #2563eb !important;
+        background-color: #16a34a !important;
         color: white !important;
         border-radius: 8px !important;
         font-weight: 600 !important;
+        border: none !important;
+        width: 100% !important;
     }
+    .stFormSubmitButton button:hover { background-color: #15803d !important; }
     </style>
     """, unsafe_allow_html=True)
     st.markdown("<br><br>", unsafe_allow_html=True)
@@ -140,16 +156,10 @@ if not st.session_state.authenticated:
     with col:
         logo_path = os.path.join(os.path.dirname(__file__), "logo-aria.png")
         if os.path.exists(logo_path):
-            st.image(logo_path, width=160)
-        else:
-            st.markdown("""
-            <div style="text-align:center;margin-bottom:8px;">
-              <span style="font-size:2rem;font-weight:800;color:#0f172a;letter-spacing:-1px;">
-                AR<span style="color:#2563eb">.</span>IA
-              </span>
-            </div>
-            """, unsafe_allow_html=True)
-        st.markdown('<p style="text-align:center;color:#64748b;font-size:0.85rem;margin-bottom:20px;">Intelligence artificielle pour vos données</p>', unsafe_allow_html=True)
+            _, lc, _ = st.columns([1, 2, 1])
+            with lc:
+                st.image(logo_path, use_container_width=True)
+        st.markdown('<p style="text-align:center;color:#15803d;font-size:0.9rem;margin-bottom:20px;">Intelligence artificielle pour vos données</p>', unsafe_allow_html=True)
         with st.form("login_form"):
             username = st.text_input("Identifiant")
             password = st.text_input("Mot de passe", type="password")
