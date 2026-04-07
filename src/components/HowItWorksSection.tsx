@@ -1,5 +1,7 @@
 import { Database, MessageSquare, BarChart3 } from "lucide-react";
 
+const floatClass = ["animate-float-1", "animate-float-2", "animate-float-3"];
+
 const steps = [
   { num: "1", icon: Database, title: "Connectez vos données", desc: "Reliez votre base de données en quelques clics. AR.IA crée automatiquement le modèle conceptuel.", examples: null },
   {
@@ -21,12 +23,14 @@ const HowItWorksSection = () => (
         <p className="text-muted-foreground text-lg">Trois étapes simples pour transformer vos données en décisions.</p>
       </div>
       <div className="grid md:grid-cols-3 gap-10 max-w-4xl mx-auto">
-        {steps.map((s) => (
-          <div key={s.num} className="text-center">
-            <div className="mx-auto h-16 w-16 rounded-2xl hero-gradient flex items-center justify-center mb-5 shadow-lg shadow-primary/20">
+        {steps.map((s, i) => (
+          <div key={s.num} className="text-center group cursor-default">
+            <div className={`mx-auto h-16 w-16 rounded-2xl hero-gradient flex items-center justify-center mb-5 shadow-lg shadow-primary/20 ${floatClass[i]} group-hover:scale-110 group-hover:animate-shimmer transition-transform duration-300`}>
               <s.icon className="h-7 w-7 text-primary-foreground" />
             </div>
-            <span className="text-xs font-bold uppercase tracking-widest text-primary mb-2 block">Étape {s.num}</span>
+            <span className="text-xs font-bold uppercase tracking-widest text-primary mb-2 block group-hover:tracking-[0.2em] transition-all duration-300">
+              Étape {s.num}
+            </span>
             <h3 className="font-semibold text-foreground text-lg mb-2">{s.title}</h3>
             <p className="text-sm text-muted-foreground leading-relaxed mb-3">{s.desc}</p>
             {s.examples && (
