@@ -1,4 +1,5 @@
-import logo from "@/assets/logo-aria.png";
+import logoColor from "@/assets/logo-aria.png";
+import logoBlanc from "@/assets/Logo_blanc.png";
 import { Mail, Phone } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -11,7 +12,7 @@ const Footer = () => (
 
           {/* Logo + tagline */}
           <div>
-            <img src={logo} alt="AR.IA" className="h-14 mb-4 brightness-0 invert" />
+            <img src={logoBlanc} alt="AR.IA" className="h-14 mb-4" />
             <p className="text-primary-foreground/80 text-sm leading-relaxed max-w-xs">
               L'assistant IA de reporting made in France — souverain, conforme RGPD, pensé pour vos équipes métier.
             </p>
