@@ -138,8 +138,22 @@ if not st.session_state.authenticated:
         border: 2px solid #2D9583 !important;
         border-radius: 8px !important;
         background: white !important;
+        background-color: white !important;
+        color: #0f172a !important;
+        -webkit-text-fill-color: #0f172a !important;
+        caret-color: #0f172a !important;
     }
-    .stTextInput input:focus { border-color: #2D9583 !important; box-shadow: 0 0 0 3px rgba(45,149,131,0.15) !important; }
+    .stTextInput input:focus {
+        border-color: #2D9583 !important;
+        box-shadow: 0 0 0 3px rgba(45,149,131,0.15) !important;
+        background: white !important;
+        background-color: white !important;
+    }
+    .stTextInput input:-webkit-autofill,
+    .stTextInput input:-webkit-autofill:focus {
+        -webkit-box-shadow: 0 0 0 1000px white inset !important;
+        -webkit-text-fill-color: #0f172a !important;
+    }
     .stFormSubmitButton button {
         background-color: #2D9583 !important;
         color: white !important;
