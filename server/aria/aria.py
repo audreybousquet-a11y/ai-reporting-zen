@@ -125,20 +125,31 @@ if not st.session_state.authenticated:
     st.markdown("""
     <style>
     #MainMenu, header, footer, [data-testid="stSidebar"] { visibility: hidden; }
-    .stApp { background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%); }
+    .stApp { background: #f8fafc; }
+    .stTextInput input { border-radius: 8px; }
+    .stFormSubmitButton button {
+        background-color: #2563eb !important;
+        color: white !important;
+        border-radius: 8px !important;
+        font-weight: 600 !important;
+    }
     </style>
     """, unsafe_allow_html=True)
     st.markdown("<br><br>", unsafe_allow_html=True)
     _, col, _ = st.columns([1, 1, 1])
     with col:
-        st.markdown("""
-        <div style="text-align:center;margin-bottom:24px;">
-          <span style="font-size:2.5rem;font-weight:800;color:white;letter-spacing:-1px;">
-            AR<span style="color:#3b82f6">.</span>IA
-          </span><br>
-          <span style="color:#94a3b8;font-size:0.85rem;">Intelligence artificielle pour vos données</span>
-        </div>
-        """, unsafe_allow_html=True)
+        logo_path = os.path.join(os.path.dirname(__file__), "logo-aria.png")
+        if os.path.exists(logo_path):
+            st.image(logo_path, width=160)
+        else:
+            st.markdown("""
+            <div style="text-align:center;margin-bottom:8px;">
+              <span style="font-size:2rem;font-weight:800;color:#0f172a;letter-spacing:-1px;">
+                AR<span style="color:#2563eb">.</span>IA
+              </span>
+            </div>
+            """, unsafe_allow_html=True)
+        st.markdown('<p style="text-align:center;color:#64748b;font-size:0.85rem;margin-bottom:20px;">Intelligence artificielle pour vos données</p>', unsafe_allow_html=True)
         with st.form("login_form"):
             username = st.text_input("Identifiant")
             password = st.text_input("Mot de passe", type="password")
