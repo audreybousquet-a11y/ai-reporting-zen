@@ -105,6 +105,41 @@ def init_state():
             st.session_state[k] = v
 
 init_state()
+
+# ─── AUTHENTIFICATION ─────────────────────────────────────────────────────────
+
+_LOGIN = os.environ.get("ARIA_LOGIN", "admin")
+_PASSWORD = os.environ.get("ARIA_PASSWORD", "aria2024")
+
+if "authenticated" not in st.session_state:
+    st.session_state.authenticated = False
+
+if not st.session_state.authenticated:
+    st.markdown("""
+    <style>
+    #MainMenu, header, footer { visibility: hidden; }
+    .login-box { max-width: 360px; margin: 10vh auto; padding: 40px; background: white;
+                 border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.12); }
+    .login-title { font-size: 2rem; font-weight: 800; text-align: center; margin-bottom: 4px; }
+    .login-sub { color: #64748b; text-align: center; font-size: 0.85rem; margin-bottom: 24px; }
+    </style>
+    <div class="login-box">
+      <div class="login-title">AR<span style="color:#2563eb">.</span>IA</div>
+      <div class="login-sub">Intelligence artificielle pour vos données</div>
+    </div>
+    """, unsafe_allow_html=True)
+    with st.form("login_form"):
+        username = st.text_input("Identifiant")
+        password = st.text_input("Mot de passe", type="password")
+        submitted = st.form_submit_button("Se connecter", use_container_width=True)
+        if submitted:
+            if username == _LOGIN and password == _PASSWORD:
+                st.session_state.authenticated = True
+                st.rerun()
+            else:
+                st.error("Identifiants incorrects")
+    st.stop()
+
 charger_css(st.session_state.theme)
 _theme = st.session_state.theme
 COLORS = COLORS_DEYTIME if _theme == "deytime" else (COLORS_DARK if _theme == "dark" else COLORS_LIGHT)
@@ -295,10 +330,9 @@ with st.sidebar:
         st.session_state.page = "aide"
         st.rerun()
 
-    st.markdown("<div style='flex:1'></div>", unsafe_allow_html=True)
     if st.button("🔴 Déconnexion", use_container_width=True, type="secondary"):
-        st.session_state.clear()
-        st.markdown('<meta http-equiv="refresh" content="0;url=https://ar-ia.fr">', unsafe_allow_html=True)
+        st.session_state.authenticated = False
+        st.rerun()
 
     if st.session_state.source_label:
         st.divider()
