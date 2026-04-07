@@ -295,6 +295,12 @@ with st.sidebar:
         st.session_state.page = "aide"
         st.rerun()
 
+    st.markdown(
+        '<a href="https://ar-ia.fr" target="_self" style="display:block;text-align:center;'
+        'color:#64748b;font-size:0.8rem;text-decoration:none;padding:8px 0;">⬅ Retour au site</a>',
+        unsafe_allow_html=True
+    )
+
     if st.session_state.source_label:
         st.divider()
 
