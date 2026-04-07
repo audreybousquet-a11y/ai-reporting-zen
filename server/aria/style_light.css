@@ -120,11 +120,19 @@ section[data-testid="stSidebar"] .stButton > button:hover {
     background-color: var(--bg-card2) !important;
     opacity: 1 !important;
 }
-/* Selectbox texte visible dans le contenu principal */
+/* Selectbox contenu principal — fond vert clair */
+[data-testid="stMain"] [data-baseweb="select"] {
+    background-color: var(--bg-card2) !important;
+    border-color: var(--border) !important;
+}
+[data-testid="stMain"] [data-baseweb="select"] > div {
+    background-color: var(--bg-card2) !important;
+}
 [data-testid="stMain"] [data-baseweb="select"] [data-testid="stMarkdownContainer"],
 [data-testid="stMain"] [data-baseweb="select"] div,
 [data-testid="stMain"] [data-baseweb="select"] span {
     color: var(--text-main) !important;
+    background-color: transparent !important;
 }
 
 /* ── BOUTONS ── */
