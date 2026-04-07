@@ -1,4 +1,4 @@
-import { ShieldCheck, MapPin, Lock } from "lucide-react";
+import { ShieldCheck, MapPin, Lock, BrainCircuit } from "lucide-react";
 
 const items = [
   {
@@ -10,6 +10,11 @@ const items = [
     icon: MapPin,
     title: "Hébergé en France",
     desc: "Serveurs OVH à Strasbourg, sous juridiction française. Aucune donnée ne sort du territoire national.",
+  },
+  {
+    icon: BrainCircuit,
+    title: "IA française — Mistral",
+    desc: "AR.IA s'appuie sur Mistral, le modèle d'intelligence artificielle français de référence. Performances de pointe, souveraineté garantie.",
   },
   {
     icon: ShieldCheck,
@@ -26,7 +31,7 @@ const TrustSection = () => (
         <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3">Vos données restent les vôtres</h2>
         <p className="text-muted-foreground">Une IA responsable, souveraine et conforme — pensée pour les entreprises qui ne font pas de compromis sur la confidentialité.</p>
       </div>
-      <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
         {items.map((item) => (
           <div key={item.title} className="flex flex-col items-center text-center bg-card rounded-xl p-6 border shadow-sm">
             <div className="h-12 w-12 rounded-full bg-secondary flex items-center justify-center mb-4">
