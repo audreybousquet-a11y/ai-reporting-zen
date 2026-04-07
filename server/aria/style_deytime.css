@@ -1,0 +1,823 @@
+/* ═══════════════════════════════════════════════════════════════
+   AR.IA — style_deytime.css
+   Thème hybride : sidebar sombre charbon + contenu fond clair
+   Inspiré de Deytime (DEY time)
+   ═══════════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* ── Variables ────────────────────────────────────────────────── */
+:root {
+  /* Fond principal (contenu) — blanc cassé comme Deytime */
+  --bg-main:           #f4f5f7;
+  --bg-card:           #ffffff;
+  --bg-card-hover:     #f9fafb;
+  --bg-input:          #ffffff;
+
+  /* Sidebar sombre charbon exacte de Deytime */
+  --bg-sidebar:        #1e2026;
+  --bg-sidebar-hover:  #2a2d36;
+  --bg-sidebar-active: #2f3340;
+
+  /* Bordures */
+  --border:            #e2e5ea;
+  --border-sidebar:    #2f3340;
+  --border-focus:      #e8a020;
+
+  /* Textes — contenu */
+  --text-primary:      #1a1d23;
+  --text-secondary:    #5f6878;
+  --text-muted:        #9ba3b0;
+
+  /* Textes — sidebar */
+  --sidebar-text:      #c8ccd6;
+  --sidebar-text-muted:#6b7280;
+  --sidebar-text-active:#ffffff;
+
+  /* Accent Deytime — orange/doré */
+  --accent:            #e8a020;
+  --accent-soft:       rgba(232, 160, 32, 0.10);
+  --accent-hover:      #f0b535;
+  --accent-text:       #b87a10;
+
+  /* États */
+  --danger:            #d94f4f;
+  --success:           #3da06e;
+  --info:              #3d7fe0;
+  --warning:           #e8a020;
+
+  /* Rayons */
+  --radius-sm:         5px;
+  --radius-md:         8px;
+  --radius-lg:         12px;
+
+  /* Typographie */
+  --font-body:         'Inter', sans-serif;
+  --font-mono:         'JetBrains Mono', monospace;
+
+  /* Ombres */
+  --shadow-card:       0 1px 4px rgba(0,0,0,0.07), 0 4px 16px rgba(0,0,0,0.04);
+  --shadow-card-hover: 0 2px 8px rgba(0,0,0,0.10), 0 8px 24px rgba(0,0,0,0.06);
+  --shadow-focus:      0 0 0 3px rgba(232, 160, 32, 0.18);
+}
+
+/* ── Reset global ─────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body,
+[data-testid="stAppViewContainer"],
+[data-testid="stMain"],
+.main {
+  font-family: var(--font-body) !important;
+  background-color: var(--bg-main) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Retire le fond blanc par défaut de Streamlit */
+[data-testid="stAppViewContainer"] > .main {
+  background-color: var(--bg-main) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SIDEBAR — charbon sombre exacte Deytime
+   ═══════════════════════════════════════════════════════════════ */
+
+[data-testid="stSidebar"] {
+  background-color: var(--bg-sidebar) !important;
+  border-right: 1px solid var(--border-sidebar) !important;
+  padding-top: 0 !important;
+}
+
+[data-testid="stSidebar"] > div:first-child {
+  padding-top: 1.2rem;
+}
+
+/* Tous les textes sidebar — on cible les éléments texte sans écraser les icon-fonts */
+[data-testid="stSidebar"] p,
+[data-testid="stSidebar"] div,
+[data-testid="stSidebar"] label,
+[data-testid="stSidebar"] a {
+  font-family: var(--font-body) !important;
+}
+
+[data-testid="stSidebar"] p,
+[data-testid="stSidebar"] span,
+[data-testid="stSidebar"] li {
+  color: var(--sidebar-text) !important;
+  font-size: 0.875rem !important;
+}
+
+/* Labels de section (type "NAVIGATION", "SOURCES"…) */
+[data-testid="stSidebar"] label,
+[data-testid="stSidebar"] .stMarkdown p {
+  color: var(--sidebar-text-muted) !important;
+  font-size: 0.72rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Titres sidebar */
+[data-testid="stSidebar"] h1,
+[data-testid="stSidebar"] h2,
+[data-testid="stSidebar"] h3 {
+  color: var(--sidebar-text-active) !important;
+  font-weight: 700 !important;
+  font-size: 1.1rem !important;
+  letter-spacing: -0.01em;
+}
+
+/* Logo AR.IA dans sidebar — accent doré */
+[data-testid="stSidebar"] h1:first-of-type {
+  color: var(--accent) !important;
+  font-size: 1.4rem !important;
+  font-weight: 700 !important;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-sidebar);
+  margin-bottom: 1rem;
+}
+
+/* ── Boutons de navigation sidebar ───────────────────────────── */
+section[data-testid="stSidebar"] [data-testid="stButton"] [data-testid="baseButton-secondary"],
+section[data-testid="stSidebar"] [data-testid="stButton"] [data-testid="baseButton-primary"],
+section[data-testid="stSidebar"] .stButton > button {
+  width: 100% !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: var(--radius-sm) !important;
+  color: var(--sidebar-text) !important;
+  font-family: var(--font-body) !important;
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  padding: 0.5rem 0.85rem !important;
+  text-align: left !important;
+  justify-content: flex-start !important;
+  transition: background 0.15s, color 0.15s !important;
+  box-shadow: none !important;
+}
+
+section[data-testid="stSidebar"] [data-testid="stButton"] [data-testid="baseButton-secondary"]:hover,
+section[data-testid="stSidebar"] [data-testid="stButton"] [data-testid="baseButton-primary"]:hover,
+section[data-testid="stSidebar"] .stButton > button:hover {
+  background: var(--accent-soft) !important;
+  color: var(--accent) !important;
+}
+
+section[data-testid="stSidebar"] [data-testid="stButton"] [data-testid="baseButton-secondary"]:focus,
+section[data-testid="stSidebar"] [data-testid="stButton"] [data-testid="baseButton-secondary"]:active,
+section[data-testid="stSidebar"] [data-testid="stButton"] [data-testid="baseButton-primary"]:focus,
+section[data-testid="stSidebar"] [data-testid="stButton"] [data-testid="baseButton-primary"]:active,
+section[data-testid="stSidebar"] .stButton > button:focus,
+section[data-testid="stSidebar"] .stButton > button:active {
+  background: var(--bg-sidebar-active) !important;
+  color: var(--accent) !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Séparateur sidebar */
+[data-testid="stSidebar"] hr {
+  border-color: var(--border-sidebar) !important;
+  margin: 0.75rem 0 !important;
+}
+
+/* Selectbox sidebar */
+[data-testid="stSidebar"] .stSelectbox > div > div {
+  background-color: var(--bg-sidebar-hover) !important;
+  border: 1px solid var(--border-sidebar) !important;
+  color: var(--sidebar-text) !important;
+  border-radius: var(--radius-sm) !important;
+  font-size: 0.875rem !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CONTENU PRINCIPAL
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Titres */
+h1, h2, h3, h4 {
+  font-family: var(--font-body) !important;
+  color: var(--text-primary) !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.015em;
+}
+
+h1 { font-size: 1.55rem !important; }
+h2 { font-size: 1.2rem !important; }
+h3 { font-size: 1rem !important; }
+
+/* Texte uniquement dans les conteneurs Markdown — jamais dans les boutons */
+[data-testid="stMarkdownContainer"] p,
+[data-testid="stMarkdownContainer"] span,
+[data-testid="stMarkdownContainer"] li,
+[data-testid="stCaptionContainer"] p {
+  color: var(--text-secondary) !important;
+  font-size: 0.9rem !important;
+  line-height: 1.6;
+}
+
+/* ── Cards / conteneurs ──────────────────────────────────────── */
+[data-testid="stContainer"],
+div.element-container > div.stMarkdown,
+[data-testid="block-container"] > div {
+  /* pas de card globale, on cible les vrais blocs ci-dessous */
+}
+
+/* Bloc expander — style carte Deytime */
+[data-testid="stExpander"] {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-card) !important;
+  overflow: hidden;
+}
+
+[data-testid="stExpander"]:hover {
+  box-shadow: var(--shadow-card-hover) !important;
+}
+
+[data-testid="stExpander"] summary {
+  font-weight: 600 !important;
+  font-size: 0.9rem !important;
+  color: #fff !important;
+  background-color: #e8a020 !important;
+  padding: 0.85rem 1rem !important;
+}
+[data-testid="stExpander"] summary:hover {
+  background-color: #f0b535 !important;
+}
+
+/* ── Inputs & champs ─────────────────────────────────────────── */
+[data-testid="stNumberInput"],
+[data-testid="stNumberInput"] > div {
+  background-color: var(--bg-input) !important;
+}
+[data-testid="stNumberInput"] input {
+  background-color: #f5d080 !important;
+  color: #1a1d23 !important;
+  -webkit-text-fill-color: #1a1d23 !important;
+  opacity: 1 !important;
+}
+.stTextInput > div > div > input,
+.stTextArea > div > div > textarea,
+.stNumberInput > div > div > input {
+  font-family: var(--font-body) !important;
+  background-color: var(--bg-input) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-md) !important;
+  color: var(--text-primary) !important;
+  -webkit-text-fill-color: var(--text-primary) !important;
+  opacity: 1 !important;
+  font-size: 0.9rem !important;
+  padding: 0.6rem 0.85rem !important;
+  transition: border-color 0.15s, box-shadow 0.15s !important;
+}
+
+.stTextInput > div > div > input:focus,
+.stTextArea > div > div > textarea:focus,
+.stNumberInput > div > div > input:focus {
+  border-color: var(--border-focus) !important;
+  box-shadow: var(--shadow-focus) !important;
+  outline: none !important;
+}
+
+.stTextInput > div > div > input::placeholder,
+.stTextArea > div > div > textarea::placeholder {
+  color: var(--text-muted) !important;
+}
+
+/* Labels */
+label[data-testid="stWidgetLabel"],
+.stTextInput label, .stTextArea label,
+.stSelectbox label, .stMultiSelect label {
+  font-size: 0.8rem !important;
+  font-weight: 600 !important;
+  color: var(--text-secondary) !important;
+  letter-spacing: 0.03em;
+  margin-bottom: 0.3rem !important;
+}
+
+/* ── Selectbox ───────────────────────────────────────────────── */
+.stSelectbox > div > div,
+.stMultiSelect > div > div {
+  background-color: var(--bg-input) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-md) !important;
+  color: var(--text-primary) !important;
+  font-size: 0.9rem !important;
+  transition: border-color 0.15s !important;
+}
+
+.stSelectbox > div > div:focus-within,
+.stMultiSelect > div > div:focus-within {
+  border-color: var(--border-focus) !important;
+  box-shadow: var(--shadow-focus) !important;
+}
+
+/* ── Boutons contenu principal (même pattern que dark/light) ─── */
+.stButton > button,
+[data-testid="baseButton-secondary"],
+[data-testid="stBaseButton-secondary"] > button,
+button[data-testid="baseButton-secondary"] {
+  background: #e8a020 !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  font-size: 0.875rem !important;
+  transition: background 0.15s !important;
+  box-shadow: none !important;
+}
+.stButton > button:hover,
+[data-testid="baseButton-secondary"]:hover,
+[data-testid="stBaseButton-secondary"] > button:hover {
+  background: #f0b535 !important;
+  color: #fff !important;
+}
+.stButton > button:active,
+[data-testid="baseButton-secondary"]:active {
+  background: #c47a20 !important;
+}
+.stButton > button:disabled,
+[data-testid="baseButton-secondary"]:disabled {
+  opacity: 0.4 !important;
+  cursor: not-allowed !important;
+}
+
+/* ── Boutons sidebar — override plus spécifique ──────────────── */
+section[data-testid="stSidebar"] .stButton > button {
+  background: transparent !important;
+  color: #c8ccd6 !important;
+  border: none !important;
+  font-weight: 500 !important;
+  text-align: left !important;
+  justify-content: flex-start !important;
+  box-shadow: none !important;
+}
+section[data-testid="stSidebar"] .stButton > button > div,
+section[data-testid="stSidebar"] .stButton > button p {
+  text-align: left !important;
+  justify-content: flex-start !important;
+  color: inherit !important;
+}
+section[data-testid="stSidebar"] .stButton > button:hover {
+  background: rgba(232, 160, 32, 0.12) !important;
+  color: #e8a020 !important;
+}
+section[data-testid="stSidebar"] .stButton > button:active,
+section[data-testid="stSidebar"] .stButton > button:focus {
+  background: #2f3340 !important;
+  color: #e8a020 !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+/* Bouton de la page active dans la sidebar */
+section[data-testid="stSidebar"] .stButton > button[kind="primary"],
+section[data-testid="stSidebar"] [data-testid="stButton"] [data-testid="baseButton-primary"],
+section[data-testid="stSidebar"] [data-testid="stBaseButton-primary"] > button {
+  background: #e8a020 !important;
+  color: #1a1d23 !important;
+  font-weight: 700 !important;
+}
+/* Texte à l'intérieur du bouton actif */
+section[data-testid="stSidebar"] .stButton > button[kind="primary"] p,
+section[data-testid="stSidebar"] .stButton > button[kind="primary"] span,
+section[data-testid="stSidebar"] [data-testid="stButton"] [data-testid="baseButton-primary"] p,
+section[data-testid="stSidebar"] [data-testid="stButton"] [data-testid="baseButton-primary"] span {
+  color: #1a1d23 !important;
+}
+
+/* ── Form submit buttons (Analyser / Effacer) ────────────────── */
+[data-testid="stFormSubmitButton"] > button {
+  background-color: var(--accent) !important;
+  border: none !important;
+  color: #fff !important;
+  font-weight: 600 !important;
+  border-radius: var(--radius-sm) !important;
+  transition: background 0.15s !important;
+  box-shadow: none !important;
+}
+
+[data-testid="stFormSubmitButton"] > button:hover {
+  background-color: var(--accent-hover) !important;
+  color: #fff !important;
+}
+
+[data-testid="stFormSubmitButton"] > button:focus,
+[data-testid="stFormSubmitButton"] > button:active {
+  background-color: var(--accent-hover) !important;
+  color: #fff !important;
+  box-shadow: var(--shadow-focus) !important;
+  outline: none !important;
+}
+
+/* ── Tableau de données ──────────────────────────────────────── */
+[data-testid="stDataFrame"],
+[data-testid="dataframe"] {
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-md) !important;
+  overflow: hidden !important;
+  background: var(--bg-card) !important;
+  box-shadow: var(--shadow-card) !important;
+}
+
+[data-testid="stDataFrame"] table {
+  font-size: 0.855rem !important;
+  font-family: var(--font-body) !important;
+}
+
+[data-testid="stDataFrame"] thead th {
+  background-color: #f0f2f5 !important;
+  color: var(--text-primary) !important;
+  font-weight: 600 !important;
+  font-size: 0.78rem !important;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border) !important;
+  padding: 0.65rem 0.85rem !important;
+}
+
+[data-testid="stDataFrame"] tbody td {
+  color: var(--text-secondary) !important;
+  border-bottom: 1px solid #f0f2f5 !important;
+  padding: 0.6rem 0.85rem !important;
+}
+
+[data-testid="stDataFrame"] tbody tr:hover td {
+  background-color: var(--accent-soft) !important;
+}
+
+[data-testid="stDataFrame"] tbody tr:last-child td {
+  border-bottom: none !important;
+}
+
+/* ── Métriques ───────────────────────────────────────────────── */
+[data-testid="stMetric"] {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-md) !important;
+  padding: 1rem 1.2rem !important;
+  box-shadow: var(--shadow-card) !important;
+}
+
+[data-testid="stMetricLabel"] {
+  font-size: 0.78rem !important;
+  font-weight: 600 !important;
+  color: var(--text-muted) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+[data-testid="stMetricValue"] {
+  font-size: 1.75rem !important;
+  font-weight: 700 !important;
+  color: var(--text-primary) !important;
+  letter-spacing: -0.02em;
+}
+
+[data-testid="stMetricDelta"] {
+  font-size: 0.82rem !important;
+  font-weight: 500 !important;
+}
+
+/* ── Alertes & messages ──────────────────────────────────────── */
+[data-testid="stAlert"] {
+  border-radius: var(--radius-md) !important;
+  border: none !important;
+  font-size: 0.875rem !important;
+  padding: 0.75rem 1rem !important;
+}
+
+.stSuccess {
+  background-color: rgba(61, 160, 110, 0.10) !important;
+  border-left: 3px solid var(--success) !important;
+  color: var(--success) !important;
+}
+
+.stError {
+  background-color: rgba(217, 79, 79, 0.10) !important;
+  border-left: 3px solid var(--danger) !important;
+  color: var(--danger) !important;
+}
+
+.stWarning {
+  background-color: rgba(232, 160, 32, 0.10) !important;
+  border-left: 3px solid var(--warning) !important;
+  color: var(--accent-text) !important;
+}
+
+.stInfo {
+  background-color: rgba(61, 127, 224, 0.10) !important;
+  border-left: 3px solid var(--info) !important;
+  color: var(--info) !important;
+}
+
+/* ── Divider ─────────────────────────────────────────────────── */
+hr, [data-testid="stDivider"] {
+  border-color: var(--border) !important;
+  margin: 1rem 0 !important;
+}
+
+/* ── Code blocks ─────────────────────────────────────────────── */
+code, pre, [data-testid="stCode"] {
+  font-family: var(--font-mono) !important;
+  font-size: 0.82rem !important;
+  border-radius: var(--radius-sm) !important;
+}
+
+[data-testid="stCode"] {
+  background-color: #f0f2f5 !important;
+  border: 1px solid var(--border) !important;
+}
+
+/* ── Spinner ─────────────────────────────────────────────────── */
+[data-testid="stSpinner"] {
+  color: var(--accent) !important;
+}
+
+/* ── Caption / texte discret ─────────────────────────────────── */
+.stCaption, [data-testid="stCaptionContainer"] p {
+  font-size: 0.78rem !important;
+  color: var(--text-muted) !important;
+}
+
+/* ── File uploader ───────────────────────────────────────────── */
+[data-testid="stFileUploader"] {
+  background-color: var(--bg-card) !important;
+  border: 1.5px dashed var(--accent) !important;
+  border-radius: var(--radius-md) !important;
+  padding: 1.2rem !important;
+  transition: border-color 0.15s, background-color 0.15s !important;
+}
+
+[data-testid="stFileUploader"]:hover {
+  background-color: var(--accent-soft) !important;
+  border-color: var(--accent-hover) !important;
+}
+
+/* Bouton "Browse files" dans le dropzone */
+[data-testid="stFileUploaderDropzone"] button,
+[data-testid="stFileUploader"] button {
+  background-color: var(--accent) !important;
+  border: none !important;
+  color: #fff !important;
+  font-weight: 600 !important;
+  border-radius: var(--radius-sm) !important;
+  transition: background 0.15s !important;
+}
+
+[data-testid="stFileUploaderDropzone"] button:hover,
+[data-testid="stFileUploader"] button:hover {
+  background-color: var(--accent-hover) !important;
+}
+
+/* ── Download button ─────────────────────────────────────────── */
+[data-testid="stDownloadButton"] > button {
+  background-color: var(--accent-soft) !important;
+  border: none !important;
+  color: var(--accent-text) !important;
+  font-size: 0.855rem !important;
+  font-weight: 500 !important;
+  border-radius: var(--radius-sm) !important;
+  transition: background 0.15s, color 0.15s !important;
+}
+
+[data-testid="stDownloadButton"] > button:hover {
+  background-color: var(--accent) !important;
+  color: #fff !important;
+}
+
+/* ── Checkbox & radio ────────────────────────────────────────── */
+[data-testid="stCheckbox"] label,
+[data-testid="stRadio"] label {
+  font-size: 0.875rem !important;
+  color: var(--text-secondary) !important;
+}
+
+/* ── Tabs ────────────────────────────────────────────────────── */
+[data-testid="stTabs"] [data-baseweb="tab-list"] {
+  border-bottom: 1px solid var(--border) !important;
+  gap: 0 !important;
+  background: transparent !important;
+}
+
+[data-testid="stTabs"] [data-baseweb="tab"] {
+  font-family: var(--font-body) !important;
+  font-size: 0.875rem !important;
+  font-weight: 700 !important;
+  color: var(--text-secondary) !important;
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 2px solid transparent !important;
+  padding: 0.6rem 1.1rem !important;
+  border-radius: 0 !important;
+  transition: color 0.15s, border-color 0.15s !important;
+}
+
+[data-testid="stTabs"] [aria-selected="true"] {
+  color: var(--accent-text) !important;
+  border-bottom-color: var(--accent) !important;
+  font-weight: 600 !important;
+}
+
+[data-testid="stTabs"] [data-baseweb="tab"]:hover {
+  color: var(--text-primary) !important;
+  background: var(--accent-soft) !important;
+}
+
+/* ── Scrollbar ───────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: #d0d5de;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+/* ═══════════════════════════════════════════════════════════════
+   COMPOSANTS SPÉCIFIQUES AR.IA
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Logo AR.IA sidebar ──────────────────────────────────────── */
+.aria-logo { display: flex; align-items: center; gap: 10px; padding: 4px 0 8px 0; }
+.aria-logo-icon { width: 36px; height: 36px; background: var(--accent); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; font-weight: 900; color: white; font-family: 'Inter', sans-serif; flex-shrink: 0; }
+.aria-logo-text { font-family: 'Inter', sans-serif; font-weight: 800; font-size: 1.3rem; color: var(--sidebar-text-active); letter-spacing: -0.5px; line-height: 1; }
+.aria-logo-text span { color: var(--accent); }
+.aria-logo-sub { font-size: 0.65rem; color: var(--sidebar-text-muted); font-weight: 400; letter-spacing: 0.8px; text-transform: uppercase; line-height: 1; }
+.nav-section { font-size: 0.7rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--sidebar-text-muted) !important; padding: 4px 0 6px 2px; }
+.source-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(232,160,32,0.1); border: 1px solid rgba(232,160,32,0.2); border-radius: 20px; padding: 3px 12px; font-size: 0.78rem; color: var(--accent-text); font-weight: 500; }
+
+/* Empty state */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3rem 2rem;
+  background: var(--bg-card);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.empty-state-icon {
+  font-size: 2.2rem;
+  margin-bottom: 0.85rem;
+  opacity: 0.6;
+}
+
+.empty-state-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-primary) !important;
+  margin-bottom: 0.35rem;
+}
+
+.empty-state-sub {
+  font-size: 0.855rem;
+  color: var(--text-muted) !important;
+}
+
+/* Badge accent */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: var(--accent-soft);
+  color: var(--accent-text);
+  border: 1px solid rgba(232, 160, 32, 0.25);
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.18rem 0.65rem;
+  letter-spacing: 0.02em;
+}
+
+/* Fiche HTML (generer_fiche_html) */
+.fiche-container {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-card);
+}
+
+/* Bloc SQL généré */
+.sql-block {
+  background: #f0f2f5;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-primary);
+  padding: 0.75rem 1rem;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* Topbar / header breadcrumb */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 0 1.25rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 1.5rem;
+}
+
+.topbar-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.015em;
+}
+
+.topbar-sub {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 0.1rem;
+}
+
+/* ── Options liste déroulante (portal hors sidebar) ──────────── */
+[data-baseweb="popover"] [role="option"],
+[data-baseweb="menu"] [role="option"] {
+  color: var(--text-primary) !important;
+  background: var(--bg-card) !important;
+  font-family: var(--font-body) !important;
+  font-size: 0.9rem !important;
+}
+[data-baseweb="popover"] [role="option"]:hover,
+[data-baseweb="menu"] [role="option"]:hover,
+[data-baseweb="popover"] [aria-selected="true"],
+[data-baseweb="menu"] [aria-selected="true"] {
+  background: var(--bg-hover) !important;
+  color: var(--accent) !important;
+}
+
+/* ── Sidebar selectbox : texte et flèche visibles ─────────────── */
+[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] > div {
+  background: transparent !important;
+  color: var(--sidebar-text) !important;
+}
+[data-testid="stSidebar"] [data-testid="stSelectbox"] span {
+  color: var(--sidebar-text) !important;
+}
+[data-testid="stSidebar"] [data-testid="stSelectbox"] svg {
+  fill: var(--sidebar-text) !important;
+}
+
+/* ── Containers bordés (st.container border=True) ─────────────────────────── */
+[data-testid="stVerticalBlockBorderWrapper"] {
+  border: 2px solid #e8a020 !important;
+  border-radius: 12px !important;
+  background: #ffffff !important;
+  padding: 4px !important;
+  box-shadow: 0 0 0 2px #e8a020 !important;
+}
+
+
+/* ── Number input (port) — boutons +/− ────────────────────────────────────── */
+[data-testid="stNumberInputStepUp"] button,
+[data-testid="stNumberInputStepDown"] button,
+[data-testid="stNumberInput"] button {
+  background: #e8a020 !important;
+  color: #fff !important;
+  border: none !important;
+}
+[data-testid="stNumberInputStepUp"] button:hover,
+[data-testid="stNumberInputStepDown"] button:hover {
+  background: #f0b535 !important;
+  color: #fff !important;
+}
+
+/* ── Œil mot de passe ─────────────────────────────────────────────────────── */
+[data-baseweb="input"] button,
+div[data-baseweb="input"] > div > button {
+  background: #e8a020 !important;
+  color: #fff !important;
+  border-radius: 4px !important;
+}
+[data-baseweb="input"] button:hover,
+div[data-baseweb="input"] > div > button:hover {
+  background: #f0b535 !important;
+}
+div[data-baseweb="input"] > div > button svg,
+div[data-baseweb="input"] button svg {
+  fill: #fff !important;
+  stroke: #fff !important;
+}
+
+/* ── Containers bordés email (composition + aperçu) ──────────────────────── */
+[class*="st-key-email_comp"],
+[class*="st-key-email_prev"] {
+  border: 2px solid #e8a020 !important;
+  border-radius: 12px !important;
+  background: #ffffff !important;
+}
+
+/* ── Encadré orange clair sur le bouton de chaque favori dans la sidebar ──── */
+section[data-testid="stSidebar"] [class*="st-key-fav_"] button {
+  border: 1px solid rgba(232, 160, 32, 0.5) !important;
+  border-radius: 8px !important;
+}
