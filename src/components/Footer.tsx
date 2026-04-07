@@ -33,7 +33,12 @@ const Footer = () => (
                   06 33 49 06 47
                 </a>
               </div>
-              <p className="pt-1">AB Carré<br />France</p>
+              <p className="pt-1">
+                <a href="https://www.ab-carre-excel.fr" target="_blank" rel="noopener noreferrer" className="hover:text-primary-foreground transition-colors underline underline-offset-2">
+                  AB Carré
+                </a>
+                <br />France
+              </p>
             </div>
           </div>
 
@@ -60,7 +65,10 @@ const Footer = () => (
 
     {/* Barre copyright */}
     <div className="bg-primary/90 text-primary-foreground/60 py-4 text-center text-xs">
-      © {new Date().getFullYear()} AR.IA by AB Carré. Tous droits réservés.
+      © {new Date().getFullYear()} AR.IA by{" "}
+      <a href="https://www.ab-carre-excel.fr" target="_blank" rel="noopener noreferrer" className="hover:text-primary-foreground transition-colors underline underline-offset-2">
+        AB Carré
+      </a>. Tous droits réservés.
     </div>
   </footer>
 );
