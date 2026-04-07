@@ -15,7 +15,7 @@ const Navbar = () => (
           <a href="https://app.ar-ia.fr" target="_blank" rel="noopener noreferrer">Accéder à l'application</a>
         </Button>
         <Button size="sm" asChild>
-          <a href="#contact">Demander une démo</a>
+          <a href="#contact">Nous contacter</a>
         </Button>
       </div>
     </div>
