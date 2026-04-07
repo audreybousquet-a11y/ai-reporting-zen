@@ -5,7 +5,6 @@ import { Mail, Phone } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
-// EmailJS config — remplace ces valeurs par les tiennes sur emailjs.com
 const EMAILJS_SERVICE_ID = "service_aria";
 const EMAILJS_TEMPLATE_ID = "template_mx74oic";
 const EMAILJS_PUBLIC_KEY = "B1PprkVPOIUU6Vjxh";
@@ -55,9 +54,8 @@ const ContactSection = () => {
         throw new Error("Échec de l'envoi");
       }
     } catch {
-      // Fallback : ouvrir le client mail avec les données pré-remplies
       const subject = encodeURIComponent(
-        `Demande de démo AR.IA — ${templateParams.from_prenom} ${templateParams.from_nom} (${templateParams.from_entreprise})`
+        `Contact AR.IA — ${templateParams.from_prenom} ${templateParams.from_nom} (${templateParams.from_entreprise})`
       );
       const body = encodeURIComponent(
         `Prénom : ${templateParams.from_prenom}\nNom : ${templateParams.from_nom}\nEmail : ${templateParams.from_email}\nEntreprise : ${templateParams.from_entreprise}\n\nMessage :\n${templateParams.message}`
@@ -77,9 +75,9 @@ const ContactSection = () => {
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-12">
           <div>
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Demandez une démonstration</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Prenons contact</h2>
             <p className="text-muted-foreground mb-8 leading-relaxed">
-              Nos experts vous présentent AR.IA en conditions réelles sur vos propres données. Remplissez le formulaire, nous vous recontactons sous 24h.
+              Découvrez AR.IA sur une démonstration préparée avec des données d'exemple, ou échangeons sur l'intégration dans votre système d'information. Remplissez le formulaire, nous vous recontactons sous 24h.
             </p>
             <div className="space-y-4 text-sm text-muted-foreground">
               <div className="flex items-center gap-3">
