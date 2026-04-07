@@ -121,18 +121,17 @@ section[data-testid="stSidebar"] .stButton > button:hover {
     opacity: 1 !important;
 }
 /* Selectbox contenu principal — fond vert clair */
-[data-testid="stMain"] [data-baseweb="select"] {
+[data-testid="stMain"] [data-baseweb="select"],
+[data-testid="stMain"] [data-baseweb="select"] > div,
+[data-testid="stMain"] [data-baseweb="select"] > div > div,
+[data-testid="stMain"] [data-baseweb="select"] > div > div > div {
     background-color: var(--bg-card2) !important;
     border-color: var(--border) !important;
 }
-[data-testid="stMain"] [data-baseweb="select"] > div {
-    background-color: var(--bg-card2) !important;
-}
-[data-testid="stMain"] [data-baseweb="select"] [data-testid="stMarkdownContainer"],
 [data-testid="stMain"] [data-baseweb="select"] div,
-[data-testid="stMain"] [data-baseweb="select"] span {
+[data-testid="stMain"] [data-baseweb="select"] span,
+[data-testid="stMain"] [data-baseweb="select"] input {
     color: var(--text-main) !important;
-    background-color: transparent !important;
 }
 
 /* ── BOUTONS ── */
