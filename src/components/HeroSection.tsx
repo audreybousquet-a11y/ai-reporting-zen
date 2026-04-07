@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import screenshot from "@/assets/localhost_85012_.png";
 
 const HeroSection = () => (
   <section className="relative pt-32 pb-20 md:pt-40 md:pb-32 overflow-hidden">
@@ -31,7 +32,7 @@ const HeroSection = () => (
       </div>
       <div className="mt-16 flex justify-center">
         <img
-          src="/src/assets/localhost_85012_.png"
+          src={screenshot}
           alt="Aperçu de l'interface AR.IA"
           className="rounded-2xl shadow-2xl shadow-primary/20 border border-border w-full max-w-4xl"
         />
