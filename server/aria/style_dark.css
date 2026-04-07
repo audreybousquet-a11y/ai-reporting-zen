@@ -1,0 +1,253 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+    --bg-dark:      #0f1318;
+    --bg-card:      #161c24;
+    --bg-card2:     #1c2530;
+    --bg-input:     #1c2530;
+    --border:       #263040;
+    --border-light: #2e3d50;
+    --accent:       #3AA48A;
+    --accent-dark:  #2d8270;
+    --accent-light: #4ec4a8;
+    --accent-glow:  #5ddbbe;
+    --text-main:    #e8eef5;
+    --text-muted:   #7a8fa8;
+    --text-dim:     #4a6070;
+    --danger:       #e05555;
+    --warning:      #e09a3a;
+    --info:         #4a9fd4;
+    --plot-bg:      #161c24;
+    --plot-grid:    #1c2530;
+    --plot-line:    #263040;
+    --plot-tick:    #7a8fa8;
+    --table-header: #1c2530;
+    --table-cell:   #161c24;
+    --table-border: #263040;
+    --table-font-h: #e8eef5;
+    --table-font-c: #7a8fa8;
+    --kpi-color:    #5ddbbe;
+}
+
+html, body, .stApp {
+    background-color: var(--bg-dark) !important;
+    color: var(--text-main) !important;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+}
+h1, h2, h3 {
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-weight: 700 !important;
+    color: var(--text-main) !important;
+    letter-spacing: -0.3px !important;
+}
+section[data-testid="stSidebar"] {
+    background-color: var(--bg-card) !important;
+    border-right: 1px solid var(--border) !important;
+}
+section[data-testid="stSidebar"] * { color: var(--text-main) !important; }
+section[data-testid="stSidebar"] .stButton > button {
+    background: transparent !important;
+    border: 1px solid var(--border-light) !important;
+    color: var(--text-muted) !important;
+    border-radius: 10px !important;
+    font-weight: 500 !important;
+    font-size: 0.85rem !important;
+    padding: 0.45rem 1rem !important;
+    transition: all 0.2s ease !important;
+    text-align: left !important;
+}
+section[data-testid="stSidebar"] .stButton > button:hover {
+    background: var(--accent) !important;
+    border-color: var(--accent) !important;
+    color: white !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+.stTextInput input, .stTextArea textarea {
+    background-color: var(--bg-input) !important;
+    border: 1.5px solid var(--border) !important;
+    color: var(--text-main) !important;
+    border-radius: 12px !important;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-size: 0.95rem !important;
+    padding: 0.6rem 1rem !important;
+    transition: border-color 0.2s ease !important;
+}
+.stTextInput input:focus, .stTextArea textarea:focus {
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 0 3px rgba(58,164,138,0.12) !important;
+}
+.stTextInput input::placeholder { color: var(--text-dim) !important; }
+.stButton > button {
+    background: var(--accent) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 10px !important;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-weight: 600 !important;
+    font-size: 0.9rem !important;
+    padding: 0.55rem 1.4rem !important;
+    transition: all 0.2s ease !important;
+}
+.stButton > button:hover {
+    background: var(--accent-dark) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 24px rgba(58,164,138,0.25) !important;
+}
+.stButton > button:active { transform: translateY(0) !important; }
+[data-testid="stMetric"] {
+    background-color: var(--bg-card) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 14px !important;
+    padding: 1.2rem !important;
+}
+[data-testid="stMetricValue"] {
+    color: var(--accent-glow) !important;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-weight: 800 !important;
+    font-size: 2.2rem !important;
+}
+[data-testid="stMetricLabel"] { color: var(--text-muted) !important; font-size: 0.85rem !important; }
+.streamlit-expanderHeader,
+[data-testid="stExpander"] summary {
+    background-color: var(--bg-card2) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 10px !important;
+    font-size: 0.85rem !important;
+}
+.streamlit-expanderHeader p,
+.streamlit-expanderHeader span,
+[data-testid="stExpander"] summary p,
+[data-testid="stExpander"] summary {
+    color: var(--accent) !important;
+    font-weight: 600 !important;
+    font-size: 0.88rem !important;
+}
+.streamlit-expanderHeader:hover,
+[data-testid="stExpander"] summary:hover {
+    border-color: var(--accent) !important;
+    color: var(--text-main) !important;
+}
+hr { border-color: var(--border) !important; opacity: 0.5 !important; }
+.stSuccess { background-color: rgba(58,164,138,0.08) !important; border-left: 3px solid var(--accent) !important; border-radius: 8px !important; }
+.stInfo    { background-color: rgba(74,159,212,0.08) !important; border-left: 3px solid var(--info) !important; border-radius: 8px !important; }
+.stWarning { background-color: rgba(224,154,58,0.08) !important; border-left: 3px solid var(--warning) !important; border-radius: 8px !important; }
+.stError   { background-color: rgba(224,85,85,0.08) !important; border-left: 3px solid var(--danger) !important; border-radius: 8px !important; }
+[data-testid="stDataFrame"] { border: 1px solid var(--border) !important; border-radius: 12px !important; overflow: hidden !important; }
+[data-testid="stFileUploader"] { background-color: var(--bg-card2) !important; border: 2px dashed var(--border-light) !important; border-radius: 12px !important; }
+
+/* ── COMPOSANTS CUSTOM ── */
+.aria-logo { display: flex; align-items: center; gap: 10px; padding: 4px 0 8px 0; }
+.aria-logo-icon { width: 36px; height: 36px; background: var(--accent); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; font-weight: 900; color: white; font-family: 'Plus Jakarta Sans', sans-serif; flex-shrink: 0; }
+.aria-logo-text { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 1.3rem; color: var(--text-main); letter-spacing: -0.5px; line-height: 1; }
+.aria-logo-text span { color: var(--accent); }
+.aria-logo-sub { font-size: 0.65rem; color: var(--text-dim); font-weight: 400; letter-spacing: 0.8px; text-transform: uppercase; line-height: 1; }
+.nav-section { font-size: 0.7rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text-dim) !important; padding: 4px 0 6px 2px; }
+.source-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(58,164,138,0.1); border: 1px solid rgba(58,164,138,0.2); border-radius: 20px; padding: 3px 12px; font-size: 0.78rem; color: var(--accent-light); font-weight: 500; }
+.empty-state { text-align: center; padding: 4rem 2rem; color: var(--text-dim); }
+.empty-state-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+.empty-state-title { font-size: 1.2rem; font-weight: 700; color: var(--text-muted); margin-bottom: 0.5rem; }
+.empty-state-sub { font-size: 0.88rem; max-width: 340px; margin: 0 auto; line-height: 1.6; }
+.mode-toggle { cursor: pointer; font-size: 1.1rem; }
+
+button[kind="primaryFormSubmit"],
+button[kind="secondaryFormSubmit"],
+[data-testid="stFormSubmitButton"] > button {
+    background: var(--accent) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 10px !important;
+    font-weight: 600 !important;
+}
+[data-testid="stFormSubmitButton"] > button:hover {
+    background: var(--accent-dark) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 24px rgba(58,164,138,0.25) !important;
+}
+
+section[data-testid="stSidebar"] .stButton > button {
+    white-space: normal !important;
+    text-align: left !important;
+    justify-content: flex-start !important;
+    height: auto !important;
+    min-height: 2rem !important;
+    line-height: 1.3 !important;
+}
+section[data-testid="stSidebar"] .stButton > button > div,
+section[data-testid="stSidebar"] .stButton > button p {
+    text-align: left !important;
+    justify-content: flex-start !important;
+    color: inherit !important;
+}
+/* ── Panneau de commentaires ──────────────────────────────────────────── */
+.comment-panel-header {
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--accent-light) !important;
+    margin: 0 0 6px 0;
+    padding: 0;
+}
+
+/* ── Bouton de navigation actif ───────────────────────────────────────── */
+section[data-testid="stSidebar"] button[kind="primary"],
+section[data-testid="stSidebar"] [data-testid="stBaseButton-primary"] > button {
+    background: var(--accent) !important;
+    color: #ffffff !important;
+    border: none !important;
+    font-weight: 700 !important;
+}
+section[data-testid="stSidebar"] button[kind="primary"]:hover,
+section[data-testid="stSidebar"] [data-testid="stBaseButton-primary"] > button:hover {
+    background: var(--accent-dark) !important;
+    transform: translateY(-1px) !important;
+}
+
+
+/* ── Options liste déroulante (portal) ───────────────────────────────────── */
+[data-baseweb="popover"] [role="option"],
+[data-baseweb="menu"] [role="option"] {
+    color: #c8d8e8 !important;
+    background: #1a2535 !important;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+}
+[data-baseweb="popover"] [role="option"]:hover,
+[data-baseweb="menu"] [role="option"]:hover,
+[data-baseweb="popover"] [aria-selected="true"],
+[data-baseweb="menu"] [aria-selected="true"] {
+    background: #263040 !important;
+    color: #5ddbbe !important;
+}
+
+/* ── Sidebar selectbox ───────────────────────────────────────────────────── */
+section[data-testid="stSidebar"] [data-testid="stSelectbox"] [data-baseweb="select"] {
+    background: rgba(255,255,255,0.08) !important;
+    border: 1px solid rgba(255,255,255,0.15) !important;
+    border-radius: 8px !important;
+}
+section[data-testid="stSidebar"] [data-testid="stSelectbox"] span,
+section[data-testid="stSidebar"] [data-testid="stSelectbox"] div {
+    color: #c8d8e8 !important;
+    background: transparent !important;
+}
+section[data-testid="stSidebar"] [data-testid="stSelectbox"] svg {
+    fill: #c8d8e8 !important;
+}
+
+/* ── Containers bordés (st.container border=True) ─────────────────────────── */
+[data-testid="stVerticalBlockBorderWrapper"] {
+    border: 1.5px solid var(--border) !important;
+    border-radius: 12px !important;
+    padding: 4px !important;
+    transition: border-color 0.2s ease !important;
+}
+[data-testid="stVerticalBlockBorderWrapper"]:hover {
+    border-color: var(--accent) !important;
+}
+
+
+/* ── Onglets (tabs) — noms en gras ────────────────────────────────────────── */
+[data-testid="stTabs"] [data-baseweb="tab"] {
+    font-weight: 700 !important;
+}
