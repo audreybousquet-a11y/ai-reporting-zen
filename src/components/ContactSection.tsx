@@ -7,8 +7,8 @@ import { useToast } from "@/hooks/use-toast";
 
 // EmailJS config — remplace ces valeurs par les tiennes sur emailjs.com
 const EMAILJS_SERVICE_ID = "service_aria";
-const EMAILJS_TEMPLATE_ID = "template_aria_contact";
-const EMAILJS_PUBLIC_KEY = "VOTRE_CLE_PUBLIQUE_EMAILJS";
+const EMAILJS_TEMPLATE_ID = "template_mx74oic";
+const EMAILJS_PUBLIC_KEY = "B1PprkVPOIUU6Vjxh";
 
 const ContactSection = () => {
   const { toast } = useToast();
