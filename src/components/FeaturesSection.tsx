@@ -6,7 +6,7 @@ const features = [
   { icon: BarChart3, title: "Visualisations multiples", desc: "KPI, graphiques, tableaux ou fiches récapitulatives avec export Excel." },
   { icon: Star, title: "Favoris & empreinte carbone", desc: "Sauvegardez vos visuels et limitez les requêtes inutiles pour un usage responsable." },
   { icon: LayoutDashboard, title: "Dashboards personnalisés", desc: "Regroupez vos favoris dans des tableaux de bord pour plus de lisibilité." },
-  { icon: Mail, title: "Envoi de mails programmable", desc: "Partagez vos rapports avec vos contacts via des e-mails personnalisables." },
+  { icon: Mail, title: "Envoi de mails programmables", desc: "Partagez vos rapports avec vos contacts via des e-mails personnalisables." },
   { icon: Workflow, title: "ETL — Connexion multi-sources", desc: "Rassemblez plusieurs sources de données dans un même espace et interrogez-les ensemble, comme si elles n'en formaient qu'une." },
 ];
 
