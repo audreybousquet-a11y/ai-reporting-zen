@@ -1,7 +1,8 @@
-import { Database, BarChart3, Star, LayoutDashboard, Mail, BrainCircuit } from "lucide-react";
+import { Database, BarChart3, Star, LayoutDashboard, Mail, BrainCircuit, Workflow } from "lucide-react";
 
 const features = [
   { icon: Database, title: "Connexion automatique", desc: "Connectez votre source de données en quelques clics, sans compétence technique." },
+  { icon: Workflow, title: "ETL — Connexion multi-sources", desc: "Rassemblez plusieurs sources de données dans un même espace et interrogez-les ensemble, comme si elles n'en formaient qu'une." },
   { icon: BrainCircuit, title: "Langage naturel", desc: "Posez vos questions comme à un collègue. L'IA comprend et génère la réponse." },
   { icon: BarChart3, title: "Visualisations multiples", desc: "KPI, graphiques, tableaux ou fiches récapitulatives avec export Excel." },
   { icon: Star, title: "Favoris & empreinte carbone", desc: "Sauvegardez vos visuels et limitez les requêtes inutiles pour un usage responsable." },
