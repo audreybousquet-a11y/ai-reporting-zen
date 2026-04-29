@@ -1,0 +1,311 @@
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Check, CreditCard, Mail, Loader2, ArrowLeft, PartyPopper } from "lucide-react";
+import { Link } from "react-router-dom";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+
+type FormulaId = "min" | "mid" | "max";
+
+const PRIX: Record<string, Record<FormulaId, number>> = {
+  "1":   { min: 29, mid: 34, max: 39 },
+  "2-4": { min: 25, mid: 29, max: 34 },
+  "5+":  { min: 23, mid: 24, max: 29 },
+};
+
+function prixUnitaire(nb: number, formule: FormulaId) {
+  if (nb >= 5) return PRIX["5+"][formule];
+  if (nb >= 2) return PRIX["2-4"][formule];
+  return PRIX["1"][formule];
+}
+
+const SOURCES_OPTIONS = [
+  { id: "deytime", nom: "DeyTime", prix: 5 },
+  { id: "extrabat", nom: "Extrabat", prix: 10 },
+];
+
+type Step = "form" | "payment" | "processing" | "success";
+
+const Souscrire = () => {
+  const [step, setStep] = useState<Step>("form");
+  const [formule, setFormule] = useState<FormulaId>("mid");
+  const [nbUsers, setNbUsers] = useState(1);
+  const [options, setOptions] = useState<string[]>([]);
+  const [prenom, setPrenom] = useState("");
+  const [nom, setNom] = useState("");
+  const [email, setEmail] = useState("");
+  const [entreprise, setEntreprise] = useState("");
+  const [telephone, setTelephone] = useState("");
+  const [result, setResult] = useState<any>(null);
+  const [error, setError] = useState("");
+
+  const pu = prixUnitaire(nbUsers, formule);
+  const sourcesExtra = SOURCES_OPTIONS.filter(s => options.includes(s.id)).reduce((sum, s) => sum + s.prix, 0);
+  const totalMois = pu * nbUsers + sourcesExtra;
+
+  const toggleOption = (id: string) => {
+    setOptions(prev => prev.includes(id) ? prev.filter(o => o !== id) : [...prev, id]);
+  };
+
+  const handleSubscribe = async () => {
+    setStep("processing");
+    setError("");
+    try {
+      const resp = await fetch("https://app.ar-ia.fr/api/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prenom, nom, email, entreprise, telephone, formule, nb_users: nbUsers, options }),
+      });
+      const data = await resp.json();
+      if (data.success) {
+        setResult(data);
+        setStep("success");
+      } else {
+        setError(data.error || "Erreur lors de la souscription");
+        setStep("payment");
+      }
+    } catch (e) {
+      setError("Erreur de connexion. Veuillez réessayer.");
+      setStep("payment");
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-background">
+      <Navbar />
+
+      <section className="pt-28 pb-16 md:pt-36 md:pb-20">
+        <div className="container mx-auto px-4 max-w-2xl">
+
+          {/* ── Étape 1 : Formulaire ──────────────────────────────── */}
+          {step === "form" && (
+            <div>
+              <Link to="/tarifs" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary mb-6">
+                <ArrowLeft className="h-4 w-4" /> Retour aux tarifs
+              </Link>
+              <h1 className="text-3xl font-extrabold text-foreground mb-2">Souscrire à ar.ia</h1>
+              <p className="text-muted-foreground mb-8">Créez votre compte en quelques minutes.</p>
+
+              <div className="space-y-6">
+                {/* Formule */}
+                <div>
+                  <label className="block text-sm font-semibold text-foreground mb-2">Formule</label>
+                  <div className="grid grid-cols-3 gap-3">
+                    {(["min", "mid", "max"] as const).map(f => (
+                      <button key={f} onClick={() => setFormule(f)}
+                        className={`py-3 rounded-xl text-sm font-bold uppercase tracking-wide transition-all ${
+                          formule === f ? "hero-gradient text-white shadow-md" : "bg-muted text-muted-foreground hover:bg-muted/80"
+                        }`}>{f}</button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Nb utilisateurs */}
+                <div>
+                  <label className="block text-sm font-semibold text-foreground mb-2">
+                    Nombre d'utilisateurs : <span className="text-primary">{nbUsers}</span>
+                  </label>
+                  <input type="range" min={1} max={20} value={nbUsers}
+                    onChange={e => setNbUsers(parseInt(e.target.value))}
+                    className="w-full h-2 rounded-full appearance-none cursor-pointer accent-primary" />
+                </div>
+
+                {/* Options sources */}
+                <div>
+                  <label className="block text-sm font-semibold text-foreground mb-2">Sources de données (optionnel)</label>
+                  <p className="text-xs text-muted-foreground mb-3">Excel / Google Sheets est inclus. Cochez les connecteurs supplémentaires :</p>
+                  {SOURCES_OPTIONS.map(s => (
+                    <label key={s.id} className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all mb-2 ${
+                      options.includes(s.id) ? "border-primary bg-primary/5" : "border-border hover:border-primary/30"
+                    }`}>
+                      <div className="flex items-center gap-3">
+                        <input type="checkbox" checked={options.includes(s.id)} onChange={() => toggleOption(s.id)} className="accent-primary h-4 w-4" />
+                        <span className="text-sm font-medium">{s.nom}</span>
+                      </div>
+                      <span className="text-sm font-semibold text-primary">+ {s.prix} EUR / mois</span>
+                    </label>
+                  ))}
+                </div>
+
+                <hr className="border-border" />
+
+                {/* Informations personnelles */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-1">Prénom *</label>
+                    <input value={prenom} onChange={e => setPrenom(e.target.value)}
+                      className="w-full rounded-lg border border-input px-3 py-2.5 text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-1">Nom *</label>
+                    <input value={nom} onChange={e => setNom(e.target.value)}
+                      className="w-full rounded-lg border border-input px-3 py-2.5 text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none" />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-1">Email professionnel *</label>
+                  <input type="email" value={email} onChange={e => setEmail(e.target.value)}
+                    className="w-full rounded-lg border border-input px-3 py-2.5 text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-1">Entreprise *</label>
+                  <input value={entreprise} onChange={e => setEntreprise(e.target.value)}
+                    className="w-full rounded-lg border border-input px-3 py-2.5 text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-1">Téléphone</label>
+                  <input value={telephone} onChange={e => setTelephone(e.target.value)}
+                    className="w-full rounded-lg border border-input px-3 py-2.5 text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none" />
+                </div>
+
+                {/* Récap */}
+                <div className="bg-card border rounded-2xl p-5">
+                  <h3 className="font-semibold text-foreground mb-3">Récapitulatif</h3>
+                  <div className="flex justify-between text-sm mb-1">
+                    <span className="text-muted-foreground">{nbUsers} utilisateur{nbUsers > 1 ? "s" : ""} × {pu} EUR ({formule.toUpperCase()})</span>
+                    <span className="font-semibold">{pu * nbUsers} EUR</span>
+                  </div>
+                  {SOURCES_OPTIONS.filter(s => options.includes(s.id)).map(s => (
+                    <div key={s.id} className="flex justify-between text-sm mb-1">
+                      <span className="text-muted-foreground">{s.nom}</span>
+                      <span className="font-semibold text-primary">+ {s.prix} EUR</span>
+                    </div>
+                  ))}
+                  <hr className="my-3 border-border" />
+                  <div className="flex justify-between">
+                    <span className="font-semibold text-foreground">Total mensuel</span>
+                    <span className="text-2xl font-extrabold text-primary">{totalMois} EUR</span>
+                  </div>
+                </div>
+
+                <Button size="lg" className="w-full" disabled={!prenom || !nom || !email || !entreprise}
+                  onClick={() => setStep("payment")}>
+                  Continuer vers le paiement
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {/* ── Étape 2 : Paiement (simulé) ───────────────────────── */}
+          {step === "payment" && (
+            <div>
+              <button onClick={() => setStep("form")} className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary mb-6">
+                <ArrowLeft className="h-4 w-4" /> Modifier mes informations
+              </button>
+              <h1 className="text-3xl font-extrabold text-foreground mb-2">Paiement</h1>
+              <p className="text-muted-foreground mb-8">{totalMois} EUR / mois — Formule {formule.toUpperCase()}</p>
+
+              {error && (
+                <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl p-4 mb-6 text-sm">{error}</div>
+              )}
+
+              <div className="bg-card border rounded-2xl p-6">
+                <div className="flex items-center gap-3 mb-6">
+                  <CreditCard className="h-6 w-6 text-primary" />
+                  <h3 className="font-semibold text-foreground">Informations de paiement</h3>
+                </div>
+
+                {/* Simulation Stripe */}
+                <div className="space-y-4 mb-6">
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-1">Numéro de carte</label>
+                    <input defaultValue="4242 4242 4242 4242" disabled
+                      className="w-full rounded-lg border border-input bg-muted/50 px-3 py-2.5 text-sm text-muted-foreground" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-foreground mb-1">Expiration</label>
+                      <input defaultValue="12/28" disabled
+                        className="w-full rounded-lg border border-input bg-muted/50 px-3 py-2.5 text-sm text-muted-foreground" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-foreground mb-1">CVC</label>
+                      <input defaultValue="123" disabled
+                        className="w-full rounded-lg border border-input bg-muted/50 px-3 py-2.5 text-sm text-muted-foreground" />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 mb-6 text-sm text-amber-700">
+                  <strong>Mode test</strong> — Aucun paiement réel ne sera effectué. Le compte sera créé immédiatement.
+                </div>
+
+                <Button size="lg" className="w-full" onClick={handleSubscribe}>
+                  <CreditCard className="h-4 w-4 mr-2" />
+                  Valider et créer mon compte ({totalMois} EUR / mois)
+                </Button>
+              </div>
+
+              <p className="text-xs text-muted-foreground text-center mt-4">
+                Paiement sécurisé par Stripe · Sans engagement · Résiliable à tout moment
+              </p>
+            </div>
+          )}
+
+          {/* ── Étape 3 : Processing ──────────────────────────────── */}
+          {step === "processing" && (
+            <div className="text-center py-20">
+              <Loader2 className="h-12 w-12 text-primary animate-spin mx-auto mb-6" />
+              <h2 className="text-xl font-bold text-foreground mb-2">Création de votre compte en cours...</h2>
+              <p className="text-muted-foreground">Configuration de votre espace, envoi des emails...</p>
+            </div>
+          )}
+
+          {/* ── Étape 4 : Succès ──────────────────────────────────── */}
+          {step === "success" && result && (
+            <div className="text-center">
+              <div className="h-20 w-20 rounded-full hero-gradient flex items-center justify-center mx-auto mb-6">
+                <PartyPopper className="h-10 w-10 text-white" />
+              </div>
+              <h1 className="text-3xl font-extrabold text-foreground mb-2">Bienvenue sur ar.ia !</h1>
+              <p className="text-muted-foreground mb-8">Votre compte a été créé avec succès.</p>
+
+              <div className="bg-card border rounded-2xl p-6 text-left max-w-md mx-auto mb-8">
+                <h3 className="font-semibold text-foreground mb-4">Vos identifiants de connexion</h3>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Adresse</span>
+                    <a href="https://app.ar-ia.fr" className="text-sm font-semibold text-primary">app.ar-ia.fr</a>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Identifiant</span>
+                    <span className="text-sm font-semibold text-foreground">{result.email}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Mot de passe</span>
+                    <code className="text-sm font-semibold bg-primary/10 text-primary px-3 py-1 rounded-lg">{result.password}</code>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <Button size="lg" asChild>
+                  <a href="https://app.ar-ia.fr">Se connecter à ar.ia</a>
+                </Button>
+                <Button size="lg" variant="outline" asChild>
+                  <Link to="/tarifs">Retour aux tarifs</Link>
+                </Button>
+              </div>
+
+              <p className="text-sm text-muted-foreground mt-6">
+                <Mail className="h-4 w-4 inline mr-1" />
+                Un email de confirmation a été envoyé à <strong>{result.email}</strong>
+              </p>
+
+              {options.includes("deytime") && (
+                <p className="text-sm text-primary mt-2">
+                  🔗 L'option Deytime sera activée sous 24-48h. Vous recevrez un email de confirmation.
+                </p>
+              )}
+            </div>
+          )}
+
+        </div>
+      </section>
+
+      <Footer />
+    </div>
+  );
+};
+
+export default Souscrire;
