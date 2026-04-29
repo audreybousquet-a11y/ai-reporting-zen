@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Check, Minus, Calculator, Mail, Phone, Zap, Star, Shield } from "lucide-react";
+import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
@@ -197,7 +198,7 @@ const Tarifs = () => {
                     size="lg"
                     asChild
                   >
-                    <a href={`/souscrire?formule=${f.id}`}>
+                    <a href="#calculateur" onClick={() => setFormule(f.id)}>
                       {isReco ? "Démarrer maintenant" : "Souscrire"}
                     </a>
                   </Button>
@@ -265,7 +266,7 @@ const Tarifs = () => {
       </section>
 
       {/* ── Calculateur ───────────────────────────────────────────────── */}
-      <section className="py-16 md:py-20">
+      <section className="py-16 md:py-20" id="calculateur">
         <div className="container mx-auto px-4 max-w-lg">
           <div className="bg-card border rounded-2xl p-6 md:p-8 shadow-sm">
             <div className="flex items-center gap-3 mb-6">
@@ -366,11 +367,10 @@ const Tarifs = () => {
               </div>
             </div>
 
-            <Button className="mt-6 w-full" size="lg" asChild>
-              <a href="mailto:audreybousquet@abcarre.fr?subject=Devis%20ar.ia" className="flex items-center justify-center gap-2">
-                <Mail className="h-4 w-4" />
-                Recevoir un devis personnalisé
-              </a>
+            <Button className="mt-6 w-full animate-shimmer" size="lg" asChild>
+              <Link to={`/souscrire?formule=${formule}&nb=${nbUsers}&options=${selectedSources.join(",")}`} className="flex items-center justify-center gap-2">
+                Souscrire — {totalMois} EUR / mois
+              </Link>
             </Button>
           </div>
         </div>
