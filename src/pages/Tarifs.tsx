@@ -197,8 +197,8 @@ const Tarifs = () => {
                     size="lg"
                     asChild
                   >
-                    <a href={`mailto:audreybousquet@abcarre.fr?subject=Devis%20ar.ia%20-%20Formule%20${f.nom}`}>
-                      {isReco ? "Démarrer maintenant" : "Demander un devis"}
+                    <a href={`/souscrire?formule=${f.id}`}>
+                      {isReco ? "Démarrer maintenant" : "Souscrire"}
                     </a>
                   </Button>
                 </div>
