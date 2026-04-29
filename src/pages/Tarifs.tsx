@@ -50,9 +50,9 @@ function prixUnitaire(nb: number, formule: FormulaId) {
 }
 
 const SOURCES = [
-  { nom: "Excel",    prix: null,  icon: "📊", desc: "Importez vos fichiers Excel" },
-  { nom: "Tine",     prix: 5,     icon: "🔗", desc: "Connecteur ERP Tine" },
-  { nom: "Extrabat", prix: 10,    icon: "🏗️", desc: "Connecteur ERP Extrabat" },
+  { nom: "Excel",    prix: null,  icon: "table", desc: "Importez vos fichiers Excel" },
+  { nom: "Tine",     prix: 5,     icon: "link",  desc: "Connecteur ERP Tine" },
+  { nom: "Extrabat", prix: 10,    icon: "build", desc: "Connecteur ERP Extrabat" },
 ];
 
 /* ── Composants ─────────────────────────────────────────────────────────── */
@@ -189,7 +189,7 @@ const Tarifs = () => {
                     size="lg"
                     asChild
                   >
-                    <a href="mailto:audreybousquet@abcarre.fr?subject=Devis%20ar.ia%20-%20Formule%20{f.nom}">
+                    <a href={`mailto:audreybousquet@abcarre.fr?subject=Devis%20ar.ia%20-%20Formule%20${f.nom}`}>
                       {isReco ? "Demarrer maintenant" : "Demander un devis"}
                     </a>
                   </Button>
@@ -322,7 +322,9 @@ const Tarifs = () => {
           <div className="grid md:grid-cols-3 gap-4">
             {SOURCES.map((s) => (
               <div key={s.nom} className="bg-card border rounded-2xl p-6 text-center hover:shadow-md transition-shadow">
-                <div className="text-3xl mb-3">{s.icon}</div>
+                <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-3">
+                  <span className="text-primary font-bold text-lg">{s.nom.charAt(0)}</span>
+                </div>
                 <h3 className="font-bold text-foreground text-lg mb-1">{s.nom}</h3>
                 <p className="text-muted-foreground text-sm mb-4">{s.desc}</p>
                 <span className={`inline-block px-4 py-1.5 rounded-full text-sm font-bold ${
