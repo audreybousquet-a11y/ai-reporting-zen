@@ -51,7 +51,7 @@ function prixUnitaire(nb: number, formule: FormulaId) {
 
 const SOURCES = [
   { nom: "Excel",    prix: null,  icon: "table", desc: "Importez vos fichiers Excel" },
-  { nom: "Tine",     prix: 5,     icon: "link",  desc: "Connecteur ERP Tine" },
+  { nom: "DeyTime",  prix: 5,     icon: "link",  desc: "Connecteur ERP DeyTime" },
   { nom: "Extrabat", prix: 10,    icon: "build", desc: "Connecteur ERP Extrabat" },
 ];
 
