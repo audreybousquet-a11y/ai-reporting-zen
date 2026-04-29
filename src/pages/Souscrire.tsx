@@ -32,8 +32,8 @@ const Souscrire = () => {
   const initNb = parseInt(searchParams.get("nb") || "1") || 1;
   const initOptions = (searchParams.get("options") || "").split(",").filter(Boolean);
 
-  // Scroll en haut au chargement
-  useEffect(() => { window.scrollTo(0, 0); }, []);
+  // Scroll en haut à chaque changement d'étape
+  useEffect(() => { window.scrollTo(0, 0); }, [step]);
 
   const [step, setStep] = useState<Step>("form");
   const [formule, setFormule] = useState<FormulaId>(initFormule);
