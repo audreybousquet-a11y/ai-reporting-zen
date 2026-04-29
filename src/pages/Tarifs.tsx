@@ -382,7 +382,7 @@ const Tarifs = () => {
                   Demander un devis
                 </a>
               </Button>
-              <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10" asChild>
+              <Button size="lg" variant="outline" className="border-white/50 text-white hover:bg-white/10 bg-white/10" asChild>
                 <a href="tel:+33633490647" className="flex items-center gap-2">
                   <Phone className="h-4 w-4" />
                   06 33 49 06 47
