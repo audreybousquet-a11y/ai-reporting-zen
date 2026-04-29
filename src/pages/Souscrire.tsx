@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Check, CreditCard, Mail, Loader2, ArrowLeft, PartyPopper } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
@@ -31,6 +31,9 @@ const Souscrire = () => {
   const initFormule = (searchParams.get("formule") as FormulaId) || "mid";
   const initNb = parseInt(searchParams.get("nb") || "1") || 1;
   const initOptions = (searchParams.get("options") || "").split(",").filter(Boolean);
+
+  // Scroll en haut au chargement
+  useEffect(() => { window.scrollTo(0, 0); }, []);
 
   const [step, setStep] = useState<Step>("form");
   const [formule, setFormule] = useState<FormulaId>(initFormule);
