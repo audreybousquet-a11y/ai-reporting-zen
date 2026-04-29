@@ -8,7 +8,7 @@ import Footer from "@/components/Footer";
 
 const FORMULES = [
   {
-    id: "min" as const, nom: "MIN", desc: "Pour decouvrir ar.ia",
+    id: "min" as const, nom: "MIN", desc: "Pour découvrir ar.ia",
     recommended: false,
   },
   {
@@ -24,11 +24,11 @@ const FORMULES = [
 type FormulaId = "min" | "mid" | "max";
 
 const FEATURES: { nom: string; categorie?: string; min: boolean | string; mid: boolean | string; max: boolean | string }[] = [
-  { nom: "Questions IA / mois",  min: "15 questions",   mid: "50 questions",   max: "100 questions" },
+  { nom: "Questions IA / mois",  min: "15",   mid: "50",   max: "100" },
   { nom: "Favoris",              min: true,    mid: true,   max: true },
   { nom: "Dashboards",           min: false,   mid: true,   max: true },
   { nom: "Fusion de sources",    min: false,   mid: true,   max: true },
-  { nom: "Emails automatises",   min: false,   mid: false,  max: true },
+  { nom: "Emails automatisés",   min: false,   mid: false,  max: true },
 ];
 
 const PRIX: Record<string, Record<FormulaId, number>> = {
@@ -39,7 +39,7 @@ const PRIX: Record<string, Record<FormulaId, number>> = {
 
 const TRANCHES = [
   { key: "1",   label: "1 utilisateur" },
-  { key: "2-4", label: "2 a 4 utilisateurs" },
+  { key: "2-4", label: "2 à 4 utilisateurs" },
   { key: "5+",  label: "5 et plus" },
 ];
 
@@ -89,10 +89,10 @@ const Tarifs = () => {
             Tarification transparente
           </div>
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-foreground mb-5">
-            Un prix simple,<br className="hidden md:block" /> adapte a votre equipe
+            Un prix simple,<br className="hidden md:block" /> adapté à votre équipe
           </h1>
           <p className="text-lg text-muted-foreground leading-relaxed max-w-xl mx-auto">
-            Par utilisateur, par mois. Des remises automatiques des 2 utilisateurs.
+            Par utilisateur, par mois. Des remises automatiques dès 2 utilisateurs.
             Sans engagement, sans surprise.
           </p>
 
@@ -136,7 +136,7 @@ const Tarifs = () => {
                   {isReco && (
                     <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
                       <span className="inline-flex items-center gap-1.5 px-4 py-1 rounded-full hero-gradient text-white text-xs font-bold uppercase tracking-wider shadow-md">
-                        <Star className="h-3.5 w-3.5" /> Recommande
+                        <Star className="h-3.5 w-3.5" /> Recommandé
                       </span>
                     </div>
                   )}
@@ -172,10 +172,10 @@ const Tarifs = () => {
                             : <Minus className="h-4 w-4 text-muted-foreground/30 shrink-0" />
                           }
                           <span className={`text-sm ${included ? "text-foreground" : "text-muted-foreground/50"}`}>
-                            {feat.nom}
                             {typeof val === "string" && (
-                              <span className="ml-1.5 font-semibold text-primary">{val}</span>
+                              <span className="mr-1.5 font-semibold text-primary">{val}</span>
                             )}
+                            {feat.nom}
                           </span>
                         </div>
                       );
@@ -190,7 +190,7 @@ const Tarifs = () => {
                     asChild
                   >
                     <a href={`mailto:audreybousquet@abcarre.fr?subject=Devis%20ar.ia%20-%20Formule%20${f.nom}`}>
-                      {isReco ? "Demarrer maintenant" : "Demander un devis"}
+                      {isReco ? "Démarrer maintenant" : "Demander un devis"}
                     </a>
                   </Button>
                 </div>
@@ -203,8 +203,8 @@ const Tarifs = () => {
       {/* ── Grille degressive ─────────────────────────────────────────── */}
       <section className="section-alt py-16 md:py-20">
         <div className="container mx-auto px-4 max-w-3xl">
-          <h2 className="text-2xl font-bold text-foreground mb-2 text-center">Tarifs degressifs</h2>
-          <p className="text-muted-foreground text-center mb-8">Plus vous etes nombreux, moins c'est cher.</p>
+          <h2 className="text-2xl font-bold text-foreground mb-2 text-center">Tarifs dégressifs</h2>
+          <p className="text-muted-foreground text-center mb-8">Plus vous êtes nombreux, moins c'est cher.</p>
 
           <div className="bg-card rounded-2xl shadow-sm border overflow-hidden">
             <table className="w-full text-sm">
@@ -241,7 +241,7 @@ const Tarifs = () => {
               </div>
               <div>
                 <h2 className="text-xl font-bold text-foreground">Estimez votre budget</h2>
-                <p className="text-xs text-muted-foreground">Selectionnez votre formule et nombre d'utilisateurs</p>
+                <p className="text-xs text-muted-foreground">Sélectionnez votre formule et nombre d'utilisateurs</p>
               </div>
             </div>
 
@@ -306,7 +306,7 @@ const Tarifs = () => {
             <Button className="mt-6 w-full" size="lg" asChild>
               <a href="mailto:audreybousquet@abcarre.fr?subject=Devis%20ar.ia" className="flex items-center justify-center gap-2">
                 <Mail className="h-4 w-4" />
-                Recevoir un devis personnalise
+                Recevoir un devis personnalisé
               </a>
             </Button>
           </div>
@@ -316,8 +316,8 @@ const Tarifs = () => {
       {/* ── Sources de donnees ────────────────────────────────────────── */}
       <section className="section-alt py-16 md:py-20">
         <div className="container mx-auto px-4 max-w-4xl">
-          <h2 className="text-2xl font-bold text-foreground mb-2 text-center">Sources de donnees</h2>
-          <p className="text-muted-foreground text-center mb-8">Connectez vos outils metier — a ajouter a votre formule.</p>
+          <h2 className="text-2xl font-bold text-foreground mb-2 text-center">Sources de données</h2>
+          <p className="text-muted-foreground text-center mb-8">Connectez vos outils métier — à ajouter à votre formule.</p>
 
           <div className="grid md:grid-cols-3 gap-4">
             {SOURCES.map((s) => (
@@ -345,22 +345,22 @@ const Tarifs = () => {
             <div className="flex items-start gap-4 p-5 rounded-xl bg-card border">
               <Shield className="h-8 w-8 text-primary shrink-0 mt-0.5" />
               <div>
-                <h3 className="font-semibold text-foreground mb-1">Heberge en France</h3>
-                <p className="text-sm text-muted-foreground">Serveurs OVH, donnees conformes RGPD.</p>
+                <h3 className="font-semibold text-foreground mb-1">Hébergé en France</h3>
+                <p className="text-sm text-muted-foreground">Serveurs OVH, données conformes RGPD.</p>
               </div>
             </div>
             <div className="flex items-start gap-4 p-5 rounded-xl bg-card border">
               <Zap className="h-8 w-8 text-primary shrink-0 mt-0.5" />
               <div>
                 <h3 className="font-semibold text-foreground mb-1">Sans engagement</h3>
-                <p className="text-sm text-muted-foreground">Resiliez a tout moment, sans justification.</p>
+                <p className="text-sm text-muted-foreground">Résiliez à tout moment, sans justification.</p>
               </div>
             </div>
             <div className="flex items-start gap-4 p-5 rounded-xl bg-card border">
               <Star className="h-8 w-8 text-primary shrink-0 mt-0.5" />
               <div>
                 <h3 className="font-semibold text-foreground mb-1">Assistance incluse</h3>
-                <p className="text-sm text-muted-foreground">Support reactif par email et telephone.</p>
+                <p className="text-sm text-muted-foreground">Support réactif par email et téléphone.</p>
               </div>
             </div>
           </div>
@@ -371,9 +371,9 @@ const Tarifs = () => {
       <section className="py-16 md:py-20">
         <div className="container mx-auto px-4 max-w-2xl">
           <div className="hero-gradient rounded-2xl p-8 md:p-12 text-center text-white">
-            <h2 className="text-2xl md:text-3xl font-bold mb-4">Pret a transformer vos donnees en decisions ?</h2>
+            <h2 className="text-2xl md:text-3xl font-bold mb-4">Prêt à transformer vos données en décisions ?</h2>
             <p className="text-white/80 mb-8 max-w-md mx-auto">
-              Contactez-nous pour une demo personnalisee ou un devis adapte a votre equipe.
+              Contactez-nous pour une démo personnalisée ou un devis adapté à votre équipe.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Button size="lg" variant="secondary" asChild>
