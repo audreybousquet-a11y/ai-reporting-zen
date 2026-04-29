@@ -71,11 +71,19 @@ const Tarifs = () => {
   const [nbUsers, setNbUsers] = useState(3);
   const [formule, setFormule] = useState<FormulaId>("mid");
   const [annuel, setAnnuel] = useState(false);
+  const [selectedSources, setSelectedSources] = useState<string[]>([]);
 
   const pu = prixUnitaire(nbUsers, formule);
-  const totalMois = pu * nbUsers;
+  const sourcesExtra = SOURCES.filter((s) => s.prix && selectedSources.includes(s.nom)).reduce((sum, s) => sum + (s.prix || 0), 0);
+  const totalMois = pu * nbUsers + sourcesExtra;
   const totalAn   = totalMois * 12;
   const economieAn = annuel ? Math.round(totalMois * 12 * 0.1) : 0;
+
+  const toggleSource = (nom: string) => {
+    setSelectedSources((prev) =>
+      prev.includes(nom) ? prev.filter((s) => s !== nom) : [...prev, nom]
+    );
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -200,8 +208,33 @@ const Tarifs = () => {
         </div>
       </section>
 
-      {/* ── Grille degressive ─────────────────────────────────────────── */}
+      {/* ── Sources de données ────────────────────────────────────────── */}
       <section className="section-alt py-16 md:py-20">
+        <div className="container mx-auto px-4 max-w-4xl">
+          <h2 className="text-2xl font-bold text-foreground mb-2 text-center">Sources de données</h2>
+          <p className="text-muted-foreground text-center mb-8">Connectez vos outils métier — à ajouter à votre formule.</p>
+
+          <div className="grid md:grid-cols-3 gap-4">
+            {SOURCES.map((s) => (
+              <div key={s.nom} className="bg-card border rounded-2xl p-6 text-center hover:shadow-md transition-shadow">
+                <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-3">
+                  <span className="text-primary font-bold text-lg">{s.nom.charAt(0)}</span>
+                </div>
+                <h3 className="font-bold text-foreground text-lg mb-1">{s.nom}</h3>
+                <p className="text-muted-foreground text-sm mb-4">{s.desc}</p>
+                <span className={`inline-block px-4 py-1.5 rounded-full text-sm font-bold ${
+                  s.prix ? "bg-primary/10 text-primary" : "hero-gradient text-white"
+                }`}>
+                  {s.prix ? `+ ${s.prix} EUR / mois` : "Inclus"}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Grille dégressive ─────────────────────────────────────────── */}
+      <section className="py-16 md:py-20">
         <div className="container mx-auto px-4 max-w-3xl">
           <h2 className="text-2xl font-bold text-foreground mb-2 text-center">Tarifs dégressifs</h2>
           <p className="text-muted-foreground text-center mb-8">Plus vous êtes nombreux, moins c'est cher.</p>
@@ -286,12 +319,42 @@ const Tarifs = () => {
                 </div>
               </div>
 
-              {/* Resultats */}
+              {/* Sources / API */}
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">Sources de données</label>
+                <div className="space-y-2">
+                  {SOURCES.filter((s) => s.prix).map((s) => (
+                    <label key={s.nom} className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all ${
+                      selectedSources.includes(s.nom) ? "border-primary bg-primary/5" : "border-border hover:border-primary/30"
+                    }`}>
+                      <div className="flex items-center gap-3">
+                        <input
+                          type="checkbox"
+                          checked={selectedSources.includes(s.nom)}
+                          onChange={() => toggleSource(s.nom)}
+                          className="accent-primary h-4 w-4"
+                        />
+                        <span className="text-sm font-medium text-foreground">{s.nom}</span>
+                      </div>
+                      <span className="text-sm font-semibold text-primary">+ {s.prix} EUR / mois</span>
+                    </label>
+                  ))}
+                </div>
+                <p className="text-xs text-muted-foreground mt-1.5">Excel est inclus dans toutes les formules.</p>
+              </div>
+
+              {/* Résultats */}
               <div className="pt-5 border-t border-border space-y-3">
                 <div className="flex justify-between items-baseline">
-                  <span className="text-sm text-muted-foreground">Prix unitaire</span>
-                  <span className="text-lg font-bold text-foreground">{pu} EUR <span className="text-xs font-normal text-muted-foreground">/ mois</span></span>
+                  <span className="text-sm text-muted-foreground">{nbUsers} utilisateur{nbUsers > 1 ? "s" : ""} x {pu} EUR</span>
+                  <span className="text-lg font-bold text-foreground">{pu * nbUsers} EUR <span className="text-xs font-normal text-muted-foreground">/ mois</span></span>
                 </div>
+                {sourcesExtra > 0 && (
+                  <div className="flex justify-between items-baseline">
+                    <span className="text-sm text-muted-foreground">Sources ({selectedSources.join(" + ")})</span>
+                    <span className="text-sm font-semibold text-primary">+ {sourcesExtra} EUR</span>
+                  </div>
+                )}
                 <div className="flex justify-between items-baseline">
                   <span className="text-sm text-muted-foreground">Total mensuel</span>
                   <span className="text-3xl font-extrabold text-primary">{totalMois} EUR</span>
@@ -309,31 +372,6 @@ const Tarifs = () => {
                 Recevoir un devis personnalisé
               </a>
             </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Sources de donnees ────────────────────────────────────────── */}
-      <section className="section-alt py-16 md:py-20">
-        <div className="container mx-auto px-4 max-w-4xl">
-          <h2 className="text-2xl font-bold text-foreground mb-2 text-center">Sources de données</h2>
-          <p className="text-muted-foreground text-center mb-8">Connectez vos outils métier — à ajouter à votre formule.</p>
-
-          <div className="grid md:grid-cols-3 gap-4">
-            {SOURCES.map((s) => (
-              <div key={s.nom} className="bg-card border rounded-2xl p-6 text-center hover:shadow-md transition-shadow">
-                <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-3">
-                  <span className="text-primary font-bold text-lg">{s.nom.charAt(0)}</span>
-                </div>
-                <h3 className="font-bold text-foreground text-lg mb-1">{s.nom}</h3>
-                <p className="text-muted-foreground text-sm mb-4">{s.desc}</p>
-                <span className={`inline-block px-4 py-1.5 rounded-full text-sm font-bold ${
-                  s.prix ? "bg-primary/10 text-primary" : "hero-gradient text-white"
-                }`}>
-                  {s.prix ? `+ ${s.prix} EUR / mois` : "Inclus"}
-                </span>
-              </div>
-            ))}
           </div>
         </div>
       </section>
