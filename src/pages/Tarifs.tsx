@@ -78,11 +78,12 @@ const Tarifs = () => {
   // Pour le scroll depuis les cartes
   const [formule, setFormule] = useState<FormulaId>("mid");
 
-  const sourcesExtra = SOURCES.filter((s) => s.prix && selectedSources.includes(s.nom)).reduce((sum, s) => sum + (s.prix || 0), 0);
+  const nbUsersTotal = lignes.reduce((sum, l) => sum + l.nb, 0);
+  const sourcesExtraParUser = SOURCES.filter((s) => s.prix && selectedSources.includes(s.nom)).reduce((sum, s) => sum + (s.prix || 0), 0);
+  const sourcesExtra = sourcesExtraParUser * nbUsersTotal;
   const totalLicences = lignes.reduce((sum, l) => sum + prixUnitaire(l.nb, l.formule) * l.nb, 0);
   const totalMois = totalLicences + sourcesExtra;
   const totalAn   = totalMois * 12;
-  const nbUsersTotal = lignes.reduce((sum, l) => sum + l.nb, 0);
 
   const toggleSource = (nom: string) => {
     setSelectedSources((prev) =>
@@ -351,7 +352,7 @@ const Tarifs = () => {
                           onChange={() => toggleSource(s.nom)} className="accent-primary h-4 w-4" />
                         <span className="text-sm font-medium text-foreground">{s.nom}</span>
                       </div>
-                      <span className="text-sm font-semibold text-primary">+ {s.prix} EUR / mois</span>
+                      <span className="text-sm font-semibold text-primary">+ {s.prix} EUR / mois / utilisateur</span>
                     </label>
                   ))}
                 </div>
@@ -370,7 +371,7 @@ const Tarifs = () => {
                 })}
                 {sourcesExtra > 0 && (
                   <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Sources ({selectedSources.join(" + ")})</span>
+                    <span className="text-muted-foreground">{selectedSources.join(" + ")} ({sourcesExtraParUser} EUR x {nbUsersTotal} util.)</span>
                     <span className="font-semibold text-primary">+ {sourcesExtra} EUR</span>
                   </div>
                 )}
