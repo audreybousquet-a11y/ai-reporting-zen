@@ -388,7 +388,7 @@ const Tarifs = () => {
             </div>
 
             <Button className="mt-6 w-full animate-shimmer" size="lg" asChild>
-              <Link to={`/souscrire?l=${lignes.map(l => l.formule + ":" + l.nb).join(",")}&options=${selectedSources.join(",")}`} className="flex items-center justify-center gap-2">
+              <Link to={`/souscrire?l=${lignes.map(l => l.formule + ":" + l.nb).join(",")}&options=${selectedSources.map(s => s.toLowerCase()).join(",")}`} className="flex items-center justify-center gap-2">
                 Souscrire — {totalMois} EUR / mois
               </Link>
             </Button>
