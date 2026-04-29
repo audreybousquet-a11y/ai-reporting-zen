@@ -68,22 +68,38 @@ function FeatureCell({ value }: { value: boolean | string }) {
 
 /* ── Page ────────────────────────────────────────────────────────────────── */
 
+type LicenceLine = { formule: FormulaId; nb: number };
+
 const Tarifs = () => {
-  const [nbUsers, setNbUsers] = useState(3);
-  const [formule, setFormule] = useState<FormulaId>("mid");
+  const [lignes, setLignes] = useState<LicenceLine[]>([{ formule: "mid", nb: 1 }]);
   const [annuel, setAnnuel] = useState(false);
   const [selectedSources, setSelectedSources] = useState<string[]>([]);
 
-  const pu = prixUnitaire(nbUsers, formule);
+  // Pour le scroll depuis les cartes
+  const [formule, setFormule] = useState<FormulaId>("mid");
+
   const sourcesExtra = SOURCES.filter((s) => s.prix && selectedSources.includes(s.nom)).reduce((sum, s) => sum + (s.prix || 0), 0);
-  const totalMois = pu * nbUsers + sourcesExtra;
+  const totalLicences = lignes.reduce((sum, l) => sum + prixUnitaire(l.nb, l.formule) * l.nb, 0);
+  const totalMois = totalLicences + sourcesExtra;
   const totalAn   = totalMois * 12;
-  const economieAn = annuel ? Math.round(totalMois * 12 * 0.1) : 0;
+  const nbUsersTotal = lignes.reduce((sum, l) => sum + l.nb, 0);
 
   const toggleSource = (nom: string) => {
     setSelectedSources((prev) =>
       prev.includes(nom) ? prev.filter((s) => s !== nom) : [...prev, nom]
     );
+  };
+
+  const updateLigne = (idx: number, field: keyof LicenceLine, value: any) => {
+    setLignes(prev => prev.map((l, i) => i === idx ? { ...l, [field]: value } : l));
+  };
+
+  const addLigne = () => {
+    setLignes(prev => [...prev, { formule: "min", nb: 1 }]);
+  };
+
+  const removeLigne = (idx: number) => {
+    setLignes(prev => prev.length <= 1 ? prev : prev.filter((_, i) => i !== idx));
   };
 
   return (
@@ -198,7 +214,7 @@ const Tarifs = () => {
                     size="lg"
                     asChild
                   >
-                    <a href="#calculateur" onClick={() => setFormule(f.id)}>
+                    <a href="#calculateur" onClick={() => { setLignes([{ formule: f.id, nb: 1 }]); setFormule(f.id); }}>
                       {isReco ? "Démarrer maintenant" : "Souscrire"}
                     </a>
                   </Button>
@@ -265,9 +281,9 @@ const Tarifs = () => {
         </div>
       </section>
 
-      {/* ── Calculateur ───────────────────────────────────────────────── */}
+      {/* ── Calculateur multi-lignes ─────────────────────────────────── */}
       <section className="py-16 md:py-20" id="calculateur">
-        <div className="container mx-auto px-4 max-w-lg">
+        <div className="container mx-auto px-4 max-w-xl">
           <div className="bg-card border rounded-2xl p-6 md:p-8 shadow-sm">
             <div className="flex items-center gap-3 mb-6">
               <div className="h-10 w-10 rounded-xl hero-gradient flex items-center justify-center">
@@ -275,50 +291,44 @@ const Tarifs = () => {
               </div>
               <div>
                 <h2 className="text-xl font-bold text-foreground">Estimez votre budget</h2>
-                <p className="text-xs text-muted-foreground">Sélectionnez votre formule et nombre d'utilisateurs</p>
+                <p className="text-xs text-muted-foreground">Combinez les formules selon vos besoins</p>
               </div>
             </div>
 
-            <div className="space-y-5">
-              {/* Formule */}
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-2">Formule</label>
-                <div className="grid grid-cols-3 gap-2">
-                  {(["min", "mid", "max"] as const).map((f) => (
-                    <button
-                      key={f}
-                      onClick={() => setFormule(f)}
-                      className={`py-2.5 rounded-xl text-sm font-semibold uppercase tracking-wide transition-all ${
-                        formule === f
-                          ? "hero-gradient text-white shadow-md scale-[1.02]"
-                          : "bg-muted text-muted-foreground hover:bg-muted/80"
-                      }`}
-                    >
-                      {f}
-                    </button>
-                  ))}
-                </div>
-              </div>
+            <div className="space-y-4">
+              {/* Lignes de licences */}
+              {lignes.map((ligne, idx) => {
+                const pu = prixUnitaire(ligne.nb, ligne.formule);
+                return (
+                  <div key={idx} className="flex items-center gap-3 p-3 rounded-xl border border-border bg-background">
+                    <div className="flex-1 grid grid-cols-3 gap-2">
+                      {(["min", "mid", "max"] as const).map(f => (
+                        <button key={f} onClick={() => updateLigne(idx, "formule", f)}
+                          className={`py-1.5 rounded-lg text-xs font-bold uppercase transition-all ${
+                            ligne.formule === f ? "hero-gradient text-white shadow-sm" : "bg-muted text-muted-foreground"
+                          }`}>{f}</button>
+                      ))}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => updateLigne(idx, "nb", Math.max(1, ligne.nb - 1))}
+                        className="w-7 h-7 rounded-lg bg-muted text-muted-foreground font-bold text-sm flex items-center justify-center hover:bg-muted/80">-</button>
+                      <span className="w-6 text-center font-bold text-foreground text-sm">{ligne.nb}</span>
+                      <button onClick={() => updateLigne(idx, "nb", Math.min(20, ligne.nb + 1))}
+                        className="w-7 h-7 rounded-lg bg-muted text-muted-foreground font-bold text-sm flex items-center justify-center hover:bg-muted/80">+</button>
+                    </div>
+                    <span className="w-20 text-right font-semibold text-foreground text-sm">{pu * ligne.nb} EUR</span>
+                    {lignes.length > 1 && (
+                      <button onClick={() => removeLigne(idx)}
+                        className="text-muted-foreground/40 hover:text-red-500 transition-colors text-lg leading-none">&times;</button>
+                    )}
+                  </div>
+                );
+              })}
 
-              {/* Nb users */}
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
-                  Nombre d'utilisateurs : <span className="text-primary font-bold">{nbUsers}</span>
-                </label>
-                <input
-                  type="range"
-                  min={1}
-                  max={20}
-                  value={nbUsers}
-                  onChange={(e) => setNbUsers(parseInt(e.target.value))}
-                  className="w-full h-2 rounded-full appearance-none cursor-pointer accent-primary"
-                  style={{ background: `linear-gradient(to right, hsl(164 36% 44%) ${(nbUsers - 1) / 19 * 100}%, hsl(210 20% 92%) ${(nbUsers - 1) / 19 * 100}%)` }}
-                />
-                <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                  <span>1</span>
-                  <span>20</span>
-                </div>
-              </div>
+              <button onClick={addLigne}
+                className="w-full py-2 rounded-xl border border-dashed border-primary/30 text-primary text-sm font-medium hover:bg-primary/5 transition-colors">
+                + Ajouter une formule
+              </button>
 
               {/* Sources / API */}
               <div>
@@ -329,46 +339,48 @@ const Tarifs = () => {
                       selectedSources.includes(s.nom) ? "border-primary bg-primary/5" : "border-border hover:border-primary/30"
                     }`}>
                       <div className="flex items-center gap-3">
-                        <input
-                          type="checkbox"
-                          checked={selectedSources.includes(s.nom)}
-                          onChange={() => toggleSource(s.nom)}
-                          className="accent-primary h-4 w-4"
-                        />
+                        <input type="checkbox" checked={selectedSources.includes(s.nom)}
+                          onChange={() => toggleSource(s.nom)} className="accent-primary h-4 w-4" />
                         <span className="text-sm font-medium text-foreground">{s.nom}</span>
                       </div>
                       <span className="text-sm font-semibold text-primary">+ {s.prix} EUR / mois</span>
                     </label>
                   ))}
                 </div>
-                <p className="text-xs text-muted-foreground mt-1.5">Excel est inclus dans toutes les formules.</p>
+                <p className="text-xs text-muted-foreground mt-1.5">Excel / Google Sheets inclus dans toutes les formules.</p>
               </div>
 
-              {/* Résultats */}
-              <div className="pt-5 border-t border-border space-y-3">
-                <div className="flex justify-between items-baseline">
-                  <span className="text-sm text-muted-foreground">{nbUsers} utilisateur{nbUsers > 1 ? "s" : ""} x {pu} EUR</span>
-                  <span className="text-lg font-bold text-foreground">{pu * nbUsers} EUR <span className="text-xs font-normal text-muted-foreground">/ mois</span></span>
-                </div>
+              {/* Récapitulatif */}
+              <div className="pt-4 border-t border-border space-y-2">
+                {lignes.map((ligne, idx) => {
+                  const pu = prixUnitaire(ligne.nb, ligne.formule);
+                  return (
+                    <div key={idx} className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">{ligne.nb} utilisateur{ligne.nb > 1 ? "s" : ""} {ligne.formule.toUpperCase()} x {pu} EUR</span>
+                      <span className="font-semibold text-foreground">{pu * ligne.nb} EUR</span>
+                    </div>
+                  );
+                })}
                 {sourcesExtra > 0 && (
-                  <div className="flex justify-between items-baseline">
-                    <span className="text-sm text-muted-foreground">Sources ({selectedSources.join(" + ")})</span>
-                    <span className="text-sm font-semibold text-primary">+ {sourcesExtra} EUR</span>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Sources ({selectedSources.join(" + ")})</span>
+                    <span className="font-semibold text-primary">+ {sourcesExtra} EUR</span>
                   </div>
                 )}
+                <hr className="border-border" />
                 <div className="flex justify-between items-baseline">
-                  <span className="text-sm text-muted-foreground">Total mensuel</span>
-                  <span className="text-3xl font-extrabold text-primary">{totalMois} EUR</span>
+                  <span className="text-sm font-medium text-foreground">{nbUsersTotal} utilisateur{nbUsersTotal > 1 ? "s" : ""} au total</span>
+                  <span className="text-3xl font-extrabold text-primary">{totalMois} EUR<span className="text-sm font-normal text-muted-foreground"> / mois</span></span>
                 </div>
-                <div className="flex justify-between items-baseline">
-                  <span className="text-sm text-muted-foreground">Total annuel</span>
-                  <span className="text-lg font-bold text-foreground">{totalAn} EUR <span className="text-xs font-normal text-muted-foreground">/ an</span></span>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Total annuel</span>
+                  <span className="font-bold text-foreground">{totalAn} EUR / an</span>
                 </div>
               </div>
             </div>
 
             <Button className="mt-6 w-full animate-shimmer" size="lg" asChild>
-              <Link to={`/souscrire?formule=${formule}&nb=${nbUsers}&options=${selectedSources.join(",")}`} className="flex items-center justify-center gap-2">
+              <Link to={`/souscrire?lignes=${encodeURIComponent(JSON.stringify(lignes))}&options=${selectedSources.join(",")}`} className="flex items-center justify-center gap-2">
                 Souscrire — {totalMois} EUR / mois
               </Link>
             </Button>
