@@ -24,7 +24,7 @@ const FORMULES = [
 type FormulaId = "min" | "mid" | "max";
 
 const FEATURES: { nom: string; categorie?: string; min: boolean | string; mid: boolean | string; max: boolean | string }[] = [
-  { nom: "Questions IA / mois",  min: "15",   mid: "50",   max: "100" },
+  { nom: "Questions IA / mois",  min: "15 questions",   mid: "50 questions",   max: "100 questions" },
   { nom: "Favoris",              min: true,    mid: true,   max: true },
   { nom: "Dashboards",           min: false,   mid: true,   max: true },
   { nom: "Fusion de sources",    min: false,   mid: true,   max: true },
