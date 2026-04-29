@@ -115,7 +115,8 @@ const Souscrire = () => {
                   </label>
                   <input type="range" min={1} max={20} value={nbUsers}
                     onChange={e => setNbUsers(parseInt(e.target.value))}
-                    className="w-full h-2 rounded-full appearance-none cursor-pointer accent-primary" />
+                    className="w-full h-2 rounded-full appearance-none cursor-pointer accent-primary"
+                    style={{ background: `linear-gradient(to right, hsl(164 36% 44%) ${(nbUsers - 1) / 19 * 100}%, hsl(210 20% 85%) ${(nbUsers - 1) / 19 * 100}%)` }} />
                 </div>
 
                 {/* Options sources */}
