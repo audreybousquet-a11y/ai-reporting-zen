@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Check, CreditCard, Mail, Loader2, ArrowLeft, PartyPopper } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { CreditCard, Mail, Loader2, ArrowLeft, PartyPopper } from "lucide-react";
+import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
@@ -29,25 +29,11 @@ type Step = "form" | "payment" | "processing" | "success";
 type LicenceLine = { formule: FormulaId; nb: number };
 
 const Souscrire = () => {
-  const location = useLocation();
-  const params = new URLSearchParams(location.search);
-  let initLignes: LicenceLine[] = [{ formule: "mid", nb: 1 }];
-  try {
-    const raw = params.get("l");
-    if (raw) {
-      initLignes = raw.split(",").map(part => {
-        const [f, n] = part.split(":");
-        return { formule: (f as FormulaId) || "mid", nb: parseInt(n) || 1 };
-      });
-    }
-  } catch {}
-  const initOptions = (params.get("options") || "").split(",").filter(Boolean);
-
   const [step, setStep] = useState<Step>("form");
   useEffect(() => { window.scrollTo(0, 0); }, [step]);
 
-  const [lignes] = useState<LicenceLine[]>(initLignes);
-  const [options, setOptions] = useState<string[]>(initOptions);
+  const [lignes, setLignes] = useState<LicenceLine[]>([{ formule: "mid", nb: 1 }]);
+  const [options, setOptions] = useState<string[]>([]);
   const [prenom, setPrenom] = useState("");
   const [nom, setNom] = useState("");
   const [email, setEmail] = useState("");
