@@ -29,11 +29,25 @@ type Step = "form" | "payment" | "processing" | "success";
 type LicenceLine = { formule: FormulaId; nb: number };
 
 const Souscrire = () => {
+  // Récupérer les paramètres du simulateur
+  const qs = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
+  const parsedLignes: LicenceLine[] = (() => {
+    try {
+      const raw = qs?.get("l") || "";
+      if (!raw) return [{ formule: "mid" as FormulaId, nb: 1 }];
+      return raw.split(",").map(p => {
+        const parts = p.split(":");
+        return { formule: (parts[0] || "mid") as FormulaId, nb: parseInt(parts[1]) || 1 };
+      });
+    } catch { return [{ formule: "mid" as FormulaId, nb: 1 }]; }
+  })();
+  const parsedOptions = (qs?.get("options") || "").split(",").filter(Boolean);
+
   const [step, setStep] = useState<Step>("form");
   useEffect(() => { window.scrollTo(0, 0); }, [step]);
 
-  const [lignes, setLignes] = useState<LicenceLine[]>([{ formule: "mid", nb: 1 }]);
-  const [options, setOptions] = useState<string[]>([]);
+  const [lignes, setLignes] = useState<LicenceLine[]>(parsedLignes);
+  const [options, setOptions] = useState<string[]>(parsedOptions);
   const [prenom, setPrenom] = useState("");
   const [nom, setNom] = useState("");
   const [email, setEmail] = useState("");
