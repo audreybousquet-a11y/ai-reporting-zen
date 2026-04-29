@@ -26,18 +26,21 @@ const SOURCES_OPTIONS = [
 
 type Step = "form" | "payment" | "processing" | "success";
 
+type LicenceLine = { formule: FormulaId; nb: number };
+
 const Souscrire = () => {
   const [searchParams] = useSearchParams();
-  const initFormule = (searchParams.get("formule") as FormulaId) || "mid";
-  const initNb = parseInt(searchParams.get("nb") || "1") || 1;
+  let initLignes: LicenceLine[] = [{ formule: "mid", nb: 1 }];
+  try {
+    const raw = searchParams.get("lignes");
+    if (raw) initLignes = JSON.parse(decodeURIComponent(raw));
+  } catch {}
   const initOptions = (searchParams.get("options") || "").split(",").filter(Boolean);
 
   const [step, setStep] = useState<Step>("form");
-
-  // Scroll en haut à chaque changement d'étape
   useEffect(() => { window.scrollTo(0, 0); }, [step]);
-  const [formule, setFormule] = useState<FormulaId>(initFormule);
-  const [nbUsers, setNbUsers] = useState(initNb);
+
+  const [lignes] = useState<LicenceLine[]>(initLignes);
   const [options, setOptions] = useState<string[]>(initOptions);
   const [prenom, setPrenom] = useState("");
   const [nom, setNom] = useState("");
@@ -47,9 +50,10 @@ const Souscrire = () => {
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState("");
 
-  const pu = prixUnitaire(nbUsers, formule);
   const sourcesExtra = SOURCES_OPTIONS.filter(s => options.includes(s.id)).reduce((sum, s) => sum + s.prix, 0);
-  const totalMois = pu * nbUsers + sourcesExtra;
+  const totalLicences = lignes.reduce((sum, l) => sum + prixUnitaire(l.nb, l.formule) * l.nb, 0);
+  const totalMois = totalLicences + sourcesExtra;
+  const nbUsersTotal = lignes.reduce((sum, l) => sum + l.nb, 0);
 
   const toggleOption = (id: string) => {
     setOptions(prev => prev.includes(id) ? prev.filter(o => o !== id) : [...prev, id]);
@@ -62,7 +66,7 @@ const Souscrire = () => {
       const resp = await fetch("https://app.ar-ia.fr/api/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prenom, nom, email, entreprise, telephone, formule, nb_users: nbUsers, options }),
+        body: JSON.stringify({ prenom, nom, email, entreprise, telephone, lignes, nb_users: nbUsersTotal, formule: lignes[0]?.formule || "mid", options }),
       });
       const data = await resp.json();
       if (data.success) {
@@ -170,10 +174,15 @@ const Souscrire = () => {
                 {/* Récap */}
                 <div className="bg-card border rounded-2xl p-5">
                   <h3 className="font-semibold text-foreground mb-3">Récapitulatif</h3>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span className="text-muted-foreground">{nbUsers} utilisateur{nbUsers > 1 ? "s" : ""} × {pu} EUR ({formule.toUpperCase()})</span>
-                    <span className="font-semibold">{pu * nbUsers} EUR</span>
-                  </div>
+                  {lignes.map((l, i) => {
+                    const lpu = prixUnitaire(l.nb, l.formule);
+                    return (
+                      <div key={i} className="flex justify-between text-sm mb-1">
+                        <span className="text-muted-foreground">{l.nb} utilisateur{l.nb > 1 ? "s" : ""} {l.formule.toUpperCase()} x {lpu} EUR</span>
+                        <span className="font-semibold">{lpu * l.nb} EUR</span>
+                      </div>
+                    );
+                  })}
                   {SOURCES_OPTIONS.filter(s => options.includes(s.id)).map(s => (
                     <div key={s.id} className="flex justify-between text-sm mb-1">
                       <span className="text-muted-foreground">{s.nom}</span>
@@ -202,7 +211,7 @@ const Souscrire = () => {
                 <ArrowLeft className="h-4 w-4" /> Modifier mes informations
               </button>
               <h1 className="text-3xl font-extrabold text-foreground mb-2">Paiement</h1>
-              <p className="text-muted-foreground mb-8">{totalMois} EUR / mois — Formule {formule.toUpperCase()}</p>
+              <p className="text-muted-foreground mb-8">{totalMois} EUR / mois — {nbUsersTotal} utilisateur{nbUsersTotal > 1 ? "s" : ""} ({lignes.map(l => `${l.nb} ${l.formule.toUpperCase()}`).join(" + ")})</p>
 
               {error && (
                 <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl p-4 mb-6 text-sm">{error}</div>
