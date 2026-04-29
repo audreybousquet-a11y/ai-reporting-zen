@@ -9,14 +9,14 @@ const Navbar = () => (
         <img src={logo} alt="AR.IA" className="h-8" />
       </Link>
       <div className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">
-        <a href="/#features" className="hover:text-primary transition-colors">Fonctionnalites</a>
-        <a href="/#how" className="hover:text-primary transition-colors">Comment ca marche</a>
+        <a href="/#features" className="hover:text-primary transition-colors">Fonctionnalités</a>
+        <a href="/#how" className="hover:text-primary transition-colors">Comment ça marche</a>
         <Link to="/tarifs" className="hover:text-primary transition-colors">Tarifs</Link>
         <a href="/#contact" className="hover:text-primary transition-colors">Contact</a>
       </div>
       <div className="flex items-center gap-3">
         <Button size="sm" variant="outline" asChild>
-          <a href="https://app.ar-ia.fr" target="_blank" rel="noopener noreferrer">Acceder a l appli</a>
+          <a href="https://app.ar-ia.fr" target="_blank" rel="noopener noreferrer">Accéder à l’appli</a>
         </Button>
         <Button size="sm" asChild>
           <a href="/#contact">Nous contacter</a>
