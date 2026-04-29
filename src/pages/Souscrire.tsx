@@ -50,10 +50,11 @@ const Souscrire = () => {
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState("");
 
-  const sourcesExtra = SOURCES_OPTIONS.filter(s => options.includes(s.id)).reduce((sum, s) => sum + s.prix, 0);
+  const nbUsersTotal = lignes.reduce((sum, l) => sum + l.nb, 0);
+  const sourcesExtraParUser = SOURCES_OPTIONS.filter(s => options.includes(s.id)).reduce((sum, s) => sum + s.prix, 0);
+  const sourcesExtra = sourcesExtraParUser * nbUsersTotal;
   const totalLicences = lignes.reduce((sum, l) => sum + prixUnitaire(l.nb, l.formule) * l.nb, 0);
   const totalMois = totalLicences + sourcesExtra;
-  const nbUsersTotal = lignes.reduce((sum, l) => sum + l.nb, 0);
 
   const toggleOption = (id: string) => {
     setOptions(prev => prev.includes(id) ? prev.filter(o => o !== id) : [...prev, id]);
