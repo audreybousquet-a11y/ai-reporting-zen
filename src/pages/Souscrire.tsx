@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Check, CreditCard, Mail, Loader2, ArrowLeft, PartyPopper } from "lucide-react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
@@ -29,10 +29,11 @@ type Step = "form" | "payment" | "processing" | "success";
 type LicenceLine = { formule: FormulaId; nb: number };
 
 const Souscrire = () => {
-  const [searchParams] = useSearchParams();
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
   let initLignes: LicenceLine[] = [{ formule: "mid", nb: 1 }];
   try {
-    const raw = searchParams.get("l");
+    const raw = params.get("l");
     if (raw) {
       initLignes = raw.split(",").map(part => {
         const [f, n] = part.split(":");
@@ -40,7 +41,7 @@ const Souscrire = () => {
       });
     }
   } catch {}
-  const initOptions = (searchParams.get("options") || "").split(",").filter(Boolean);
+  const initOptions = (params.get("options") || "").split(",").filter(Boolean);
 
   const [step, setStep] = useState<Step>("form");
   useEffect(() => { window.scrollTo(0, 0); }, [step]);
