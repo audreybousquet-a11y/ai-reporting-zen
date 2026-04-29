@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Check, CreditCard, Mail, Loader2, ArrowLeft, PartyPopper } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
@@ -27,10 +27,15 @@ const SOURCES_OPTIONS = [
 type Step = "form" | "payment" | "processing" | "success";
 
 const Souscrire = () => {
+  const [searchParams] = useSearchParams();
+  const initFormule = (searchParams.get("formule") as FormulaId) || "mid";
+  const initNb = parseInt(searchParams.get("nb") || "1") || 1;
+  const initOptions = (searchParams.get("options") || "").split(",").filter(Boolean);
+
   const [step, setStep] = useState<Step>("form");
-  const [formule, setFormule] = useState<FormulaId>("mid");
-  const [nbUsers, setNbUsers] = useState(1);
-  const [options, setOptions] = useState<string[]>([]);
+  const [formule, setFormule] = useState<FormulaId>(initFormule);
+  const [nbUsers, setNbUsers] = useState(initNb);
+  const [options, setOptions] = useState<string[]>(initOptions);
   const [prenom, setPrenom] = useState("");
   const [nom, setNom] = useState("");
   const [email, setEmail] = useState("");
