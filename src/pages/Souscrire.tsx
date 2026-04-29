@@ -32,8 +32,13 @@ const Souscrire = () => {
   const [searchParams] = useSearchParams();
   let initLignes: LicenceLine[] = [{ formule: "mid", nb: 1 }];
   try {
-    const raw = searchParams.get("lignes");
-    if (raw) initLignes = JSON.parse(decodeURIComponent(raw));
+    const raw = searchParams.get("l");
+    if (raw) {
+      initLignes = raw.split(",").map(part => {
+        const [f, n] = part.split(":");
+        return { formule: (f as FormulaId) || "mid", nb: parseInt(n) || 1 };
+      });
+    }
   } catch {}
   const initOptions = (searchParams.get("options") || "").split(",").filter(Boolean);
 
