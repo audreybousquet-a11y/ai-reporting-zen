@@ -92,34 +92,45 @@ const Souscrire = () => {
               <p className="text-muted-foreground mb-8">Créez votre compte en quelques minutes.</p>
 
               <div className="space-y-6">
-                {/* Formule */}
+                {/* Licences */}
                 <div>
-                  <label className="block text-sm font-semibold text-foreground mb-2">Formule</label>
-                  <div className="grid grid-cols-3 gap-3">
-                    {(["min", "mid", "max"] as const).map(f => (
-                      <button key={f} onClick={() => setFormule(f)}
-                        className={`py-3 rounded-xl text-sm font-bold uppercase tracking-wide transition-all ${
-                          formule === f ? "hero-gradient text-white shadow-md" : "bg-muted text-muted-foreground hover:bg-muted/80"
-                        }`}>{f}</button>
+                  <label className="block text-sm font-semibold text-foreground mb-2">Vos licences</label>
+                  <div className="space-y-2">
+                    {lignes.map((ligne, idx) => (
+                      <div key={idx} className="flex items-center gap-2 p-3 rounded-xl border border-border bg-background">
+                        <div className="flex-1 grid grid-cols-3 gap-1">
+                          {(["min", "mid", "max"] as const).map(f => (
+                            <button key={f} onClick={() => setLignes(prev => prev.map((l, i) => i === idx ? { ...l, formule: f } : l))}
+                              className={`py-1.5 rounded-lg text-xs font-bold uppercase ${
+                                ligne.formule === f ? "hero-gradient text-white" : "bg-muted text-muted-foreground"
+                              }`}>{f}</button>
+                          ))}
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <button onClick={() => setLignes(prev => prev.map((l, i) => i === idx ? { ...l, nb: Math.max(1, l.nb - 1) } : l))}
+                            className="w-7 h-7 rounded-lg bg-muted text-muted-foreground font-bold text-sm flex items-center justify-center">-</button>
+                          <span className="w-6 text-center font-bold text-sm">{ligne.nb}</span>
+                          <button onClick={() => setLignes(prev => prev.map((l, i) => i === idx ? { ...l, nb: l.nb + 1 } : l))}
+                            className="w-7 h-7 rounded-lg bg-muted text-muted-foreground font-bold text-sm flex items-center justify-center">+</button>
+                        </div>
+                        <span className="w-16 text-right font-semibold text-sm">{prixUnitaire(ligne.nb, ligne.formule) * ligne.nb} EUR</span>
+                        {lignes.length > 1 && (
+                          <button onClick={() => setLignes(prev => prev.filter((_, i) => i !== idx))}
+                            className="text-muted-foreground/40 hover:text-red-500 text-lg">&times;</button>
+                        )}
+                      </div>
                     ))}
+                    <button onClick={() => setLignes(prev => [...prev, { formule: "min", nb: 1 }])}
+                      className="w-full py-2 rounded-xl border border-dashed border-primary/30 text-primary text-sm font-medium hover:bg-primary/5">
+                      + Ajouter une formule
+                    </button>
                   </div>
-                </div>
-
-                {/* Nb utilisateurs */}
-                <div>
-                  <label className="block text-sm font-semibold text-foreground mb-2">
-                    Nombre d'utilisateurs : <span className="text-primary">{nbUsers}</span>
-                  </label>
-                  <input type="range" min={1} max={20} value={nbUsers}
-                    onChange={e => setNbUsers(parseInt(e.target.value))}
-                    className="w-full h-2 rounded-full appearance-none cursor-pointer accent-primary"
-                    style={{ background: `linear-gradient(to right, hsl(164 36% 44%) ${(nbUsers - 1) / 19 * 100}%, hsl(210 20% 85%) ${(nbUsers - 1) / 19 * 100}%)` }} />
                 </div>
 
                 {/* Options sources */}
                 <div>
-                  <label className="block text-sm font-semibold text-foreground mb-2">Sources de données (optionnel)</label>
-                  <p className="text-xs text-muted-foreground mb-3">Excel / Google Sheets est inclus. Cochez les connecteurs supplémentaires :</p>
+                  <label className="block text-sm font-semibold text-foreground mb-2">Sources de données</label>
+                  <p className="text-xs text-muted-foreground mb-3">Excel / Google Sheets inclus. Connecteurs optionnels :</p>
                   {SOURCES_OPTIONS.map(s => (
                     <label key={s.id} className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all mb-2 ${
                       options.includes(s.id) ? "border-primary bg-primary/5" : "border-border hover:border-primary/30"
@@ -128,7 +139,7 @@ const Souscrire = () => {
                         <input type="checkbox" checked={options.includes(s.id)} onChange={() => toggleOption(s.id)} className="accent-primary h-4 w-4" />
                         <span className="text-sm font-medium">{s.nom}</span>
                       </div>
-                      <span className="text-sm font-semibold text-primary">+ {s.prix} EUR / mois</span>
+                      <span className="text-sm font-semibold text-primary">+ {s.prix} EUR / mois / util.</span>
                     </label>
                   ))}
                 </div>
