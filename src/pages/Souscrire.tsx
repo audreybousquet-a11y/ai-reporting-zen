@@ -144,7 +144,14 @@ const Souscrire = () => {
                 {/* Options sources */}
                 <div>
                   <label className="block text-sm font-semibold text-foreground mb-2">Sources de données</label>
-                  <p className="text-xs text-muted-foreground mb-3">Excel / Google Sheets inclus. Connecteurs optionnels :</p>
+                  <p className="text-xs text-muted-foreground mb-3">Importez vos fichiers Excel et/ou connectez vos Google Sheets.</p>
+                  <label className="flex items-center justify-between p-3 rounded-xl border border-primary bg-primary/5 mb-2">
+                    <div className="flex items-center gap-3">
+                      <input type="checkbox" checked={true} disabled className="accent-primary h-4 w-4" />
+                      <span className="text-sm font-medium text-foreground">Excel / Google Sheets</span>
+                    </div>
+                    <span className="text-sm font-semibold hero-gradient text-white px-2 py-0.5 rounded-full">Inclus</span>
+                  </label>
                   {SOURCES_OPTIONS.map(s => (
                     <label key={s.id} className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all mb-2 ${
                       options.includes(s.id) ? "border-primary bg-primary/5" : "border-border hover:border-primary/30"
