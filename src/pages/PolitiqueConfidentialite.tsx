@@ -60,10 +60,39 @@ const PolitiqueConfidentialite = () => (
         </div>
 
         <div>
-          <h2 className="text-base font-semibold text-foreground mb-2">Durée de conservation</h2>
+          <h2 className="text-base font-semibold text-foreground mb-2">Connexion aux services Google (Gmail, Google Agenda)</h2>
           <p>
-            Les données transmises via le formulaire de contact sont conservées le temps nécessaire
+            AR.IA propose une fonctionnalite optionnelle de connexion a votre compte Google
+            pour importer des donnees depuis Gmail et Google Agenda. Cette connexion est soumise
+            a votre consentement explicite via le protocole OAuth2 de Google.
+          </p>
+          <ul className="list-disc list-inside mt-2 space-y-1">
+            <li><strong>Donnees Gmail</strong> : seules les metadonnees de vos emails sont recuperees
+              (expediteur, destinataire, date, objet, labels). Le contenu des emails n'est jamais lu ni stocke.</li>
+            <li><strong>Donnees Google Agenda</strong> : seules les informations de vos evenements sont recuperees
+              (titre, date, duree, lieu, participants). Le contenu des notes n'est pas lu.</li>
+            <li>Ces donnees sont stockees dans une base de donnees locale dediee a votre compte utilisateur,
+              hebergee sur nos serveurs en France (OVH, Strasbourg).</li>
+            <li>Elles ne sont jamais partagees avec des tiers.</li>
+            <li>Vous pouvez revoquer l'acces a tout moment depuis les parametres de votre compte AR.IA
+              ou depuis votre compte Google (myaccount.google.com/permissions).</li>
+            <li>La suppression de votre compte AR.IA entraine la suppression de toutes les donnees Google associees.</li>
+          </ul>
+          <p className="mt-2">
+            L'utilisation et le transfert des informations recues via les API Google respectent la{" "}
+            <a href="https://developers.google.com/terms/api-services-user-data-policy" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">
+              politique de donnees utilisateur des services API Google
+            </a>, y compris les exigences d'utilisation limitee (Limited Use).
+          </p>
+        </div>
+
+        <div>
+          <h2 className="text-base font-semibold text-foreground mb-2">Duree de conservation</h2>
+          <p>
+            Les donnees transmises via le formulaire de contact sont conservees le temps necessaire
             au traitement de votre demande, et au maximum 12 mois.
+            Les donnees importees depuis Google sont conservees tant que votre compte AR.IA est actif
+            et que l'autorisation Google n'est pas revoquee.
           </p>
         </div>
 
