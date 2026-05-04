@@ -11,7 +11,7 @@ const Footer = () => (
 
           {/* Logo + tagline */}
           <div>
-            <img src={logo} alt="AR.IA" className="h-14 mb-4 brightness-0 invert" />
+            <img src={logo} alt="AR.IA" className="h-14 mb-4" />
             <p className="text-primary-foreground/80 text-sm leading-relaxed max-w-xs">
               L'assistant IA de reporting made in France — souverain, conforme RGPD, pensé pour vos équipes métier.
             </p>
