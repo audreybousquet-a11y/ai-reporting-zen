@@ -1,4 +1,4 @@
-import logoAria from "@/assets/logo-aria.png";
+import logo from "@/assets/logo-aria.png";
 import { Mail, Phone } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -11,7 +11,7 @@ const Footer = () => (
 
           {/* Logo + tagline */}
           <div>
-            <img src={logoAria} alt="AR.IA" className="h-24 mb-4" />
+            <img src={logo} alt="AR.IA" className="h-14 mb-4 brightness-0 invert" />
             <p className="text-primary-foreground/80 text-sm leading-relaxed max-w-xs">
               L'assistant IA de reporting made in France — souverain, conforme RGPD, pensé pour vos équipes métier.
             </p>
@@ -33,12 +33,7 @@ const Footer = () => (
                   06 33 49 06 47
                 </a>
               </div>
-              <p className="pt-1">
-                <a href="https://www.ab-carre-excel.fr" target="_blank" rel="noopener noreferrer" className="hover:text-primary-foreground transition-colors underline underline-offset-2">
-                  AB Carré
-                </a>
-                <br />France
-              </p>
+              <p className="pt-1">AB Carré<br />France</p>
             </div>
           </div>
 
@@ -65,10 +60,7 @@ const Footer = () => (
 
     {/* Barre copyright */}
     <div className="bg-primary/90 text-primary-foreground/60 py-4 text-center text-xs">
-      © {new Date().getFullYear()} AR.IA by{" "}
-      <a href="https://www.ab-carre-excel.fr" target="_blank" rel="noopener noreferrer" className="hover:text-primary-foreground transition-colors underline underline-offset-2">
-        AB Carré
-      </a>. Tous droits réservés.
+      © {new Date().getFullYear()} AR.IA by AB Carré. Tous droits réservés.
     </div>
   </footer>
 );
