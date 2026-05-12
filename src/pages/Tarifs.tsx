@@ -79,8 +79,8 @@ const Tarifs = () => {
   const [formule, setFormule] = useState<FormulaId>("mid");
 
   const nbUsersTotal = lignes.reduce((sum, l) => sum + l.nb, 0);
-  const sourcesExtraParUser = SOURCES.filter((s) => s.prix && selectedSources.includes(s.nom)).reduce((sum, s) => sum + (s.prix || 0), 0);
-  const sourcesExtra = sourcesExtraParUser * nbUsersTotal;
+  // Connecteurs = prix fixe par entreprise (pas par utilisateur)
+  const sourcesExtra = SOURCES.filter((s) => s.prix && selectedSources.includes(s.nom)).reduce((sum, s) => sum + (s.prix || 0), 0);
   const totalLicences = lignes.reduce((sum, l) => sum + prixUnitaire(l.nb, l.formule) * l.nb, 0);
   const totalMois = totalLicences + sourcesExtra;
   const totalAn   = totalMois * 12;
@@ -331,10 +331,10 @@ const Tarifs = () => {
                 + Ajouter une formule
               </button>
 
-              {/* Sources / API */}
+              {/* Sources / API — prix par entreprise */}
               <div>
-                <label className="block text-sm font-medium text-foreground mb-2">Sources de données</label>
-                <p className="text-xs text-muted-foreground mb-3">Importez vos fichiers Excel et/ou connectez vos Google Sheets.</p>
+                <label className="block text-sm font-medium text-foreground mb-2">Connecteurs</label>
+                <p className="text-xs text-muted-foreground mb-3">Connectez vos logiciels métier. Prix fixe par entreprise, quel que soit le nombre d'utilisateurs.</p>
                 <div className="space-y-2">
                   <label className="flex items-center justify-between p-3 rounded-xl border border-primary bg-primary/5">
                     <div className="flex items-center gap-3">
@@ -352,7 +352,7 @@ const Tarifs = () => {
                           onChange={() => toggleSource(s.nom)} className="accent-primary h-4 w-4" />
                         <span className="text-sm font-medium text-foreground">{s.nom}</span>
                       </div>
-                      <span className="text-sm font-semibold text-primary">+ {s.prix} EUR / mois / utilisateur</span>
+                      <span className="text-sm font-semibold text-primary">+ {s.prix} EUR / mois</span>
                     </label>
                   ))}
                 </div>
@@ -371,7 +371,7 @@ const Tarifs = () => {
                 })}
                 {sourcesExtra > 0 && (
                   <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">{selectedSources.join(" + ")} ({sourcesExtraParUser} EUR x {nbUsersTotal} util.)</span>
+                    <span className="text-muted-foreground">Connecteurs ({selectedSources.join(" + ")})</span>
                     <span className="font-semibold text-primary">+ {sourcesExtra} EUR</span>
                   </div>
                 )}
@@ -388,7 +388,7 @@ const Tarifs = () => {
             </div>
 
             <Button className="mt-6 w-full animate-shimmer" size="lg" asChild>
-              <Link to={`/souscrire?l=${lignes.map(l => l.formule + ":" + l.nb).join(",")}&options=${selectedSources.map(s => s.toLowerCase()).join(",")}`} className="flex items-center justify-center gap-2">
+              <Link to={`/souscrire?l=${lignes.map(l => l.formule + ":" + l.nb).join(",")}&options=${selectedSources.map(s => s.toLowerCase().replace("dey", "dey")).join(",")}`} className="flex items-center justify-center gap-2">
                 Souscrire — {totalMois} EUR / mois
               </Link>
             </Button>
