@@ -57,8 +57,8 @@ const Souscrire = () => {
   const [error, setError] = useState("");
 
   const nbUsersTotal = lignes.reduce((sum, l) => sum + l.nb, 0);
-  const sourcesExtraParUser = SOURCES_OPTIONS.filter(s => options.includes(s.id)).reduce((sum, s) => sum + s.prix, 0);
-  const sourcesExtra = sourcesExtraParUser * nbUsersTotal;
+  // Connecteurs = prix fixe par entreprise
+  const sourcesExtra = SOURCES_OPTIONS.filter(s => options.includes(s.id)).reduce((sum, s) => sum + s.prix, 0);
   const totalLicences = lignes.reduce((sum, l) => sum + prixUnitaire(l.nb, l.formule) * l.nb, 0);
   const totalMois = totalLicences + sourcesExtra;
 
@@ -70,7 +70,7 @@ const Souscrire = () => {
     setStep("processing");
     setError("");
     try {
-      const resp = await fetch("https://app.ar-ia.fr/api/subscribe", {
+      const resp = await fetch("https://dev.ar-ia.fr/api/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prenom, nom, email, entreprise, telephone, lignes, nb_users: nbUsersTotal, formule: lignes[0]?.formule || "mid", options }),
@@ -141,10 +141,10 @@ const Souscrire = () => {
                   </div>
                 </div>
 
-                {/* Options sources */}
+                {/* Options sources — par entreprise */}
                 <div>
-                  <label className="block text-sm font-semibold text-foreground mb-2">Sources de données</label>
-                  <p className="text-xs text-muted-foreground mb-3">Importez vos fichiers Excel et/ou connectez vos Google Sheets.</p>
+                  <label className="block text-sm font-semibold text-foreground mb-2">Connecteurs</label>
+                  <p className="text-xs text-muted-foreground mb-3">Prix fixe par entreprise, quel que soit le nombre d'utilisateurs.</p>
                   <label className="flex items-center justify-between p-3 rounded-xl border border-primary bg-primary/5 mb-2">
                     <div className="flex items-center gap-3">
                       <input type="checkbox" checked={true} disabled className="accent-primary h-4 w-4" />
@@ -160,7 +160,7 @@ const Souscrire = () => {
                         <input type="checkbox" checked={options.includes(s.id)} onChange={() => toggleOption(s.id)} className="accent-primary h-4 w-4" />
                         <span className="text-sm font-medium">{s.nom}</span>
                       </div>
-                      <span className="text-sm font-semibold text-primary">+ {s.prix} EUR / mois / util.</span>
+                      <span className="text-sm font-semibold text-primary">+ {s.prix} EUR / mois</span>
                     </label>
                   ))}
                 </div>
@@ -308,7 +308,7 @@ const Souscrire = () => {
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-muted-foreground">Adresse</span>
-                    <a href="https://app.ar-ia.fr" className="text-sm font-semibold text-primary">app.ar-ia.fr</a>
+                    <a href="https://dev.ar-ia.fr" className="text-sm font-semibold text-primary">dev.ar-ia.fr</a>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-muted-foreground">Identifiant</span>
@@ -325,7 +325,7 @@ const Souscrire = () => {
 
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Button size="lg" asChild>
-                  <a href="https://app.ar-ia.fr">Se connecter à ar.ia</a>
+                  <a href="https://dev.ar-ia.fr">Se connecter à ar.ia</a>
                 </Button>
                 <Button size="lg" variant="outline" asChild>
                   <Link to="/tarifs">Retour aux tarifs</Link>
@@ -339,7 +339,7 @@ const Souscrire = () => {
 
               {options.includes("deytime") && (
                 <p className="text-sm text-primary mt-2">
-                  🔗 L'option Deytime sera activée sous 24-48h. Vous recevrez un email de confirmation.
+                  🔗 Le connecteur Deytime sera activé sous 24-48h. Vous recevrez un email de confirmation.
                 </p>
               )}
             </div>
