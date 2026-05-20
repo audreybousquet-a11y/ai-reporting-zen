@@ -14,14 +14,9 @@ function PasswordGate({ children }: { children: React.ReactNode }) {
   const [input, setInput] = useState("");
   const [error, setError] = useState(false);
 
-  useEffect(() => {
-    if (sessionStorage.getItem("aria_tarifs_ok") === "1") setUnlocked(true);
-  }, []);
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (input === GATE_PASSWORD) {
-      sessionStorage.setItem("aria_tarifs_ok", "1");
       setUnlocked(true);
     } else {
       setError(true);
