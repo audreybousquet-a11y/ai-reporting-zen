@@ -1,9 +1,89 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Check, Minus, Calculator, Mail, Phone, Zap, Star, Shield } from "lucide-react";
+import { Check, Minus, Calculator, Mail, Phone, Zap, Star, Shield, Lock, Construction } from "lucide-react";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+
+/* ── Gate mot de passe ──────────────────────────────────────────────────── */
+
+const GATE_PASSWORD = "aria2024";
+
+function PasswordGate({ children }: { children: React.ReactNode }) {
+  const [unlocked, setUnlocked] = useState(false);
+  const [input, setInput] = useState("");
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    if (sessionStorage.getItem("aria_tarifs_ok") === "1") setUnlocked(true);
+  }, []);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (input === GATE_PASSWORD) {
+      sessionStorage.setItem("aria_tarifs_ok", "1");
+      setUnlocked(true);
+    } else {
+      setError(true);
+      setTimeout(() => setError(false), 2000);
+    }
+  };
+
+  if (unlocked) return <>{children}</>;
+
+  return (
+    <div className="min-h-screen bg-background">
+      <Navbar />
+      <section className="pt-36 pb-20">
+        <div className="container mx-auto px-4 max-w-md text-center">
+          <div className="h-20 w-20 rounded-2xl hero-gradient flex items-center justify-center mx-auto mb-8">
+            <Construction className="h-10 w-10 text-white" />
+          </div>
+          <h1 className="text-3xl font-extrabold text-foreground mb-3">Page en construction</h1>
+          <p className="text-muted-foreground mb-8 leading-relaxed">
+            Nous travaillons sur notre grille tarifaire.<br />
+            Contactez-nous pour un devis personnalisé.
+          </p>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-10">
+            <Button variant="default" size="lg" asChild>
+              <a href="mailto:audreybousquet@abcarre.fr" className="flex items-center gap-2">
+                <Mail className="h-4 w-4" /> Demander un devis
+              </a>
+            </Button>
+            <Button variant="outline" size="lg" asChild>
+              <a href="tel:+33633490647" className="flex items-center gap-2">
+                <Phone className="h-4 w-4" /> 06 33 49 06 47
+              </a>
+            </Button>
+          </div>
+
+          <div className="border-t pt-8">
+            <form onSubmit={handleSubmit} className="max-w-xs mx-auto">
+              <label className="flex items-center gap-2 text-sm text-muted-foreground mb-3 justify-center">
+                <Lock className="h-3.5 w-3.5" /> Accès réservé
+              </label>
+              <div className="flex gap-2">
+                <input
+                  type="password"
+                  value={input}
+                  onChange={e => setInput(e.target.value)}
+                  placeholder="Mot de passe"
+                  className={`flex-1 rounded-lg border px-3 py-2.5 text-sm outline-none transition-colors ${
+                    error ? "border-red-400 bg-red-50" : "border-input focus:border-primary focus:ring-2 focus:ring-primary/30"
+                  }`}
+                />
+                <Button type="submit" size="default">OK</Button>
+              </div>
+              {error && <p className="text-red-500 text-xs mt-2">Mot de passe incorrect</p>}
+            </form>
+          </div>
+        </div>
+      </section>
+      <Footer />
+    </div>
+  );
+}
 
 /* ── Donnees ────────────────────────────────────────────────────────────── */
 
@@ -104,6 +184,7 @@ const Tarifs = () => {
   };
 
   return (
+    <PasswordGate>
     <div className="min-h-screen bg-background">
       <Navbar />
 
@@ -453,6 +534,7 @@ const Tarifs = () => {
 
       <Footer />
     </div>
+    </PasswordGate>
   );
 };
 
