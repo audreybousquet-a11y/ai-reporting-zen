@@ -2,7 +2,7 @@ const connectors = [
   { name: "Deytime", logo: "/logos/deytime2.webp" },
   { name: "Extrabat", logo: "/logos/Extrabat.png" },
   { name: "Pennylane", logo: "/logos/pennylane.png" },
-  { name: "Excel", logo: "/logos/Excel2.png" },
+  { name: "Excel", logo: "/logos/Microsoft_Excel_2013-2019_logo.svg.png" },
   { name: "Google Sheets", logo: "/logos/google_sheets.svg" },
   { name: "Gmail", logo: "/logos/fmail.png" },
   { name: "Open-Meteo", logo: "/logos/openmeteo.jpg" },
