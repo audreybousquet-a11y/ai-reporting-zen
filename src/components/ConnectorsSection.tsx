@@ -1,42 +1,14 @@
 const connectors = [
-  {
-    name: "Deytime",
-    logo: "https://www.deytime.fr/wp-content/uploads/2023/01/logo-deytime.svg",
-    alt: "Deytime - Gestion du temps BTP",
-  },
-  {
-    name: "Extrabat",
-    logo: "https://www.extrabat.com/images/logo-extrabat.svg",
-    alt: "Extrabat - Logiciel BTP",
-  },
-  {
-    name: "Pennylane",
-    logo: "https://logo.clearbit.com/pennylane.com",
-    alt: "Pennylane - Comptabilité",
-  },
-  {
-    name: "Excel",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/3/34/Microsoft_Office_Excel_%282019%E2%80%93present%29.svg",
-    alt: "Microsoft Excel",
-  },
-  {
-    name: "Google Sheets",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/3/30/Google_Sheets_logo_%282014-2020%29.svg",
-    alt: "Google Sheets",
-  },
-  {
-    name: "Open-Meteo",
-    logo: "https://open-meteo.com/favicon-32x32.png",
-    alt: "Open-Meteo - Données météo",
-  },
-  {
-    name: "EDF",
-    logo: "https://logo.clearbit.com/edf.fr",
-    alt: "EDF - Factures énergie",
-  },
+  { name: "Deytime", logo: "/logos/DeyTime.png" },
+  { name: "Extrabat", logo: "/logos/Extrabat.png" },
+  { name: "Pennylane", logo: "/logos/pennylane.png" },
+  { name: "Excel", logo: "/logos/Excel2.png" },
+  { name: "Google Sheets", logo: "/logos/google_sheets.svg" },
+  { name: "Gmail", logo: "/logos/fmail.png" },
+  { name: "Open-Meteo", logo: "/logos/Open_Meteo.png" },
+  { name: "EDF", logo: "/logos/edf.svg" },
 ];
 
-/* Double la liste pour boucle infinie */
 const doubled = [...connectors, ...connectors];
 
 const ConnectorsSection = () => (
@@ -50,8 +22,6 @@ const ConnectorsSection = () => (
           ar.ia se connecte à vos outils métier et enrichit vos données automatiquement.
         </p>
       </div>
-
-      {/* Carrousel infini */}
       <div className="relative w-full">
         <div className="flex animate-scroll gap-12 w-max">
           {doubled.map((c, i) => (
@@ -59,15 +29,11 @@ const ConnectorsSection = () => (
               key={`${c.name}-${i}`}
               className="flex flex-col items-center justify-center min-w-[140px] group"
             >
-              <div className="h-16 w-16 rounded-xl bg-card border shadow-sm flex items-center justify-center mb-3 group-hover:shadow-md group-hover:scale-110 transition-all duration-300">
+              <div className="h-20 w-20 rounded-xl bg-card border shadow-sm flex items-center justify-center mb-3 group-hover:shadow-md group-hover:scale-110 transition-all duration-300">
                 <img
                   src={c.logo}
-                  alt={c.alt}
-                  className="h-10 w-10 object-contain"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).style.display = "none";
-                    (e.target as HTMLImageElement).parentElement!.innerHTML = `<span class="text-xl font-bold text-primary">${c.name[0]}</span>`;
-                  }}
+                  alt={c.name}
+                  className="h-12 w-12 object-contain"
                 />
               </div>
               <span className="text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors">
@@ -78,7 +44,6 @@ const ConnectorsSection = () => (
         </div>
       </div>
     </div>
-
     <style>{`
       @keyframes scroll {
         0%   { transform: translateX(0); }
