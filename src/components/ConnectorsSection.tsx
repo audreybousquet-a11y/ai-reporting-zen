@@ -1,11 +1,11 @@
 const connectors = [
-  { name: "Deytime", logo: "/logos/DeyTime.png" },
+  { name: "Deytime", logo: "/logos/deytime2.webp" },
   { name: "Extrabat", logo: "/logos/Extrabat.png" },
   { name: "Pennylane", logo: "/logos/pennylane.png" },
   { name: "Excel", logo: "/logos/Excel2.png" },
   { name: "Google Sheets", logo: "/logos/google_sheets.svg" },
   { name: "Gmail", logo: "/logos/fmail.png" },
-  { name: "Open-Meteo", logo: "/logos/Open_Meteo.png" },
+  { name: "Open-Meteo", logo: "/logos/openmeteo.jpg" },
   { name: "EDF", logo: "/logos/edf.svg" },
 ];
 
