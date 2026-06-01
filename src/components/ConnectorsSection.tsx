@@ -63,7 +63,7 @@ const ConnectorsSection = () => (
         bottom: -60px;
         left: 50%;
         transform: translateX(-50%);
-        background: #1a1a2e;
+        background: #2d9583;
         color: #fff;
         padding: 8px 14px;
         border-radius: 8px;
@@ -85,7 +85,7 @@ const ConnectorsSection = () => (
         transform: translateX(-50%);
         border-left: 6px solid transparent;
         border-right: 6px solid transparent;
-        border-bottom: 6px solid #1a1a2e;
+        border-bottom: 6px solid #2d9583;
       }
       .connector-item:hover .connector-tooltip {
         opacity: 1;
