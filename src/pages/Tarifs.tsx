@@ -100,35 +100,25 @@ const FORMULES = [
 type FormulaId = "min" | "mid" | "max";
 
 const FEATURES: { nom: string; categorie?: string; min: boolean | string; mid: boolean | string; max: boolean | string }[] = [
-  { nom: "Questions IA / mois",  min: "15",   mid: "50",   max: "100" },
-  { nom: "Favoris",              min: true,    mid: true,   max: true },
-  { nom: "Dashboards",           min: false,   mid: true,   max: true },
-  { nom: "Fusion de sources",    min: false,   mid: true,   max: true },
-  { nom: "Emails automatisés",   min: false,   mid: false,  max: true },
+  { nom: "Questions IA / mois",      min: "50",    mid: "200",  max: "Illimité" },
+  { nom: "Favoris",                   min: true,    mid: true,   max: true },
+  { nom: "Dashboards",                min: true,    mid: true,   max: true },
+  { nom: "Fusion de sources (ETL)",   min: false,   mid: true,   max: true },
+  { nom: "Emails personnalisés",      min: false,   mid: false,  max: true },
+  { nom: "Alertes automatisées",      min: false,   mid: false,  max: true },
 ];
 
-const PRIX: Record<string, Record<FormulaId, number>> = {
-  "1":   { min: 29, mid: 34, max: 39 },
-  "2-4": { min: 25, mid: 29, max: 34 },
-  "5+":  { min: 23, mid: 24, max: 29 },
-};
-
-const TRANCHES = [
-  { key: "1",   label: "1 utilisateur" },
-  { key: "2-4", label: "2 à 4 utilisateurs" },
-  { key: "5+",  label: "5 et plus" },
-];
+const PRIX: Record<FormulaId, number> = { min: 29, mid: 34, max: 39 };
 
 function prixUnitaire(nb: number, formule: FormulaId) {
-  if (nb >= 5) return PRIX["5+"][formule];
-  if (nb >= 2) return PRIX["2-4"][formule];
-  return PRIX["1"][formule];
+  return PRIX[formule];
 }
 
 const SOURCES = [
   { nom: "Excel / Google Sheets",  prix: null,  icon: "table", desc: "Importez vos fichiers Excel ou connectez un Google Sheet" },
-  { nom: "DeyTime",  prix: 5,     icon: "link",  desc: "Connecteur ERP DeyTime" },
+  { nom: "DeyTime",  prix: 15,    icon: "link",  desc: "Connecteur ERP DeyTime" },
   { nom: "Extrabat", prix: 10,    icon: "build", desc: "Connecteur ERP Extrabat" },
+  { nom: "Pennylane", prix: 10,   icon: "coins", desc: "Connecteur comptabilité Pennylane" },
 ];
 
 /* ── Composants ─────────────────────────────────────────────────────────── */
@@ -194,8 +184,7 @@ const Tarifs = () => {
             Un prix simple,<br className="hidden md:block" /> adapté à votre équipe
           </h1>
           <p className="text-lg text-muted-foreground leading-relaxed max-w-xl mx-auto">
-            Par utilisateur, par mois. Des remises automatiques dès 2 utilisateurs.
-            Sans engagement, sans surprise.
+            Par utilisateur, par mois. Sans engagement, sans surprise.
           </p>
 
           {/* Toggle mensuel / annuel */}
@@ -327,36 +316,6 @@ const Tarifs = () => {
         </div>
       </section>
 
-      {/* ── Grille dégressive ─────────────────────────────────────────── */}
-      <section className="py-16 md:py-20">
-        <div className="container mx-auto px-4 max-w-3xl">
-          <h2 className="text-2xl font-bold text-foreground mb-2 text-center">Tarifs dégressifs</h2>
-          <p className="text-muted-foreground text-center mb-8">Plus vous êtes nombreux, moins c'est cher.</p>
-
-          <div className="bg-card rounded-2xl shadow-sm border overflow-hidden">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="hero-gradient text-white">
-                  <th className="py-3.5 px-5 text-left font-semibold">Utilisateurs</th>
-                  <th className="py-3.5 px-5 text-center font-semibold">MIN</th>
-                  <th className="py-3.5 px-5 text-center font-semibold">MID</th>
-                  <th className="py-3.5 px-5 text-center font-semibold">MAX</th>
-                </tr>
-              </thead>
-              <tbody>
-                {TRANCHES.map((t, i) => (
-                  <tr key={t.key} className={i < TRANCHES.length - 1 ? "border-b border-border/50" : ""}>
-                    <td className="py-3.5 px-5 text-muted-foreground font-medium">{t.label}</td>
-                    <td className="py-3.5 px-5 text-center font-semibold text-foreground">{PRIX[t.key].min} EUR</td>
-                    <td className="py-3.5 px-5 text-center font-semibold text-primary">{PRIX[t.key].mid} EUR</td>
-                    <td className="py-3.5 px-5 text-center font-semibold text-foreground">{PRIX[t.key].max} EUR</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </section>
 
       {/* ── Calculateur multi-lignes ─────────────────────────────────── */}
       <section className="py-16 md:py-20" id="calculateur">
@@ -534,3 +493,4 @@ const Tarifs = () => {
 };
 
 export default Tarifs;
+
