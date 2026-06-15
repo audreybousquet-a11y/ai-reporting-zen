@@ -82,21 +82,16 @@ function PasswordGate({ children }: { children: React.ReactNode }) {
 
 type FormulaId = "min" | "mid" | "max";
 
-const PRIX: Record<string, Record<FormulaId, number>> = {
-  "1":   { min: 29, mid: 34, max: 39 },
-  "2-4": { min: 25, mid: 29, max: 34 },
-  "5+":  { min: 23, mid: 24, max: 29 },
-};
+const PRIX: Record<FormulaId, number> = { min: 29, mid: 34, max: 39 };
 
 function prixUnitaire(nb: number, formule: FormulaId) {
-  if (nb >= 5) return PRIX["5+"][formule];
-  if (nb >= 2) return PRIX["2-4"][formule];
-  return PRIX["1"][formule];
+  return PRIX[formule];
 }
 
 const SOURCES_OPTIONS = [
   { id: "deytime", nom: "DeyTime", prix: 5 },
   { id: "extrabat", nom: "Extrabat", prix: 10 },
+  { id: "pennylane", nom: "Pennylane", prix: 10 },
 ];
 
 type Step = "form" | "payment" | "processing" | "success";
