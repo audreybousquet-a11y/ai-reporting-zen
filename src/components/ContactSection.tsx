@@ -13,6 +13,9 @@ const ContactSection = () => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
 
+  // Pré-remplir le message si ?demo=1
+  const isDemo = typeof window !== "undefined" && new URLSearchParams(window.location.search).get("demo") === "1";
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
@@ -97,7 +100,7 @@ const ContactSection = () => {
             </div>
             <Input name="email" type="email" placeholder="Email professionnel" required />
             <Input name="entreprise" placeholder="Entreprise" required />
-            <Textarea name="message" placeholder="Votre message ou besoin..." rows={4} />
+            <Textarea name="message" placeholder="Votre message ou besoin..." rows={4} defaultValue={isDemo ? "Bonjour,\nJe souhaite avoir une démonstration d'ar.ia.\nMerci." : ""} />
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Envoi en cours..." : "Envoyer ma demande"}
             </Button>
