@@ -16,24 +16,24 @@ const HeroSection = () => (
           <span className="text-primary">ar.ia</span> se charge du reste
         </h1>
         <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
-          Interrogez vos données métier en langage naturel. Obtenez des KPI, graphiques et tableaux de bord en quelques secondes — sans compétence technique.
+          Interrogez vos donn\u00e9es m\u00e9tier en langage naturel. Obtenez des KPI, graphiques et tableaux de bord en quelques secondes \u2014 sans comp\u00e9tence technique.
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Button size="lg" className="text-base px-8" asChild>
-            <a href="?demo=1#contact">
-              Demander une démonstration
+            <a href="#contact">
+              Prendre contact
               <ArrowRight className="ml-2 h-5 w-5" />
             </a>
           </Button>
           <Button variant="outline" size="lg" className="text-base px-8" asChild>
-            <a href="#how">Découvrir le fonctionnement</a>
+            <a href="#how">D\u00e9couvrir le fonctionnement</a>
           </Button>
         </div>
       </div>
       <div className="mt-16 flex justify-center">
         <img
           src={screenshot}
-          alt="Aperçu de l'interface AR.IA"
+          alt="Aper\u00e7u de l'interface AR.IA"
           className="rounded-2xl shadow-2xl shadow-primary/20 border border-border w-full max-w-4xl"
         />
       </div>
