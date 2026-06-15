@@ -469,9 +469,9 @@ const Tarifs = () => {
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Button size="lg" variant="secondary" asChild>
-                <a href="mailto:audreybousquet@abcarre.fr" className="flex items-center gap-2">
+                <a href="/?demo=1#contact" className="flex items-center gap-2">
                   <Mail className="h-4 w-4" />
-                  Demander un devis
+                  Demander une démo
                 </a>
               </Button>
               <Button size="lg" variant="outline" className="border-white/50 text-white hover:bg-white/10 bg-white/10" asChild>
