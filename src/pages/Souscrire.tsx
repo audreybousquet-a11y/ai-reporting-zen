@@ -203,7 +203,7 @@ const Souscrire = () => {
                           <button onClick={() => setLignes(prev => prev.map((l, i) => i === idx ? { ...l, nb: l.nb + 1 } : l))}
                             className="w-7 h-7 rounded-lg bg-muted text-muted-foreground font-bold text-sm flex items-center justify-center">+</button>
                         </div>
-                        <span className="w-16 text-right font-semibold text-sm">{prixUnitaire(ligne.nb, ligne.formule) * ligne.nb} EUR</span>
+                        <span className="w-16 text-right font-semibold text-sm">{prixUnitaire(ligne.nb, ligne.formule) * ligne.nb} EUR HT</span>
                         {lignes.length > 1 && (
                           <button onClick={() => setLignes(prev => prev.filter((_, i) => i !== idx))}
                             className="text-muted-foreground/40 hover:text-red-500 text-lg">&times;</button>
@@ -236,7 +236,7 @@ const Souscrire = () => {
                         <input type="checkbox" checked={options.includes(s.id)} onChange={() => toggleOption(s.id)} className="accent-primary h-4 w-4" />
                         <span className="text-sm font-medium">{s.nom}</span>
                       </div>
-                      <span className="text-sm font-semibold text-primary">+ {s.prix} EUR / mois</span>
+                      <span className="text-sm font-semibold text-primary">+ {s.prix} EUR HT / mois</span>
                     </label>
                   ))}
                 </div>
@@ -279,21 +279,21 @@ const Souscrire = () => {
                     const lpu = prixUnitaire(l.nb, l.formule);
                     return (
                       <div key={i} className="flex justify-between text-sm mb-1">
-                        <span className="text-muted-foreground">{l.nb} utilisateur{l.nb > 1 ? "s" : ""} {l.formule.toUpperCase()} x {lpu} EUR</span>
-                        <span className="font-semibold">{lpu * l.nb} EUR</span>
+                        <span className="text-muted-foreground">{l.nb} utilisateur{l.nb > 1 ? "s" : ""} {l.formule.toUpperCase()} x {lpu} EUR HT</span>
+                        <span className="font-semibold">{lpu * l.nb} EUR HT</span>
                       </div>
                     );
                   })}
                   {SOURCES_OPTIONS.filter(s => options.includes(s.id)).map(s => (
                     <div key={s.id} className="flex justify-between text-sm mb-1">
                       <span className="text-muted-foreground">{s.nom}</span>
-                      <span className="font-semibold text-primary">+ {s.prix} EUR</span>
+                      <span className="font-semibold text-primary">+ {s.prix} EUR HT</span>
                     </div>
                   ))}
                   <hr className="my-3 border-border" />
                   <div className="flex justify-between">
                     <span className="font-semibold text-foreground">Total mensuel</span>
-                    <span className="text-2xl font-extrabold text-primary">{totalMois} EUR</span>
+                    <span className="text-2xl font-extrabold text-primary">{totalMois} EUR HT</span>
                   </div>
                 </div>
 
@@ -312,7 +312,7 @@ const Souscrire = () => {
                 <ArrowLeft className="h-4 w-4" /> Modifier mes informations
               </button>
               <h1 className="text-3xl font-extrabold text-foreground mb-2">Paiement</h1>
-              <p className="text-muted-foreground mb-8">{totalMois} EUR / mois — {nbUsersTotal} utilisateur{nbUsersTotal > 1 ? "s" : ""} ({lignes.map(l => `${l.nb} ${l.formule.toUpperCase()}`).join(" + ")})</p>
+              <p className="text-muted-foreground mb-8">{totalMois} EUR HT / mois — {nbUsersTotal} utilisateur{nbUsersTotal > 1 ? "s" : ""} ({lignes.map(l => `${l.nb} ${l.formule.toUpperCase()}`).join(" + ")})</p>
 
               {error && (
                 <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl p-4 mb-6 text-sm">{error}</div>
@@ -351,7 +351,7 @@ const Souscrire = () => {
 
                 <Button size="lg" className="w-full" onClick={handleSubscribe}>
                   <CreditCard className="h-4 w-4 mr-2" />
-                  Valider et créer mon compte ({totalMois} EUR / mois)
+                  Valider et créer mon compte ({totalMois} EUR HT / mois)
                 </Button>
               </div>
 
