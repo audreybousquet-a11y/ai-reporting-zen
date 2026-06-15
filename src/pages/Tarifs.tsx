@@ -100,25 +100,35 @@ const FORMULES = [
 type FormulaId = "min" | "mid" | "max";
 
 const FEATURES: { nom: string; categorie?: string; min: boolean | string; mid: boolean | string; max: boolean | string }[] = [
-  { nom: "Questions IA / mois",      min: "50",    mid: "200",  max: "Illimité" },
-  { nom: "Favoris",                   min: true,    mid: true,   max: true },
-  { nom: "Dashboards",                min: true,    mid: true,   max: true },
-  { nom: "Fusion de sources (ETL)",   min: false,   mid: true,   max: true },
-  { nom: "Emails personnalisés",      min: false,   mid: false,  max: true },
-  { nom: "Alertes automatisées",      min: false,   mid: false,  max: true },
+  { nom: "Questions IA / mois",  min: "15",   mid: "50",   max: "100" },
+  { nom: "Favoris",              min: true,    mid: true,   max: true },
+  { nom: "Dashboards",           min: false,   mid: true,   max: true },
+  { nom: "Fusion de sources",    min: false,   mid: true,   max: true },
+  { nom: "Emails automatisés",   min: false,   mid: false,  max: true },
 ];
 
-const PRIX: Record<FormulaId, number> = { min: 29, mid: 34, max: 39 };
+const PRIX: Record<string, Record<FormulaId, number>> = {
+  "1":   { min: 29, mid: 34, max: 39 },
+  "2-4": { min: 25, mid: 29, max: 34 },
+  "5+":  { min: 23, mid: 24, max: 29 },
+};
+
+const TRANCHES = [
+  { key: "1",   label: "1 utilisateur" },
+  { key: "2-4", label: "2 à 4 utilisateurs" },
+  { key: "5+",  label: "5 et plus" },
+];
 
 function prixUnitaire(nb: number, formule: FormulaId) {
-  return PRIX[formule];
+  if (nb >= 5) return PRIX["5+"][formule];
+  if (nb >= 2) return PRIX["2-4"][formule];
+  return PRIX["1"][formule];
 }
 
 const SOURCES = [
   { nom: "Excel / Google Sheets",  prix: null,  icon: "table", desc: "Importez vos fichiers Excel ou connectez un Google Sheet" },
-  { nom: "DeyTime",  prix: 15,    icon: "link",  desc: "Connecteur ERP DeyTime" },
+  { nom: "DeyTime",  prix: 5,     icon: "link",  desc: "Connecteur ERP DeyTime" },
   { nom: "Extrabat", prix: 10,    icon: "build", desc: "Connecteur ERP Extrabat" },
-  { nom: "Pennylane", prix: 10,   icon: "coins", desc: "Connecteur comptabilité Pennylane" },
 ];
 
 /* ── Composants ─────────────────────────────────────────────────────────── */
@@ -184,7 +194,8 @@ const Tarifs = () => {
             Un prix simple,<br className="hidden md:block" /> adapté à votre équipe
           </h1>
           <p className="text-lg text-muted-foreground leading-relaxed max-w-xl mx-auto">
-            Par utilisateur, par mois. Sans engagement, sans surprise.
+            Par utilisateur, par mois. Des remises automatiques dès 2 utilisateurs.
+            Sans engagement, sans surprise.
           </p>
 
           {/* Toggle mensuel / annuel */}
@@ -211,7 +222,7 @@ const Tarifs = () => {
         <div className="container mx-auto px-4 max-w-5xl">
           <div className="grid md:grid-cols-3 gap-5 md:gap-6">
             {FORMULES.map((f) => {
-              const prix1 = PRIX[f.id];
+              const prix1 = PRIX["1"][f.id];
               const prixAffiche = annuel ? Math.round(prix1 * 0.9) : prix1;
               const isReco = f.recommended;
 
@@ -241,12 +252,12 @@ const Tarifs = () => {
                   <div className="text-center mb-6">
                     <div className="flex items-baseline justify-center gap-1">
                       <span className="text-4xl font-extrabold text-foreground">{prixAffiche}</span>
-                      <span className="text-lg text-muted-foreground font-medium">EUR</span>
+                      <span className="text-lg text-muted-foreground font-medium">EUR HT</span>
                     </div>
                     <p className="text-xs text-muted-foreground mt-1">par utilisateur / mois</p>
                     {annuel && (
                       <p className="text-xs text-green-600 font-medium mt-1">
-                        soit {prixAffiche * 12} EUR / an par utilisateur
+                        soit {prixAffiche * 12} EUR HT / an par utilisateur
                       </p>
                     )}
                   </div>
@@ -308,7 +319,7 @@ const Tarifs = () => {
                 <span className={`inline-block px-4 py-1.5 rounded-full text-sm font-bold ${
                   s.prix ? "bg-primary/10 text-primary" : "hero-gradient text-white"
                 }`}>
-                  {s.prix ? `+ ${s.prix} EUR / mois` : "Inclus"}
+                  {s.prix ? `+ ${s.prix} EUR HT / mois` : "Inclus"}
                 </span>
               </div>
             ))}
@@ -316,6 +327,36 @@ const Tarifs = () => {
         </div>
       </section>
 
+      {/* ── Grille dégressive ─────────────────────────────────────────── */}
+      <section className="py-16 md:py-20">
+        <div className="container mx-auto px-4 max-w-3xl">
+          <h2 className="text-2xl font-bold text-foreground mb-2 text-center">Tarifs dégressifs</h2>
+          <p className="text-muted-foreground text-center mb-8">Plus vous êtes nombreux, moins c'est cher.</p>
+
+          <div className="bg-card rounded-2xl shadow-sm border overflow-hidden">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="hero-gradient text-white">
+                  <th className="py-3.5 px-5 text-left font-semibold">Utilisateurs</th>
+                  <th className="py-3.5 px-5 text-center font-semibold">MIN</th>
+                  <th className="py-3.5 px-5 text-center font-semibold">MID</th>
+                  <th className="py-3.5 px-5 text-center font-semibold">MAX</th>
+                </tr>
+              </thead>
+              <tbody>
+                {TRANCHES.map((t, i) => (
+                  <tr key={t.key} className={i < TRANCHES.length - 1 ? "border-b border-border/50" : ""}>
+                    <td className="py-3.5 px-5 text-muted-foreground font-medium">{t.label}</td>
+                    <td className="py-3.5 px-5 text-center font-semibold text-foreground">{PRIX[t.key].min} EUR HT</td>
+                    <td className="py-3.5 px-5 text-center font-semibold text-primary">{PRIX[t.key].mid} EUR HT</td>
+                    <td className="py-3.5 px-5 text-center font-semibold text-foreground">{PRIX[t.key].max} EUR HT</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
 
       {/* ── Calculateur multi-lignes ─────────────────────────────────── */}
       <section className="py-16 md:py-20" id="calculateur">
@@ -352,7 +393,7 @@ const Tarifs = () => {
                       <button onClick={() => updateLigne(idx, "nb", Math.min(20, ligne.nb + 1))}
                         className="w-7 h-7 rounded-lg bg-muted text-muted-foreground font-bold text-sm flex items-center justify-center hover:bg-muted/80">+</button>
                     </div>
-                    <span className="w-20 text-right font-semibold text-foreground text-sm">{pu * ligne.nb} EUR</span>
+                    <span className="w-20 text-right font-semibold text-foreground text-sm">{pu * ligne.nb} EUR HT</span>
                     {lignes.length > 1 && (
                       <button onClick={() => removeLigne(idx)}
                         className="text-muted-foreground/40 hover:text-red-500 transition-colors text-lg leading-none">&times;</button>
@@ -387,7 +428,7 @@ const Tarifs = () => {
                           onChange={() => toggleSource(s.nom)} className="accent-primary h-4 w-4" />
                         <span className="text-sm font-medium text-foreground">{s.nom}</span>
                       </div>
-                      <span className="text-sm font-semibold text-primary">+ {s.prix} EUR / mois</span>
+                      <span className="text-sm font-semibold text-primary">+ {s.prix} EUR HT / mois</span>
                     </label>
                   ))}
                 </div>
@@ -399,32 +440,32 @@ const Tarifs = () => {
                   const pu = prixUnitaire(ligne.nb, ligne.formule);
                   return (
                     <div key={idx} className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">{ligne.nb} utilisateur{ligne.nb > 1 ? "s" : ""} {ligne.formule.toUpperCase()} x {pu} EUR</span>
-                      <span className="font-semibold text-foreground">{pu * ligne.nb} EUR</span>
+                      <span className="text-muted-foreground">{ligne.nb} utilisateur{ligne.nb > 1 ? "s" : ""} {ligne.formule.toUpperCase()} x {pu} EUR HT</span>
+                      <span className="font-semibold text-foreground">{pu * ligne.nb} EUR HT</span>
                     </div>
                   );
                 })}
                 {sourcesExtra > 0 && (
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Connecteurs ({selectedSources.join(" + ")})</span>
-                    <span className="font-semibold text-primary">+ {sourcesExtra} EUR</span>
+                    <span className="font-semibold text-primary">+ {sourcesExtra} EUR HT</span>
                   </div>
                 )}
                 <hr className="border-border" />
                 <div className="flex justify-between items-baseline">
                   <span className="text-sm font-medium text-foreground">{nbUsersTotal} utilisateur{nbUsersTotal > 1 ? "s" : ""} au total</span>
-                  <span className="text-3xl font-extrabold text-primary">{totalMois} EUR<span className="text-sm font-normal text-muted-foreground"> / mois</span></span>
+                  <span className="text-3xl font-extrabold text-primary">{totalMois} EUR HT<span className="text-sm font-normal text-muted-foreground"> / mois</span></span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Total annuel</span>
-                  <span className="font-bold text-foreground">{totalAn} EUR / an</span>
+                  <span className="font-bold text-foreground">{totalAn} EUR HT / an</span>
                 </div>
               </div>
             </div>
 
             <Button className="mt-6 w-full animate-shimmer" size="lg" asChild>
               <Link to={`/souscrire?l=${lignes.map(l => l.formule + ":" + l.nb).join(",")}&options=${selectedSources.map(s => s.toLowerCase().replace("dey", "dey")).join(",")}`} className="flex items-center justify-center gap-2">
-                Souscrire — {totalMois} EUR / mois
+                Souscrire — {totalMois} EUR HT / mois
               </Link>
             </Button>
           </div>
@@ -493,4 +534,3 @@ const Tarifs = () => {
 };
 
 export default Tarifs;
-
