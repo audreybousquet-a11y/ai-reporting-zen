@@ -10,19 +10,19 @@ import Footer from "@/components/Footer";
 const ConstructionRibbon = () => (
   <div
     className="fixed z-[60] pointer-events-none"
-    style={{ top: 0, left: "120px", width: "250px", height: "250px", overflow: "hidden" }}
+    style={{ top: 0, left: "100px", width: "350px", height: "350px", overflow: "hidden" }}
   >
     <div
       style={{
         position: "absolute",
-        top: "48px",
-        left: "-30px",
-        width: "320px",
+        top: "55px",
+        left: "-60px",
+        width: "450px",
         textAlign: "center",
         transform: "rotate(-40deg)",
-        background: "repeating-linear-gradient(90deg, #F5A623, #F5A623 12px, #1a1a1a 12px, #1a1a1a 24px)",
-        padding: "7px 0",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
+        background: "repeating-linear-gradient(45deg, #F5A623, #F5A623 10px, #1a1a1a 10px, #1a1a1a 20px)",
+        padding: "8px 0",
+        boxShadow: "0 2px 10px rgba(0,0,0,0.4)",
       }}
     >
       <span
@@ -30,12 +30,12 @@ const ConstructionRibbon = () => (
           color: "#fff",
           fontSize: "11px",
           fontWeight: 800,
-          letterSpacing: "1.5px",
+          letterSpacing: "2px",
           textTransform: "uppercase",
-          textShadow: "0 1px 2px rgba(0,0,0,0.5)",
+          textShadow: "0 1px 3px rgba(0,0,0,0.6)",
         }}
       >
-        🔧 En construction
+        🔧 Logiciel en construction 🔧
       </span>
     </div>
   </div>
