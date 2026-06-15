@@ -119,6 +119,10 @@ const SOURCES = [
   { nom: "DeyTime",  prix: 5,     icon: "link",  desc: "Connecteur ERP DeyTime" },
   { nom: "Extrabat", prix: 10,    icon: "build", desc: "Connecteur ERP Extrabat" },
   { nom: "Pennylane", prix: 10,   icon: "coins", desc: "Connecteur comptabilité Pennylane" },
+  { nom: "EDF",       prix: 2,    icon: "zap",   desc: "Suivi de vos consommations et factures EDF" },
+  { nom: "Gmail",     prix: 2,    icon: "mail",  desc: "Analyse et suivi de vos emails professionnels" },
+  { nom: "Open-Météo", prix: 2,  icon: "cloud", desc: "Données météo pour corréler avec votre activité" },
+  { nom: "Facture électronique", prix: 2, icon: "file", desc: "Import de factures XML (Factur-X, CII, UBL)" },
 ];
 
 /* ── Composants ─────────────────────────────────────────────────────────── */
@@ -297,7 +301,7 @@ const Tarifs = () => {
           <h2 className="text-2xl font-bold text-foreground mb-2 text-center">Sources de données</h2>
           <p className="text-muted-foreground text-center mb-8">Connectez vos outils métier — à ajouter à votre formule.</p>
 
-          <div className="grid md:grid-cols-3 gap-4">
+          <div className="grid md:grid-cols-4 gap-4">
             {SOURCES.map((s) => (
               <div key={s.nom} className="bg-card border rounded-2xl p-6 text-center hover:shadow-md transition-shadow">
                 <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-3">
