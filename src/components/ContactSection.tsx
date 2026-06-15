@@ -78,7 +78,7 @@ const ContactSection = () => {
           <div>
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Prenons contact</h2>
             <p className="text-muted-foreground mb-8 leading-relaxed">
-              Découvrez AR.IA sur une démonstration préparée avec des données d'exemple, ou échangeons sur l'intégration dans votre système d'information. Remplissez le formulaire, nous vous recontactons sous 24h.
+              Une question sur ar.ia ? Envie d'en savoir plus ? Remplissez le formulaire, nous reviendrons vers vous.
             </p>
             <div className="space-y-4 text-sm text-muted-foreground">
               <div className="flex items-center gap-3">
@@ -98,7 +98,7 @@ const ContactSection = () => {
             </div>
             <Input name="email" type="email" placeholder="Email professionnel" required />
             <Input name="entreprise" placeholder="Entreprise" required />
-            <Textarea name="message" placeholder="Votre message ou besoin..." rows={4} defaultValue={isDemo ? "Bonjour,\nJe souhaite avoir une démonstration d'ar.ia.\nMerci." : ""} />
+            <Textarea name="message" placeholder="Votre message ou besoin..." rows={4} />
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Envoi en cours..." : "Envoyer ma demande"}
             </Button>
