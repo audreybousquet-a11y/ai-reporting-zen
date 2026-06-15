@@ -7,34 +7,35 @@ import TrustSection from "@/components/TrustSection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 
-const ConstructionBanner = () => (
+const ConstructionRibbon = () => (
   <div
-    className="fixed top-0 left-0 right-0 z-[60] overflow-hidden"
-    style={{ height: "32px" }}
+    className="fixed z-[60] pointer-events-none"
+    style={{ top: 0, left: 0, width: "200px", height: "200px", overflow: "hidden" }}
   >
     <div
       style={{
-        width: "200%",
-        height: "100%",
-        background:
-          "repeating-linear-gradient(45deg, #F5A623, #F5A623 20px, #1a1a1a 20px, #1a1a1a 40px)",
-        opacity: 0.9,
+        position: "absolute",
+        top: "38px",
+        left: "-50px",
+        width: "280px",
+        textAlign: "center",
+        transform: "rotate(-45deg)",
+        background: "repeating-linear-gradient(90deg, #F5A623, #F5A623 10px, #e6951a 10px, #e6951a 20px)",
+        padding: "6px 0",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
       }}
-    />
-    <div
-      className="absolute inset-0 flex items-center justify-center"
-      style={{ background: "rgba(0,0,0,0.4)" }}
     >
       <span
         style={{
-          color: "#F5A623",
-          fontSize: "12px",
-          fontWeight: 700,
-          letterSpacing: "3px",
+          color: "#fff",
+          fontSize: "11px",
+          fontWeight: 800,
+          letterSpacing: "1.5px",
           textTransform: "uppercase",
+          textShadow: "0 1px 2px rgba(0,0,0,0.4)",
         }}
       >
-        🔧 En construction — Lancement septembre 2026
+        🔧 En construction
       </span>
     </div>
   </div>
@@ -42,19 +43,17 @@ const ConstructionBanner = () => (
 
 const Index = () => (
   <>
-    <ConstructionBanner />
-    <div style={{ paddingTop: "32px" }}>
-      <Navbar />
-      <main>
-        <HeroSection />
-        <FeaturesSection />
-        <ConnectorsSection />
-        <HowItWorksSection />
-        <TrustSection />
-        <ContactSection />
-      </main>
-      <Footer />
-    </div>
+    <ConstructionRibbon />
+    <Navbar />
+    <main>
+      <HeroSection />
+      <FeaturesSection />
+      <ConnectorsSection />
+      <HowItWorksSection />
+      <TrustSection />
+      <ContactSection />
+    </main>
+    <Footer />
   </>
 );
 
