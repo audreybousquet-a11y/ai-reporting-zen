@@ -211,7 +211,7 @@ const Tarifs = () => {
         <div className="container mx-auto px-4 max-w-5xl">
           <div className="grid md:grid-cols-3 gap-5 md:gap-6">
             {FORMULES.map((f) => {
-              const prix1 = PRIX["1"][f.id];
+              const prix1 = PRIX[f.id];
               const prixAffiche = annuel ? Math.round(prix1 * 0.9) : prix1;
               const isReco = f.recommended;
 
