@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Mail, Phone } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 
 const EMAILJS_SERVICE_ID = "service_aria";
@@ -12,9 +12,15 @@ const EMAILJS_PUBLIC_KEY = "B1PprkVPOIUU6Vjxh";
 const ContactSection = () => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
 
-  // Pré-remplir le message si ?demo=1
-  const isDemo = typeof window !== "undefined" && new URLSearchParams(window.location.search).get("demo") === "1";
+  const isDemo = typeof window !== "undefined" && window.location.hash === "#contact-demo";
+
+  useEffect(() => {
+    if (isDemo && sectionRef.current) {
+      sectionRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [isDemo]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -74,7 +80,7 @@ const ContactSection = () => {
   };
 
   return (
-    <section id="contact" className="py-20 md:py-28">
+    <section id="contact" ref={sectionRef} className="py-20 md:py-28">
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-12">
           <div>
