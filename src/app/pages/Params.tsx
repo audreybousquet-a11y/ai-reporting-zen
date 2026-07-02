@@ -8,7 +8,7 @@ interface ParamsProps {
   user: User;
 }
 
-type Tab = "profil" | "abonnement" | "sources" | "equipe" | "apparence";
+type Tab = "sources" | "profils" | "abonnement" | "apparence";
 
 // Icônes SVG (style Lucide) — plus pro que les emojis
 const Icon = ({ d, size = 16 }: { d: string; size?: number }) => (
@@ -35,10 +35,9 @@ const icons = {
 };
 
 const tabs: { id: Tab; icon: string; label: string }[] = [
-  { id: "profil", icon: "user", label: "Profil" },
-  { id: "abonnement", icon: "card", label: "Abonnement" },
   { id: "sources", icon: "folder", label: "Sources" },
-  { id: "equipe", icon: "users", label: "Équipe" },
+  { id: "profils", icon: "users", label: "Profils" },
+  { id: "abonnement", icon: "card", label: "Abonnement" },
   { id: "apparence", icon: "palette", label: "Apparence" },
 ];
 
@@ -138,8 +137,8 @@ function UserCard({ initials, name, email, role, formule, color, isSelf }: { ini
 }
 
 export default function Params({ user }: ParamsProps) {
-  const [tab, setTab] = useState<Tab>("profil");
-  const [darkMode, setDarkMode] = useState(false);
+  const [tab, setTab] = useState<Tab>("sources");
+  const [theme, setTheme] = useState("light");
   const [aiComment, setAiComment] = useState(true);
   const [showTotals, setShowTotals] = useState(true);
   const [showThumbs, setShowThumbs] = useState(true);
@@ -179,27 +178,7 @@ export default function Params({ user }: ParamsProps) {
         ))}
       </div>
 
-      {/* Profil */}
-      {tab === "profil" && (
-        <Section>
-          <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
-            <div style={{ width: 56, height: 56, borderRadius: 14, background: "#3AA48A", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 22 }}>{initials}</div>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 18, fontWeight: 700 }}>{user.prenom} {user.nom}</div>
-              <div style={{ fontSize: 13, color: "#4a7068" }}>{user.role === "admin_mag" ? "Administrateur" : "Utilisateur"} — {user.entreprise || user.id_magasin}</div>
-            </div>
-            <Btn>Modifier</Btn>
-          </div>
-          <ParamRow label="Email"><span style={{ fontSize: 13, color: "#4a7068" }}>{user.email}</span></ParamRow>
-          <ParamRow label="Téléphone"><span style={{ fontSize: 13, color: "#4a7068" }}>{user.telephone || "—"}</span></ParamRow>
-          <ParamRow label="Rôle"><span style={{ fontSize: 13, color: "#4a7068" }}>{user.role}</span></ParamRow>
-          <ParamRow label="Formule"><span style={{ fontSize: 13, color: "#3AA48A", fontWeight: 600 }}>{(user.formule || "").toUpperCase()}</span></ParamRow>
-          <ParamRow label="Mot de passe">
-            <span style={{ fontSize: 13, color: "#4a7068" }}>••••••••</span>
-            <Btn>Changer</Btn>
-          </ParamRow>
-        </Section>
-      )}
+      {/* Sources */}
 
       {/* Abonnement */}
       {tab === "abonnement" && (
@@ -257,12 +236,12 @@ export default function Params({ user }: ParamsProps) {
         </Section>
       )}
 
-      {/* Équipe */}
-      {tab === "equipe" && (
+      {/* Profils */}
+      {tab === "profils" && (
         <Section>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
             <div>
-              <span style={{ fontWeight: 700, fontSize: 15 }}>Équipe</span>
+              <span style={{ fontWeight: 700, fontSize: 15, color: "#1a3030" }}>Profils</span>
               <span style={{ fontSize: 13, color: "#4a7068", marginLeft: 8 }}>3 utilisateurs sur 5 sièges</span>
             </div>
             <Btn primary>+ Inviter un utilisateur</Btn>
@@ -272,7 +251,7 @@ export default function Params({ user }: ParamsProps) {
             <div style={{ background: "#3AA48A", height: "100%", width: "60%", borderRadius: 6 }} />
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
-            <UserCard initials={initials} name={`${user.prenom} ${user.nom}`} email={user.email} role="admin" formule={user.formule || "mid"} color="#3AA48A" isSelf />
+            <UserCard initials={initials} name={`${user.prenom} ${user.nom}`} email={user.email} role="admin" formule={user.formule || "mid"} color="#3AA48A" isSelf={false} />
             <UserCard initials="LD" name="Laurent Dupont" email="laurent@artetlamatiere.fr" role="user" formule="mid" color="#2a7ab0" />
             <UserCard initials="SM" name="Sophie Martin" email="sophie@artetlamatiere.fr" role="user" formule="min" color="#c47a20" />
           </div>
@@ -282,7 +261,21 @@ export default function Params({ user }: ParamsProps) {
       {/* Apparence */}
       {tab === "apparence" && (
         <Section>
-          <ParamRow label="Thème sombre"><Toggle on={darkMode} onToggle={() => setDarkMode(!darkMode)} /></ParamRow>
+          <ParamRow label="Thème">
+            <select
+              value={theme}
+              onChange={e => setTheme(e.target.value)}
+              style={{
+                padding: "8px 14px", borderRadius: 8, border: "1.5px solid #3AA48A",
+                fontSize: 13, fontFamily: "inherit", color: "#1a3030", background: "#fff",
+                cursor: "pointer", outline: "none", minWidth: 160,
+              }}
+            >
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+              <option value="deytime">Deytime</option>
+            </select>
+          </ParamRow>
           <ParamRow label="Commentaire IA automatique"><Toggle on={aiComment} onToggle={() => setAiComment(!aiComment)} /></ParamRow>
           <ParamRow label="Totaux sur les tableaux"><Toggle on={showTotals} onToggle={() => setShowTotals(!showTotals)} /></ParamRow>
           <ParamRow label="Boutons de feedback"><Toggle on={showThumbs} onToggle={() => setShowThumbs(!showThumbs)} /></ParamRow>

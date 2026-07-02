@@ -67,3 +67,6 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
 .dtable td { padding: 8px 12px; border-bottom: 1px solid var(--border-light); }
 .dtable tr:hover td { background: var(--accent-bg); }
 .dtable .n { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* Animations */
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
