@@ -96,6 +96,7 @@ export default function Dashboards({ id_magasin, user_id, savedFavoris = [], onN
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const dragFavRef = useRef<string | null>(null);
   const dragCellRef = useRef<number | null>(null);
+  const dragWithZone = useRef(false); // ctrl+drag = déplace la zone entière
   const [editingFav, setEditingFav] = useState<{ idx: number; question: string; titre: string; cat: string } | null>(null);
 
   const db = dashboards.find(d => d.id === activeDb)!;
@@ -148,8 +149,14 @@ export default function Dashboards({ id_magasin, user_id, savedFavoris = [], onN
       if (d.id !== activeDb) return d;
       const cells = [...d.cells];
       const sizes = [...(d.sizes || [])];
-      [cells[from], cells[to]] = [cells[to], cells[from]];
-      [sizes[from], sizes[to]] = [sizes[to], sizes[from]];
+      if (dragWithZone.current) {
+        // Ctrl+drag : swap contenu + taille (déplace la zone entière)
+        [cells[from], cells[to]] = [cells[to], cells[from]];
+        [sizes[from], sizes[to]] = [sizes[to], sizes[from]];
+      } else {
+        // Drag normal : swap juste le contenu, zones restent en place
+        [cells[from], cells[to]] = [cells[to], cells[from]];
+      }
       return { ...d, cells, sizes };
     }));
   };
@@ -298,8 +305,8 @@ export default function Dashboards({ id_magasin, user_id, savedFavoris = [], onN
             <div
               key={idx}
               draggable
-              onDragStart={() => { dragCellRef.current = idx; }}
-              onDragEnd={() => { dragCellRef.current = null; }}
+              onDragStart={(e) => { dragCellRef.current = idx; dragWithZone.current = e.ctrlKey; }}
+              onDragEnd={() => { dragCellRef.current = null; dragWithZone.current = false; }}
               onDragOver={e => { e.preventDefault(); (e.currentTarget).style.border = "2px solid #3AA48A"; }}
               onDragLeave={e => { (e.currentTarget).style.border = "1px solid #d0e8e2"; }}
               onDrop={e => {
