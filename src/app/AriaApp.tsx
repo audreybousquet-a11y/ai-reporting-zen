@@ -1,8 +1,9 @@
 /**
  * AriaApp.tsx — Composant principal de l'application ar.ia
  */
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useAuth } from "./hooks/useAuth";
+import { AskResult } from "./lib/api";
 import Sidebar from "./components/Sidebar";
 import Login from "./pages/Login";
 import Questions from "./pages/Questions";
@@ -10,11 +11,47 @@ import Params from "./pages/Params";
 import Dashboards from "./pages/Dashboards";
 import "./app.css";
 
+export interface SavedFavori {
+  titre: string;
+  question: string;
+  cat: string;
+  viz: string;
+  sql: string;
+  viz_config: Record<string, any>;
+}
+
 export default function AriaApp() {
   const { user, loading, login, logout } = useAuth();
   const [currentPage, setCurrentPage] = useState("questions");
-  // Garder les pages montées pour ne pas perdre le state
-  const pages = ["questions", "dashboards", "emails", "alertes", "params", "aide"];
+  const [savedFavoris, setSavedFavoris] = useState<SavedFavori[]>([]);
+
+  const handleSaveFavori = useCallback((titre: string, cat: string, result: AskResult) => {
+    // Déterminer le type de viz
+    let viz = "tableau";
+    const vt = result.viz_config?.type_viz || "table";
+    if (["bar", "hbar"].includes(vt)) viz = "barres";
+    else if (["line", "area"].includes(vt)) viz = "ligne";
+    else if (vt === "pie") viz = "camembert";
+    else if (vt === "kpi") viz = "kpi";
+    // Auto-detect si table
+    if (viz === "tableau" && result.data?.length > 0) {
+      const row0 = result.data[0];
+      const textCols = result.columns.filter(c => typeof row0[c] === "string");
+      const numCols = result.columns.filter(c => typeof row0[c] === "number");
+      if (textCols.length === 1 && numCols.length >= 1 && result.data.length <= 15) viz = "barres";
+      if (result.data.length === 1 && result.columns.length <= 2) viz = "kpi";
+    }
+
+    const newFav: SavedFavori = {
+      titre,
+      question: result.question,
+      cat,
+      viz,
+      sql: result.sql,
+      viz_config: result.viz_config,
+    };
+    setSavedFavoris(prev => [...prev, newFav]);
+  }, []);
 
   if (loading) {
     return (
@@ -43,10 +80,10 @@ export default function AriaApp() {
         </div>
         <div className="app-content">
           <div style={{ display: currentPage === "questions" ? "block" : "none" }}>
-            <Questions id_magasin={user.id_magasin} user_id={user.id} />
+            <Questions id_magasin={user.id_magasin} user_id={user.id} onSaveFavori={handleSaveFavori} />
           </div>
           <div style={{ display: currentPage === "dashboards" ? "block" : "none" }}>
-            <Dashboards id_magasin={user.id_magasin} user_id={user.id} />
+            <Dashboards id_magasin={user.id_magasin} user_id={user.id} savedFavoris={savedFavoris} />
           </div>
           {currentPage === "emails" && (
             <div>

@@ -1,13 +1,16 @@
 /**
  * Dashboards.tsx — Tableaux de bord avec drag & drop
  */
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Favori, AskResult, ask } from "../lib/api";
 import Chart from "../components/Chart";
+
+import type { SavedFavori } from "../AriaApp";
 
 interface DashboardsProps {
   id_magasin: string;
   user_id: string;
+  savedFavoris?: SavedFavori[];
 }
 
 // Icônes SVG
@@ -36,13 +39,27 @@ const DEMO_FAVORIS: (Favori & { cat: string; viz: string })[] = [
   { titre: "Congés par salarié", question: "congés par salarié et par an", sql: "", viz_config: {}, cat: "absence", viz: "barres" },
   { titre: "Rentabilité chantier", question: "rentabilité par chantier ce mois", sql: "", viz_config: {}, cat: "chantier", viz: "tableau" },
   { titre: "Évolution heures par mois", question: "heures travaillées par mois cette année", sql: "", viz_config: {}, cat: "equipe", viz: "ligne" },
+  { titre: "Salariés actifs", question: "combien de salariés actifs", sql: "", viz_config: {}, cat: "equipe", viz: "kpi" },
+  { titre: "Heures ce mois", question: "total heures travaillées ce mois", sql: "", viz_config: {}, cat: "equipe", viz: "kpi" },
+  { titre: "Coût de revient", question: "coût de revient total ce mois", sql: "", viz_config: {}, cat: "equipe", viz: "kpi" },
+  { titre: "Absents ce mois", question: "combien de salariés absents ce mois", sql: "", viz_config: {}, cat: "absence", viz: "kpi" },
 ];
 
-const CATEGORIES = [
+const FILTER_CATEGORIES = [
   { id: "all", label: "Tous" },
   { id: "equipe", label: "Équipe & RH" },
   { id: "chantier", label: "Chantiers" },
   { id: "absence", label: "Absences" },
+  { id: "finance", label: "Finances" },
+  { id: "general", label: "Général" },
+];
+
+const EDIT_CATEGORIES = [
+  { id: "equipe", label: "Équipe & RH" },
+  { id: "chantier", label: "Chantiers" },
+  { id: "absence", label: "Absences" },
+  { id: "finance", label: "Finances" },
+  { id: "general", label: "Général" },
 ];
 
 interface DashboardData {
@@ -58,7 +75,7 @@ interface CellData {
   loading?: boolean;
 }
 
-export default function Dashboards({ id_magasin, user_id }: DashboardsProps) {
+export default function Dashboards({ id_magasin, user_id, savedFavoris = [] }: DashboardsProps) {
   const [dashboards, setDashboards] = useState<DashboardData[]>([
     { id: "db1", nom: "Suivi équipe", cells: [null, null, null, null] },
   ]);
@@ -71,9 +88,17 @@ export default function Dashboards({ id_magasin, user_id }: DashboardsProps) {
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const dragFavRef = useRef<string | null>(null);
   const dragCellRef = useRef<number | null>(null);
+  const [editingFav, setEditingFav] = useState<{ question: string; titre: string; cat: string } | null>(null);
+  const [favEdits, setFavEdits] = useState<Record<string, { titre: string; cat: string }>>({}); // question → edits
 
   const db = dashboards.find(d => d.id === activeDb)!;
-  const filteredFavs = DEMO_FAVORIS.filter(f => catFilter === "all" || f.cat === catFilter);
+
+  // Fusionner démo + favoris sauvegardés
+  const allFavoris = [
+    ...DEMO_FAVORIS,
+    ...savedFavoris.map(f => ({ titre: f.titre, question: f.question, sql: f.sql, viz_config: f.viz_config, cat: f.cat, viz: f.viz })),
+  ];
+  const filteredFavs = allFavoris.filter(f => catFilter === "all" || f.cat === catFilter);
 
   // Exécuter un favori et mettre le résultat dans une cellule
   const executeInCell = async (cellIdx: number, titre: string, question: string) => {
@@ -170,7 +195,7 @@ export default function Dashboards({ id_magasin, user_id }: DashboardsProps) {
         </div>
         {/* Boutons catégorie */}
         <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
-          {CATEGORIES.map(c => (
+          {FILTER_CATEGORIES.map(c => (
             <button
               key={c.id}
               onClick={() => setCatFilter(c.id)}
@@ -188,12 +213,17 @@ export default function Dashboards({ id_magasin, user_id }: DashboardsProps) {
         </div>
         {/* Chips favoris */}
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-          {filteredFavs.map((fav, i) => (
+          {filteredFavs.map((fav, i) => {
+            // Trouver l'index dans allFavoris pour l'édition
+            const realIdx = allFavoris.indexOf(fav);
+            const isUserFav = realIdx >= DEMO_FAVORIS.length;
+            return (
             <div
               key={i}
               draggable
               onDragStart={() => { dragFavRef.current = fav.question; }}
               onDragEnd={() => { dragFavRef.current = null; }}
+              onDoubleClick={() => { if (isUserFav) setEditingFav({ idx: realIdx - DEMO_FAVORIS.length, titre: fav.titre, cat: fav.cat }); }}
               style={{
                 display: "flex", alignItems: "center", gap: 6, padding: "6px 14px", borderRadius: 8,
                 background: "#f0f7f5", border: "1.5px solid #d0e8e2", fontSize: 12, fontWeight: 500,
@@ -205,7 +235,8 @@ export default function Dashboards({ id_magasin, user_id }: DashboardsProps) {
               <Ico d={vizIcons[fav.viz] || vizIcons.tableau} size={13} color="#3AA48A" />
               {fav.titre}
             </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
@@ -291,6 +322,20 @@ export default function Dashboards({ id_magasin, user_id }: DashboardsProps) {
                   </div>
                 ) : cell.result?.data && cell.result.data.length > 0 ? (
                   (() => {
+                    // KPI : 1 seule ligne, 1-2 colonnes → gros chiffre centré
+                    if (cell.result!.data.length === 1 && cell.result!.columns.length <= 2) {
+                      const lastCol = cell.result!.columns[cell.result!.columns.length - 1];
+                      const val = cell.result!.data[0][lastCol];
+                      return (
+                        <div style={{ textAlign: "center", padding: 24 }}>
+                          <div style={{ fontSize: 40, fontWeight: 800, color: "#3AA48A", fontVariantNumeric: "tabular-nums" }}>
+                            {typeof val === "number" ? val.toLocaleString("fr-FR") : val}
+                          </div>
+                          <div style={{ fontSize: 12, color: "#4a7068", marginTop: 6 }}>{lastCol.replace(/_/g, " ")}</div>
+                        </div>
+                      );
+                    }
+                    // Graphique ou tableau
                     let vt = cell.result!.viz_config?.type_viz || "table";
                     const row0 = cell.result!.data[0] || {};
                     const cols = cell.result!.columns;
@@ -343,6 +388,9 @@ export default function Dashboards({ id_magasin, user_id }: DashboardsProps) {
             /* Zone drop vide */
             <div
               key={idx}
+              style={{ position: "relative" }}
+            >
+            <div
               onDragOver={e => { e.preventDefault(); (e.currentTarget).style.borderColor = "#3AA48A"; (e.currentTarget).style.background = "#e8f4f1"; (e.currentTarget).style.color = "#3AA48A"; }}
               onDragLeave={e => { (e.currentTarget).style.borderColor = "#d0e8e2"; (e.currentTarget).style.background = "transparent"; (e.currentTarget).style.color = "#8ab8b0"; }}
               onDrop={e => {
@@ -352,7 +400,7 @@ export default function Dashboards({ id_magasin, user_id }: DashboardsProps) {
                 (e.currentTarget).style.color = "#8ab8b0";
                 // Drop d'un favori
                 if (dragFavRef.current) {
-                  const fav = DEMO_FAVORIS.find(f => f.question === dragFavRef.current);
+                  const fav = allFavoris.find(f => f.question === dragFavRef.current);
                   if (fav) executeInCell(idx, fav.titre, fav.question);
                 }
                 // Drop d'une cellule (swap)
@@ -368,6 +416,16 @@ export default function Dashboards({ id_magasin, user_id }: DashboardsProps) {
             >
               <Ico d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18" size={28} color="#d0e8e2" />
               Glissez un favori ici
+            </div>
+            {/* Bouton supprimer zone vide */}
+            {db.cells.length > 1 && (
+              <span
+                onClick={() => setDashboards(prev => prev.map(d => d.id !== activeDb ? d : { ...d, cells: d.cells.filter((_, ci) => ci !== idx) }))}
+                style={{ position: "absolute", top: 6, right: 8, fontSize: 12, color: "#d0e8e2", cursor: "pointer", opacity: 0.5, transition: "all .15s" }}
+                onMouseOver={e => { (e.currentTarget).style.opacity = "1"; (e.currentTarget).style.color = "#d94040"; }}
+                onMouseOut={e => { (e.currentTarget).style.opacity = "0.5"; (e.currentTarget).style.color = "#d0e8e2"; }}
+              >✕</span>
+            )}
             </div>
           )
         ))}
@@ -388,6 +446,64 @@ export default function Dashboards({ id_magasin, user_id }: DashboardsProps) {
           Ajouter une zone
         </div>
       </div>
+
+      {/* Modal édition favori */}
+      {editingFav && (
+        <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(26,48,48,0.4)", zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center" }}
+          onClick={() => setEditingFav(null)}
+        >
+          <div style={{ background: "#fff", borderRadius: 16, padding: 28, width: 420, boxShadow: "0 20px 60px rgba(0,0,0,.15)" }}
+            onClick={e => e.stopPropagation()}
+          >
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1a3030", marginBottom: 16, display: "flex", alignItems: "center", gap: 8 }}>
+              <Ico d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" size={18} color="#3AA48A" />
+              Modifier le favori
+            </h3>
+
+            <label style={{ fontSize: 13, fontWeight: 600, display: "block", marginBottom: 6, color: "#1a3030" }}>Nom</label>
+            <input
+              type="text"
+              value={editingFav.titre}
+              onChange={e => setEditingFav({ ...editingFav, titre: e.target.value })}
+              autoFocus
+              style={{ width: "100%", padding: "10px 14px", border: "1.5px solid #3AA48A", borderRadius: 10, fontSize: 14, fontFamily: "inherit", outline: "none", marginBottom: 16, color: "#1a3030" }}
+            />
+
+            <label style={{ fontSize: 13, fontWeight: 600, display: "block", marginBottom: 8, color: "#1a3030" }}>Catégorie</label>
+            <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 20 }}>
+              {EDIT_CATEGORIES.map(c => (
+                <button
+                  key={c.id}
+                  onClick={() => setEditingFav({ ...editingFav, cat: c.id })}
+                  style={{
+                    padding: "7px 14px", borderRadius: 8, fontSize: 12, fontWeight: 600, fontFamily: "inherit",
+                    border: `2px solid ${editingFav.cat === c.id ? "#3AA48A" : "#d0e8e2"}`,
+                    background: editingFav.cat === c.id ? "#3AA48A" : "#fff",
+                    color: editingFav.cat === c.id ? "#fff" : "#4a7068",
+                    cursor: "pointer",
+                  }}
+                >{c.label}</button>
+              ))}
+            </div>
+
+            <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
+              <button onClick={() => setEditingFav(null)}
+                style={{ padding: "8px 20px", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", border: "1px solid #d0e8e2", background: "#fff", color: "#4a7068" }}
+              >Annuler</button>
+              <button onClick={() => {
+                // Mettre à jour le favori sauvegardé
+                if (savedFavoris && editingFav.idx >= 0 && editingFav.idx < savedFavoris.length) {
+                  savedFavoris[editingFav.idx].titre = editingFav.titre;
+                  savedFavoris[editingFav.idx].cat = editingFav.cat;
+                }
+                setEditingFav(null);
+              }}
+                style={{ padding: "8px 20px", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", border: "none", background: "#3AA48A", color: "#fff" }}
+              >Enregistrer</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Modal confirmation suppression */}
       {confirmDelete && (
