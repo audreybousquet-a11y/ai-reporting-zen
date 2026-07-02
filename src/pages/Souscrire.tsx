@@ -4,6 +4,20 @@ import { CreditCard, Mail, Loader2, ArrowLeft, PartyPopper, Lock, Construction, 
 import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
+
+const API_URL = "https://dev.ar-ia.fr";
+let stripePromise: ReturnType<typeof loadStripe> | null = null;
+
+async function getStripe() {
+  if (!stripePromise) {
+    const res = await fetch(`${API_URL}/api/stripe-config`);
+    const { publishableKey } = await res.json();
+    stripePromise = loadStripe(publishableKey);
+  }
+  return stripePromise;
+}
 
 /* ── Gate mot de passe (même que Tarifs) ────────────────────────────────── */
 
@@ -94,6 +108,57 @@ const SOURCES_OPTIONS = [
   { id: "pennylane", nom: "Pennylane", prix: 10 },
 ];
 
+/* ── Composant formulaire Stripe Elements ─────────────────────────────── */
+
+function CheckoutForm({ totalMois, nbUsersTotal, lignes, onSuccess, onError }: {
+  totalMois: number;
+  nbUsersTotal: number;
+  lignes: LicenceLine[];
+  onSuccess: (data: any) => void;
+  onError: (msg: string) => void;
+}) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!stripe || !elements) return;
+
+    setLoading(true);
+    onError("");
+
+    const { error, paymentIntent } = await stripe.confirmPayment({
+      elements,
+      confirmParams: { return_url: window.location.href },
+      redirect: "if_required",
+    });
+
+    if (error) {
+      onError(error.message || "Erreur de paiement");
+      setLoading(false);
+    } else if (paymentIntent?.status === "succeeded") {
+      onSuccess({ paymentIntentId: paymentIntent.id });
+    } else {
+      onError("Le paiement n'a pas abouti. Veuillez réessayer.");
+      setLoading(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <PaymentElement className="mb-6" />
+      <Button size="lg" className="w-full" type="submit" disabled={!stripe || loading}>
+        {loading ? (
+          <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Paiement en cours...</>
+        ) : (
+          <><CreditCard className="h-4 w-4 mr-2" /> Payer {totalMois} EUR HT / mois</>
+        )}
+      </Button>
+    </form>
+  );
+}
+
 type Step = "form" | "payment" | "processing" | "success";
 
 type LicenceLine = { formule: FormulaId; nb: number };
@@ -125,6 +190,8 @@ const Souscrire = () => {
   const [telephone, setTelephone] = useState("");
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState("");
+  const [clientSecret, setClientSecret] = useState("");
+  const [stripeInstance, setStripeInstance] = useState<any>(null);
 
   const nbUsersTotal = lignes.reduce((sum, l) => sum + l.nb, 0);
   // Connecteurs = prix fixe par entreprise
@@ -136,26 +203,64 @@ const Souscrire = () => {
     setOptions(prev => prev.includes(id) ? prev.filter(o => o !== id) : [...prev, id]);
   };
 
-  const handleSubscribe = async () => {
-    setStep("processing");
+  const handleGoToPayment = async () => {
     setError("");
+    setStep("processing");
     try {
-      const resp = await fetch("https://dev.ar-ia.fr/api/subscribe", {
+      // Créer le PaymentIntent côté serveur
+      const resp = await fetch(`${API_URL}/api/create-payment-intent`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prenom, nom, email, entreprise, telephone, lignes, nb_users: nbUsersTotal, formule: lignes[0]?.formule || "mid", options }),
+        body: JSON.stringify({ prenom, nom, email, entreprise, telephone, lignes, options }),
       });
       const data = await resp.json();
-      if (data.success) {
-        setResult(data);
-        setStep("success");
-      } else {
-        setError(data.error || "Erreur lors de la souscription");
+      if (data.clientSecret) {
+        setClientSecret(data.clientSecret);
+        const s = await getStripe();
+        setStripeInstance(s);
         setStep("payment");
+      } else {
+        setError(data.error || "Erreur lors de la création du paiement");
+        setStep("form");
       }
     } catch (e) {
       setError("Erreur de connexion. Veuillez réessayer.");
-      setStep("payment");
+      setStep("form");
+    }
+  };
+
+  const handlePaymentSuccess = async (data: any) => {
+    setStep("processing");
+    try {
+      // Le webhook Stripe crée le compte automatiquement.
+      // On attend un peu puis on affiche le succès.
+      // En mode test, on appelle /api/subscribe directement comme fallback.
+      const resp = await fetch(`${API_URL}/api/subscribe`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          prenom, nom, email, entreprise, telephone, lignes,
+          nb_users: nbUsersTotal,
+          formule: lignes[0]?.formule || "mid",
+          options,
+          stripe_payment_intent: data.paymentIntentId,
+        }),
+      });
+      const result = await resp.json();
+      if (result.success) {
+        setResult(result);
+        setStep("success");
+      } else if (resp.status === 409) {
+        // Compte déjà créé par le webhook
+        setResult({ email, password: "(envoyé par email)" });
+        setStep("success");
+      } else {
+        setError(result.error || "Erreur lors de la création du compte");
+        setStep("form");
+      }
+    } catch (e) {
+      setError("Paiement validé mais erreur de création de compte. Contactez-nous.");
+      setStep("form");
     }
   };
 
@@ -293,15 +398,15 @@ const Souscrire = () => {
                 </div>
 
                 <Button size="lg" className="w-full" disabled={!prenom || !nom || !email || !entreprise}
-                  onClick={() => setStep("payment")}>
+                  onClick={handleGoToPayment}>
                   Continuer vers le paiement
                 </Button>
               </div>
             </div>
           )}
 
-          {/* ── Étape 2 : Paiement (simulé) ───────────────────────── */}
-          {step === "payment" && (
+          {/* ── Étape 2 : Paiement Stripe Elements ────────────────── */}
+          {step === "payment" && clientSecret && stripeInstance && (
             <div>
               <button onClick={() => setStep("form")} className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary mb-6">
                 <ArrowLeft className="h-4 w-4" /> Modifier mes informations
@@ -319,35 +424,15 @@ const Souscrire = () => {
                   <h3 className="font-semibold text-foreground">Informations de paiement</h3>
                 </div>
 
-                {/* Simulation Stripe */}
-                <div className="space-y-4 mb-6">
-                  <div>
-                    <label className="block text-sm font-medium text-foreground mb-1">Numéro de carte</label>
-                    <input defaultValue="4242 4242 4242 4242" disabled
-                      className="w-full rounded-lg border border-input bg-muted/50 px-3 py-2.5 text-sm text-muted-foreground" />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-foreground mb-1">Expiration</label>
-                      <input defaultValue="12/28" disabled
-                        className="w-full rounded-lg border border-input bg-muted/50 px-3 py-2.5 text-sm text-muted-foreground" />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-foreground mb-1">CVC</label>
-                      <input defaultValue="123" disabled
-                        className="w-full rounded-lg border border-input bg-muted/50 px-3 py-2.5 text-sm text-muted-foreground" />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 mb-6 text-sm text-amber-700">
-                  <strong>Mode test</strong> — Aucun paiement réel ne sera effectué. Le compte sera créé immédiatement.
-                </div>
-
-                <Button size="lg" className="w-full" onClick={handleSubscribe}>
-                  <CreditCard className="h-4 w-4 mr-2" />
-                  Valider et créer mon compte ({totalMois} EUR HT / mois)
-                </Button>
+                <Elements stripe={stripeInstance} options={{ clientSecret, appearance: { theme: "stripe", variables: { colorPrimary: "#3AA48A" } } }}>
+                  <CheckoutForm
+                    totalMois={totalMois}
+                    nbUsersTotal={nbUsersTotal}
+                    lignes={lignes}
+                    onSuccess={handlePaymentSuccess}
+                    onError={setError}
+                  />
+                </Elements>
               </div>
 
               <p className="text-xs text-muted-foreground text-center mt-4">
