@@ -84,7 +84,7 @@ interface CellData {
 
 export default function Dashboards({ id_magasin, user_id, savedFavoris = [], onNavigate, onSetQuestion, onDeleteFavori, onEditFavori }: DashboardsProps) {
   const [dashboards, setDashboards] = useState<DashboardData[]>([
-    { id: "db1", nom: "Suivi équipe", cells: [null, null, null, null], sizes: ["medium", "medium", "medium", "medium"] },
+    { id: "db1", nom: "Suivi équipe", cells: [null, null, null, null, null, null, null], sizes: ["small", "small", "small", "small", "medium", "medium", "large"] },
   ]);
   const [showSizeMenu, setShowSizeMenu] = useState(false);
   const [activeDb, setActiveDb] = useState("db1");
@@ -96,7 +96,8 @@ export default function Dashboards({ id_magasin, user_id, savedFavoris = [], onN
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const dragFavRef = useRef<string | null>(null);
   const dragCellRef = useRef<number | null>(null);
-  const dragWithZone = useRef(false); // ctrl+drag = déplace la zone entière
+  const dragWithZone = useRef(false);
+  const [dropIndicator, setDropIndicator] = useState<{ idx: number; side: "before" | "after" } | null>(null);
   const [editingFav, setEditingFav] = useState<{ idx: number; question: string; titre: string; cat: string } | null>(null);
 
   const db = dashboards.find(d => d.id === activeDb)!;
@@ -161,6 +162,21 @@ export default function Dashboards({ id_magasin, user_id, savedFavoris = [], onN
     }));
   };
 
+  // Insérer une cellule à une position précise (au lieu de swap)
+  const insertCellAt = (fromIdx: number, toIdx: number, side: "before" | "after") => {
+    setDashboards(prev => prev.map(d => {
+      if (d.id !== activeDb) return d;
+      const cells = [...d.cells];
+      const sizes = [...(d.sizes || [])];
+      const cell = cells.splice(fromIdx, 1)[0];
+      const size = sizes.splice(fromIdx, 1)[0];
+      const insertAt = side === "before" ? (fromIdx < toIdx ? toIdx - 1 : toIdx) : (fromIdx < toIdx ? toIdx : toIdx + 1);
+      cells.splice(insertAt, 0, cell);
+      sizes.splice(insertAt, 0, size);
+      return { ...d, cells, sizes };
+    }));
+  };
+
   const renameDashboard = (id: string, newName: string) => {
     if (!newName.trim()) return;
     setDashboards(prev => prev.map(d => d.id === id ? { ...d, nom: newName.trim() } : d));
@@ -179,7 +195,7 @@ export default function Dashboards({ id_magasin, user_id, savedFavoris = [], onN
   const createDashboard = () => {
     const id = "db_" + Date.now();
     const nom = newDbName.trim() || "Nouveau dashboard";
-    setDashboards(prev => [...prev, { id, nom, cells: [null, null, null, null], sizes: ["medium", "medium", "medium", "medium"] }]);
+    setDashboards(prev => [...prev, { id, nom, cells: [null, null, null, null, null, null, null], sizes: ["small", "small", "small", "small", "medium", "medium", "large"] }]);
     setActiveDb(id);
     setShowNewModal(false);
     setNewDbName("");
@@ -307,19 +323,32 @@ export default function Dashboards({ id_magasin, user_id, savedFavoris = [], onN
               draggable
               onDragStart={(e) => { dragCellRef.current = idx; dragWithZone.current = e.ctrlKey; }}
               onDragEnd={() => { dragCellRef.current = null; dragWithZone.current = false; }}
-              onDragOver={e => { e.preventDefault(); (e.currentTarget).style.border = "2px solid #3AA48A"; }}
-              onDragLeave={e => { (e.currentTarget).style.border = "1px solid #d0e8e2"; }}
+              onDragOver={e => {
+                e.preventDefault();
+                if (dragCellRef.current !== null && dragCellRef.current !== idx) {
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  const midX = rect.left + rect.width / 2;
+                  const side = e.clientX < midX ? "before" : "after";
+                  setDropIndicator({ idx, side });
+                }
+              }}
+              onDragLeave={() => { setDropIndicator(null); }}
               onDrop={e => {
                 e.preventDefault();
-                (e.currentTarget).style.border = "1px solid #d0e8e2";
+                setDropIndicator(null);
                 if (dragCellRef.current !== null && dragCellRef.current !== idx) {
-                  swapCells(dragCellRef.current, idx);
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  const midX = rect.left + rect.width / 2;
+                  const side = e.clientX < midX ? "before" : "after";
+                  insertCellAt(dragCellRef.current, idx, side);
                 }
               }}
               style={{
                 background: "#fff", border: "1px solid #d0e8e2", borderRadius: 12, overflow: "hidden", cursor: "grab", transition: "border .2s",
-                display: "flex", flexDirection: "column", gridColumn: `span ${span}`,
+                display: "flex", flexDirection: "column", gridColumn: `span ${span}`, position: "relative",
                 alignSelf: (cell.result?.data?.length === 1 && (cell.result?.columns?.length || 0) <= 2) ? "start" : "stretch",
+                borderLeft: dropIndicator?.idx === idx && dropIndicator?.side === "before" ? "4px solid #3AA48A" : undefined,
+                borderRight: dropIndicator?.idx === idx && dropIndicator?.side === "after" ? "4px solid #3AA48A" : undefined,
               }}
             >
               {/* Header cellule */}
@@ -414,19 +443,32 @@ export default function Dashboards({ id_magasin, user_id, savedFavoris = [], onN
               draggable
               onDragStart={(e) => { dragCellRef.current = idx; dragWithZone.current = e.ctrlKey; }}
               onDragEnd={() => { dragCellRef.current = null; dragWithZone.current = false; }}
-              onDragOver={e => { e.preventDefault(); (e.currentTarget).style.borderColor = "#3AA48A"; (e.currentTarget).style.background = "#e8f4f1"; (e.currentTarget).style.color = "#3AA48A"; }}
-              onDragLeave={e => { (e.currentTarget).style.borderColor = "#d0e8e2"; (e.currentTarget).style.background = "transparent"; (e.currentTarget).style.color = "#8ab8b0"; }}
+              onDragOver={e => {
+                e.preventDefault();
+                (e.currentTarget).style.borderColor = "#3AA48A";
+                (e.currentTarget).style.background = "#e8f4f1";
+                (e.currentTarget).style.color = "#3AA48A";
+                if (dragCellRef.current !== null && dragCellRef.current !== idx) {
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  const midX = rect.left + rect.width / 2;
+                  setDropIndicator({ idx, side: e.clientX < midX ? "before" : "after" });
+                }
+              }}
+              onDragLeave={e => { (e.currentTarget).style.borderColor = "#d0e8e2"; (e.currentTarget).style.background = "transparent"; (e.currentTarget).style.color = "#8ab8b0"; setDropIndicator(null); }}
               onDrop={e => {
                 e.preventDefault();
                 (e.currentTarget).style.borderColor = "#d0e8e2";
                 (e.currentTarget).style.background = "transparent";
                 (e.currentTarget).style.color = "#8ab8b0";
+                setDropIndicator(null);
                 if (dragFavRef.current) {
                   const fav = allFavoris.find(f => f.question === dragFavRef.current);
                   if (fav) executeInCell(idx, fav.titre, fav.question);
                 }
                 if (dragCellRef.current !== null && dragCellRef.current !== idx) {
-                  swapCells(dragCellRef.current, idx);
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  const midX = rect.left + rect.width / 2;
+                  insertCellAt(dragCellRef.current, idx, e.clientX < midX ? "before" : "after");
                 }
               }}
               style={{
@@ -434,6 +476,8 @@ export default function Dashboards({ id_magasin, user_id, savedFavoris = [], onN
                 display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
                 gap: 6, color: "#8ab8b0", fontSize: 13, transition: "all .2s", cursor: "grab",
                 gridColumn: `span ${span}`,
+                borderLeft: dropIndicator?.idx === idx && dropIndicator?.side === "before" ? "4px solid #3AA48A" : undefined,
+                borderRight: dropIndicator?.idx === idx && dropIndicator?.side === "after" ? "4px solid #3AA48A" : undefined,
               }}
             >
               <Ico d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18" size={28} color="#d0e8e2" />
