@@ -31,7 +31,7 @@ export default function Chart({ data, columns, vizType, height = 220 }: ChartPro
   const isNum = (v: any) => typeof v === "number" || (typeof v === "string" && !isNaN(Number(v)) && v.trim() !== "");
   const xCol = columns.find(c => !isNum(data[0][c])) || columns[0];
   const valueCols = columns.filter(c => c !== xCol && isNum(data[0][c]));
-  if (valueCols.length === 0) return null;
+  if (valueCols.length === 0 || data.length === 0) return null;
 
   const chartData = data.slice(0, 20).map(row => {
     const d: Record<string, any> = { [xCol]: row[xCol] };

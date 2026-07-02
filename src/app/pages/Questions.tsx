@@ -22,7 +22,13 @@ const CATEGORIES = [
   { id: "general", label: "Général" },
 ];
 
-function SaveFavoriModal({ question, onSave, onClose }: { question: string; onSave: (nom: string, cat: string) => void; onClose: () => void }) {
+function SaveFavoriModal({ question, isFromFavori, onSave, onOverwrite, onClose }: {
+  question: string;
+  isFromFavori?: boolean;
+  onSave: (nom: string, cat: string) => void;
+  onOverwrite?: () => void;
+  onClose: () => void;
+}) {
   const [nom, setNom] = useState(question);
   const [cat, setCat] = useState("equipe");
 
@@ -73,9 +79,14 @@ function SaveFavoriModal({ question, onSave, onClose }: { question: string; onSa
           <button onClick={onClose}
             style={{ padding: "8px 20px", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", border: "1px solid #d0e8e2", background: "#fff", color: "#4a7068" }}
           >Annuler</button>
+          {isFromFavori && onOverwrite && (
+            <button onClick={onOverwrite}
+              style={{ padding: "8px 20px", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", border: "2px solid #c47a20", background: "#fff", color: "#c47a20" }}
+            >Écraser le favori</button>
+          )}
           <button onClick={() => { if (nom.trim()) onSave(nom.trim(), cat); }}
             style={{ padding: "8px 20px", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", border: "none", background: "#3AA48A", color: "#fff" }}
-          >Sauvegarder</button>
+          >{isFromFavori ? "Dupliquer" : "Sauvegarder"}</button>
         </div>
       </div>
     </div>
@@ -198,11 +209,19 @@ function ResultCard({ result, onSaveFavori }: { result: AskResult & { ts: string
       {showSaveModal && (
         <SaveFavoriModal
           question={result.question}
+          isFromFavori={fromFavori}
           onClose={() => setShowSaveModal(false)}
           onSave={(nom, cat) => {
             setSaved(true);
             setShowSaveModal(false);
+            setFromFavori(false);
             if (onSaveFavori) onSaveFavori(nom, cat, result);
+          }}
+          onOverwrite={() => {
+            setSaved(true);
+            setShowSaveModal(false);
+            setFromFavori(false);
+            if (onSaveFavori) onSaveFavori(result.question, "", result);
           }}
         />
       )}
@@ -212,10 +231,12 @@ function ResultCard({ result, onSaveFavori }: { result: AskResult & { ts: string
 
 export default function Questions({ id_magasin, user_id, onSaveFavori, questionPrefill, onClearPrefill }: QuestionsProps) {
   const [question, setQuestion] = useState("");
+  const [fromFavori, setFromFavori] = useState(false);
 
   // Pré-remplir la question depuis les dashboards
   if (questionPrefill && question !== questionPrefill) {
     setQuestion(questionPrefill);
+    setFromFavori(true);
     if (onClearPrefill) onClearPrefill();
   }
   const [loading, setLoading] = useState(false);
