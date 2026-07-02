@@ -300,7 +300,11 @@ export default function Dashboards({ id_magasin, user_id, savedFavoris = [] }: D
                   swapCells(dragCellRef.current, idx);
                 }
               }}
-              style={{ background: "#fff", border: "1px solid #d0e8e2", borderRadius: 12, overflow: "hidden", cursor: "grab", transition: "border .2s" }}
+              style={{
+                background: "#fff", border: "1px solid #d0e8e2", borderRadius: 12, overflow: "hidden", cursor: "grab", transition: "border .2s",
+                display: "flex", flexDirection: "column",
+                alignSelf: (cell.result?.data?.length === 1 && (cell.result?.columns?.length || 0) <= 2) ? "start" : "stretch",
+              }}
             >
               {/* Header cellule */}
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", borderBottom: "1px solid #e8f4f1" }}>
@@ -314,7 +318,7 @@ export default function Dashboards({ id_magasin, user_id, savedFavoris = [] }: D
                 >✕</button>
               </div>
               {/* Body cellule */}
-              <div style={{ padding: 14 }}>
+              <div style={{ padding: 14, height: cell.result?.data?.length === 1 && cell.result?.columns?.length <= 2 ? "auto" : 320, overflow: "auto", display: "flex", flexDirection: "column" }}>
                 {cell.loading ? (
                   <div style={{ textAlign: "center", padding: 30, color: "#8ab8b0" }}>
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3AA48A" strokeWidth="2" style={{ animation: "spin 1s linear infinite" }}><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
