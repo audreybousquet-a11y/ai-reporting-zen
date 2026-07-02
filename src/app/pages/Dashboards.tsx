@@ -11,6 +11,10 @@ interface DashboardsProps {
   id_magasin: string;
   user_id: string;
   savedFavoris?: SavedFavori[];
+  onNavigate?: (page: string) => void;
+  onSetQuestion?: (question: string) => void;
+  onDeleteFavori?: (idx: number) => void;
+  onEditFavori?: (idx: number, titre: string, cat: string) => void;
 }
 
 // Icônes SVG
@@ -62,10 +66,13 @@ const EDIT_CATEGORIES = [
   { id: "general", label: "Général" },
 ];
 
+type CellSize = "small" | "medium" | "large"; // 1/4, 1/2, full width
+
 interface DashboardData {
   id: string;
   nom: string;
   cells: (CellData | null)[];
+  sizes: CellSize[];
 }
 
 interface CellData {
@@ -75,10 +82,11 @@ interface CellData {
   loading?: boolean;
 }
 
-export default function Dashboards({ id_magasin, user_id, savedFavoris = [] }: DashboardsProps) {
+export default function Dashboards({ id_magasin, user_id, savedFavoris = [], onNavigate, onSetQuestion, onDeleteFavori, onEditFavori }: DashboardsProps) {
   const [dashboards, setDashboards] = useState<DashboardData[]>([
-    { id: "db1", nom: "Suivi équipe", cells: [null, null, null, null] },
+    { id: "db1", nom: "Suivi équipe", cells: [null, null, null, null], sizes: ["medium", "medium", "medium", "medium"] },
   ]);
+  const [showSizeMenu, setShowSizeMenu] = useState(false);
   const [activeDb, setActiveDb] = useState("db1");
   const [catFilter, setCatFilter] = useState("all");
   const [showNewModal, setShowNewModal] = useState(false);
@@ -88,8 +96,7 @@ export default function Dashboards({ id_magasin, user_id, savedFavoris = [] }: D
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const dragFavRef = useRef<string | null>(null);
   const dragCellRef = useRef<number | null>(null);
-  const [editingFav, setEditingFav] = useState<{ question: string; titre: string; cat: string } | null>(null);
-  const [favEdits, setFavEdits] = useState<Record<string, { titre: string; cat: string }>>({}); // question → edits
+  const [editingFav, setEditingFav] = useState<{ idx: number; question: string; titre: string; cat: string } | null>(null);
 
   const db = dashboards.find(d => d.id === activeDb)!;
 
@@ -140,8 +147,10 @@ export default function Dashboards({ id_magasin, user_id, savedFavoris = [] }: D
     setDashboards(prev => prev.map(d => {
       if (d.id !== activeDb) return d;
       const cells = [...d.cells];
+      const sizes = [...(d.sizes || [])];
       [cells[from], cells[to]] = [cells[to], cells[from]];
-      return { ...d, cells };
+      [sizes[from], sizes[to]] = [sizes[to], sizes[from]];
+      return { ...d, cells, sizes };
     }));
   };
 
@@ -163,7 +172,7 @@ export default function Dashboards({ id_magasin, user_id, savedFavoris = [] }: D
   const createDashboard = () => {
     const id = "db_" + Date.now();
     const nom = newDbName.trim() || "Nouveau dashboard";
-    setDashboards(prev => [...prev, { id, nom, cells: [null, null, null, null] }]);
+    setDashboards(prev => [...prev, { id, nom, cells: [null, null, null, null], sizes: ["medium", "medium", "medium", "medium"] }]);
     setActiveDb(id);
     setShowNewModal(false);
     setNewDbName("");
@@ -214,16 +223,14 @@ export default function Dashboards({ id_magasin, user_id, savedFavoris = [] }: D
         {/* Chips favoris */}
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           {filteredFavs.map((fav, i) => {
-            // Trouver l'index dans allFavoris pour l'édition
             const realIdx = allFavoris.indexOf(fav);
-            const isUserFav = realIdx >= DEMO_FAVORIS.length;
             return (
             <div
               key={i}
               draggable
               onDragStart={() => { dragFavRef.current = fav.question; }}
               onDragEnd={() => { dragFavRef.current = null; }}
-              onDoubleClick={() => { if (isUserFav) setEditingFav({ idx: realIdx - DEMO_FAVORIS.length, titre: fav.titre, cat: fav.cat }); }}
+              onDoubleClick={() => setEditingFav({ idx: realIdx, question: fav.question, titre: fav.titre, cat: fav.cat })}
               style={{
                 display: "flex", alignItems: "center", gap: 6, padding: "6px 14px", borderRadius: 8,
                 background: "#f0f7f5", border: "1.5px solid #d0e8e2", fontSize: 12, fontWeight: 500,
@@ -281,10 +288,12 @@ export default function Dashboards({ id_magasin, user_id, savedFavoris = [] }: D
         ))}
       </div>
 
-      {/* Grille du dashboard */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 14, minHeight: 300 }}>
-        {db.cells.map((cell, idx) => (
-          cell ? (
+      {/* Grille du dashboard — tailles dynamiques */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14, minHeight: 300 }}>
+        {db.cells.map((cell, idx) => {
+          const size = db.sizes?.[idx] || "medium";
+          const span = size === "small" ? 1 : size === "medium" ? 2 : 4;
+          return cell ? (
             /* Cellule remplie */
             <div
               key={idx}
@@ -302,7 +311,7 @@ export default function Dashboards({ id_magasin, user_id, savedFavoris = [] }: D
               }}
               style={{
                 background: "#fff", border: "1px solid #d0e8e2", borderRadius: 12, overflow: "hidden", cursor: "grab", transition: "border .2s",
-                display: "flex", flexDirection: "column",
+                display: "flex", flexDirection: "column", gridColumn: `span ${span}`,
                 alignSelf: (cell.result?.data?.length === 1 && (cell.result?.columns?.length || 0) <= 2) ? "start" : "stretch",
               }}
             >
@@ -408,39 +417,66 @@ export default function Dashboards({ id_magasin, user_id, savedFavoris = [] }: D
                 }
               }}
               style={{
-                border: "2px dashed #d0e8e2", borderRadius: 12, minHeight: 200, position: "relative",
+                border: "2px dashed #d0e8e2", borderRadius: 12, minHeight: size === "small" ? 100 : 200, position: "relative",
                 display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
                 gap: 6, color: "#8ab8b0", fontSize: 13, transition: "all .2s", cursor: "default",
+                gridColumn: `span ${span}`,
               }}
             >
               <Ico d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18" size={28} color="#d0e8e2" />
               Glissez un favori ici
               {db.cells.length > 1 && (
                 <span
-                  onClick={() => setDashboards(prev => prev.map(d => d.id !== activeDb ? d : { ...d, cells: d.cells.filter((_, ci) => ci !== idx) }))}
+                  onClick={() => setDashboards(prev => prev.map(d => d.id !== activeDb ? d : { ...d, cells: d.cells.filter((_, ci) => ci !== idx), sizes: (d.sizes || []).filter((_, ci) => ci !== idx) }))}
                   style={{ position: "absolute", top: 6, right: 8, fontSize: 12, color: "#d0e8e2", cursor: "pointer", opacity: 0.5, transition: "all .15s" }}
                   onMouseOver={e => { (e.currentTarget).style.opacity = "1"; (e.currentTarget).style.color = "#d94040"; }}
                   onMouseOut={e => { (e.currentTarget).style.opacity = "0.5"; (e.currentTarget).style.color = "#d0e8e2"; }}
                 >✕</span>
               )}
             </div>
-          )
-        ))}
-        {/* Bouton ajouter une zone */}
-        <div
-          onClick={() => {
-            setDashboards(prev => prev.map(d => d.id !== activeDb ? d : { ...d, cells: [...d.cells, null] }));
-          }}
-          style={{
-            border: "2px dashed #d0e8e2", borderRadius: 12, minHeight: 80,
-            display: "flex", alignItems: "center", justifyContent: "center",
-            gap: 6, color: "#8ab8b0", fontSize: 13, cursor: "pointer", transition: "all .2s",
-          }}
-          onMouseOver={e => { (e.currentTarget).style.borderColor = "#3AA48A"; (e.currentTarget).style.color = "#3AA48A"; }}
-          onMouseOut={e => { (e.currentTarget).style.borderColor = "#d0e8e2"; (e.currentTarget).style.color = "#8ab8b0"; }}
-        >
-          <Ico d="M12 5v14M5 12h14" size={18} color="currentColor" />
-          Ajouter une zone
+          );
+        })}
+        {/* Bouton ajouter une zone avec choix de taille */}
+        <div style={{ gridColumn: "span 4", position: "relative" }}>
+          <div
+            onClick={() => setShowSizeMenu(!showSizeMenu)}
+            style={{
+              border: "2px dashed #d0e8e2", borderRadius: 12, padding: "16px 0",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              gap: 6, color: "#8ab8b0", fontSize: 13, cursor: "pointer", transition: "all .2s",
+            }}
+            onMouseOver={e => { (e.currentTarget).style.borderColor = "#3AA48A"; (e.currentTarget).style.color = "#3AA48A"; }}
+            onMouseOut={e => { (e.currentTarget).style.borderColor = "#d0e8e2"; (e.currentTarget).style.color = "#8ab8b0"; }}
+          >
+            <Ico d="M12 5v14M5 12h14" size={18} color="currentColor" />
+            Ajouter une zone
+          </div>
+          {showSizeMenu && (
+            <div style={{ position: "absolute", top: "100%", left: "50%", transform: "translateX(-50%)", marginTop: 6, background: "#fff", border: "1px solid #d0e8e2", borderRadius: 10, boxShadow: "0 4px 16px rgba(0,0,0,.1)", padding: 8, display: "flex", gap: 6, zIndex: 10 }}>
+              {([
+                { size: "small" as CellSize, label: "Petite (KPI)", desc: "1/4" },
+                { size: "medium" as CellSize, label: "Moyenne", desc: "1/2" },
+                { size: "large" as CellSize, label: "Grande", desc: "Pleine largeur" },
+              ]).map(opt => (
+                <button key={opt.size}
+                  onClick={() => {
+                    setDashboards(prev => prev.map(d => d.id !== activeDb ? d : { ...d, cells: [...d.cells, null], sizes: [...(d.sizes || []), opt.size] }));
+                    setShowSizeMenu(false);
+                  }}
+                  style={{
+                    padding: "10px 16px", borderRadius: 8, border: "1.5px solid #d0e8e2", background: "#fff",
+                    cursor: "pointer", fontFamily: "inherit", fontSize: 12, textAlign: "center", transition: "all .15s",
+                    minWidth: 100,
+                  }}
+                  onMouseOver={e => { (e.currentTarget).style.borderColor = "#3AA48A"; (e.currentTarget).style.background = "#e8f4f1"; }}
+                  onMouseOut={e => { (e.currentTarget).style.borderColor = "#d0e8e2"; (e.currentTarget).style.background = "#fff"; }}
+                >
+                  <div style={{ fontWeight: 600, color: "#1a3030" }}>{opt.label}</div>
+                  <div style={{ fontSize: 10, color: "#8ab8b0", marginTop: 2 }}>{opt.desc}</div>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
@@ -449,7 +485,7 @@ export default function Dashboards({ id_magasin, user_id, savedFavoris = [] }: D
         <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(26,48,48,0.4)", zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center" }}
           onClick={() => setEditingFav(null)}
         >
-          <div style={{ background: "#fff", borderRadius: 16, padding: 28, width: 420, boxShadow: "0 20px 60px rgba(0,0,0,.15)" }}
+          <div style={{ background: "#fff", borderRadius: 16, padding: 28, width: 440, boxShadow: "0 20px 60px rgba(0,0,0,.15)" }}
             onClick={e => e.stopPropagation()}
           >
             <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1a3030", marginBottom: 16, display: "flex", alignItems: "center", gap: 8 }}>
@@ -463,8 +499,13 @@ export default function Dashboards({ id_magasin, user_id, savedFavoris = [] }: D
               value={editingFav.titre}
               onChange={e => setEditingFav({ ...editingFav, titre: e.target.value })}
               autoFocus
-              style={{ width: "100%", padding: "10px 14px", border: "1.5px solid #3AA48A", borderRadius: 10, fontSize: 14, fontFamily: "inherit", outline: "none", marginBottom: 16, color: "#1a3030" }}
+              style={{ width: "100%", padding: "10px 14px", border: "1.5px solid #3AA48A", borderRadius: 10, fontSize: 14, fontFamily: "inherit", outline: "none", marginBottom: 12, color: "#1a3030" }}
             />
+
+            <label style={{ fontSize: 13, fontWeight: 600, display: "block", marginBottom: 6, color: "#1a3030" }}>Question</label>
+            <div style={{ padding: "10px 14px", border: "1px solid #d0e8e2", borderRadius: 10, fontSize: 13, color: "#4a7068", marginBottom: 16, background: "#f0f7f5" }}>
+              {editingFav.question}
+            </div>
 
             <label style={{ fontSize: 13, fontWeight: 600, display: "block", marginBottom: 8, color: "#1a3030" }}>Catégorie</label>
             <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 20 }}>
@@ -483,19 +524,40 @@ export default function Dashboards({ id_magasin, user_id, savedFavoris = [] }: D
               ))}
             </div>
 
-            <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
-              <button onClick={() => setEditingFav(null)}
-                style={{ padding: "8px 20px", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", border: "1px solid #d0e8e2", background: "#fff", color: "#4a7068" }}
-              >Annuler</button>
+            <div style={{ display: "flex", gap: 8 }}>
+              {/* Modifier = retour Questions avec la question */}
               <button onClick={() => {
-                // Mettre à jour le favori sauvegardé
-                if (savedFavoris && editingFav.idx >= 0 && editingFav.idx < savedFavoris.length) {
-                  savedFavoris[editingFav.idx].titre = editingFav.titre;
-                  savedFavoris[editingFav.idx].cat = editingFav.cat;
+                if (onSetQuestion) onSetQuestion(editingFav.question);
+                if (onNavigate) onNavigate("questions");
+                setEditingFav(null);
+              }}
+                style={{ padding: "8px 16px", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", border: "2px solid #3AA48A", background: "#fff", color: "#3AA48A", display: "flex", alignItems: "center", gap: 6 }}
+              >
+                <Ico d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" size={13} color="#3AA48A" />
+                Modifier
+              </button>
+              {/* Supprimer */}
+              <button onClick={() => {
+                if (onDeleteFavori && editingFav.idx >= DEMO_FAVORIS.length) {
+                  onDeleteFavori(editingFav.idx - DEMO_FAVORIS.length);
                 }
                 setEditingFav(null);
               }}
-                style={{ padding: "8px 20px", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", border: "none", background: "#3AA48A", color: "#fff" }}
+                style={{ padding: "8px 16px", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", border: "1px solid #d94040", background: "#fff", color: "#d94040" }}
+              >Supprimer</button>
+
+              <div style={{ flex: 1 }} />
+              {/* Annuler / Enregistrer */}
+              <button onClick={() => setEditingFav(null)}
+                style={{ padding: "8px 16px", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", border: "1px solid #d0e8e2", background: "#fff", color: "#4a7068" }}
+              >Annuler</button>
+              <button onClick={() => {
+                if (onEditFavori && editingFav.idx >= DEMO_FAVORIS.length) {
+                  onEditFavori(editingFav.idx - DEMO_FAVORIS.length, editingFav.titre, editingFav.cat);
+                }
+                setEditingFav(null);
+              }}
+                style={{ padding: "8px 16px", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", border: "none", background: "#3AA48A", color: "#fff" }}
               >Enregistrer</button>
             </div>
           </div>

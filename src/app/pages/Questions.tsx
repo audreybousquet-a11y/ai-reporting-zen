@@ -10,6 +10,8 @@ interface QuestionsProps {
   id_magasin: string;
   user_id: string;
   onSaveFavori?: (titre: string, cat: string, result: AskResult) => void;
+  questionPrefill?: string;
+  onClearPrefill?: () => void;
 }
 
 const CATEGORIES = [
@@ -208,8 +210,14 @@ function ResultCard({ result, onSaveFavori }: { result: AskResult & { ts: string
   );
 }
 
-export default function Questions({ id_magasin, user_id, onSaveFavori }: QuestionsProps) {
+export default function Questions({ id_magasin, user_id, onSaveFavori, questionPrefill, onClearPrefill }: QuestionsProps) {
   const [question, setQuestion] = useState("");
+
+  // Pré-remplir la question depuis les dashboards
+  if (questionPrefill && question !== questionPrefill) {
+    setQuestion(questionPrefill);
+    if (onClearPrefill) onClearPrefill();
+  }
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<(AskResult & { ts: string })[]>([]);
   const [error, setError] = useState("");
