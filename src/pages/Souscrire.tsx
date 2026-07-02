@@ -207,8 +207,8 @@ const Souscrire = () => {
     setError("");
     setStep("processing");
     try {
-      // Créer le PaymentIntent côté serveur
-      const resp = await fetch(`${API_URL}/api/create-payment-intent`, {
+      // Créer l'abonnement Stripe côté serveur
+      const resp = await fetch(`${API_URL}/api/create-subscription`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prenom, nom, email, entreprise, telephone, lignes, options }),
@@ -424,7 +424,12 @@ const Souscrire = () => {
                   <h3 className="font-semibold text-foreground">Informations de paiement</h3>
                 </div>
 
-                <Elements stripe={stripeInstance} options={{ clientSecret, appearance: { theme: "stripe", variables: { colorPrimary: "#3AA48A" } } }}>
+                <Elements stripe={stripeInstance} options={{
+                  clientSecret,
+                  appearance: { theme: "stripe", variables: { colorPrimary: "#3AA48A" } },
+                  paymentMethodCreation: "manual" as any,
+                  wallets: { link: "never", applePay: "auto", googlePay: "auto" } as any,
+                }}>
                   <CheckoutForm
                     totalMois={totalMois}
                     nbUsersTotal={nbUsersTotal}
