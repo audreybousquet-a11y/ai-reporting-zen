@@ -1,7 +1,7 @@
 /**
  * Questions.tsx — Page de questions en langage naturel
  */
-import { useState, useEffect } from "react";
+import { useState, useRef } from "react";
 import { ask, AskResult } from "../lib/api";
 import Chart from "../components/Chart";
 import logoVert from "../../assets/Logo_vert.png";
@@ -232,14 +232,18 @@ function ResultCard({ result, onSaveFavori }: { result: AskResult & { ts: string
 export default function Questions({ id_magasin, user_id, onSaveFavori, questionPrefill, onClearPrefill }: QuestionsProps) {
   const [question, setQuestion] = useState("");
   const [fromFavori, setFromFavori] = useState(false);
-  const [lastPrefill, setLastPrefill] = useState("");
+  const prefillRef = useRef("");
 
-  // Pré-remplir la question depuis les dashboards
-  if (questionPrefill && questionPrefill !== lastPrefill) {
-    setQuestion(questionPrefill);
-    setFromFavori(true);
-    setLastPrefill(questionPrefill);
+  // Pré-remplir la question depuis les dashboards (via ref pour éviter boucle)
+  if (questionPrefill && questionPrefill !== prefillRef.current) {
+    prefillRef.current = questionPrefill;
+    // On schedule le setState pour le prochain tick
+    setTimeout(() => {
+      setQuestion(questionPrefill);
+      setFromFavori(true);
+    }, 0);
   }
+
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<(AskResult & { ts: string })[]>([]);
   const [error, setError] = useState("");
