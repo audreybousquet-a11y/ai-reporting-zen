@@ -153,7 +153,11 @@ export default function AriaApp() {
       sql: result.sql,
       viz_config: result.viz_config,
     };
-    setSavedFavoris(prev => [...prev, newFav]);
+    setSavedFavoris(prev => {
+      const updated = [...prev, newFav];
+      console.log("[ar.ia] Favori sauvegardé:", newFav.titre, "Total:", updated.length);
+      return updated;
+    });
   }, []);
 
   if (loading) {
