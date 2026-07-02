@@ -30,6 +30,98 @@ export interface SavedFavori {
   viz_config: Record<string, any>;
 }
 
+function BotAssistance() {
+  const [open, setOpen] = useState(false);
+  const [msg, setMsg] = useState("");
+  const [messages, setMessages] = useState<{ from: string; text: string }[]>([
+    { from: "bot", text: "Bonjour ! Je suis l'assistant ar.ia. Comment puis-je vous aider ?" },
+  ]);
+
+  const send = () => {
+    if (!msg.trim()) return;
+    setMessages(prev => [...prev, { from: "user", text: msg }]);
+    const q = msg;
+    setMsg("");
+    // Réponse simulée
+    setTimeout(() => {
+      setMessages(prev => [...prev, { from: "bot", text: `Je comprends votre question sur "${q}". Pour l'instant, essayez de poser cette question directement dans la page Questions !` }]);
+    }, 800);
+  };
+
+  return (
+    <>
+      {/* Bouton flottant */}
+      <div onClick={() => setOpen(!open)}
+        style={{
+          position: "fixed", bottom: 24, right: 24, width: 52, height: 52, borderRadius: "50%",
+          background: "#3AA48A", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center",
+          cursor: "pointer", boxShadow: "0 4px 20px rgba(58,164,138,0.3)", zIndex: 50, transition: "transform .2s",
+          transform: open ? "rotate(45deg)" : "none",
+        }}
+      >
+        {open ? (
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        ) : (
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        )}
+      </div>
+
+      {/* Fenêtre chat */}
+      {open && (
+        <div style={{
+          position: "fixed", bottom: 88, right: 24, width: 360, height: 440,
+          background: "#fff", borderRadius: 16, boxShadow: "0 8px 40px rgba(0,0,0,.15)",
+          display: "flex", flexDirection: "column", zIndex: 50, overflow: "hidden",
+        }}>
+          {/* Header */}
+          <div style={{ padding: "14px 18px", background: "#3AA48A", color: "#fff", display: "flex", alignItems: "center", gap: 10 }}>
+            <div style={{ width: 32, height: 32, borderRadius: 8, background: "rgba(255,255,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 8V4H8M2 14h2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2H2zM22 14h-2a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h2zM6 14v-4a6 6 0 1 1 12 0v4"/></svg>
+            </div>
+            <div>
+              <div style={{ fontWeight: 600, fontSize: 14 }}>Assistant ar.ia</div>
+              <div style={{ fontSize: 11, opacity: 0.8 }}>En ligne</div>
+            </div>
+          </div>
+
+          {/* Messages */}
+          <div style={{ flex: 1, padding: 14, overflowY: "auto", display: "flex", flexDirection: "column", gap: 10 }}>
+            {messages.map((m, i) => (
+              <div key={i} style={{ display: "flex", justifyContent: m.from === "user" ? "flex-end" : "flex-start" }}>
+                <div style={{
+                  maxWidth: "80%", padding: "10px 14px", borderRadius: 12, fontSize: 13, lineHeight: 1.5,
+                  background: m.from === "user" ? "#3AA48A" : "#f0f7f5",
+                  color: m.from === "user" ? "#fff" : "#1a3030",
+                  borderBottomRightRadius: m.from === "user" ? 4 : 12,
+                  borderBottomLeftRadius: m.from === "bot" ? 4 : 12,
+                }}>
+                  {m.text}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Input */}
+          <div style={{ padding: "10px 14px", borderTop: "1px solid #e8f4f1", display: "flex", gap: 8 }}>
+            <input
+              value={msg}
+              onChange={e => setMsg(e.target.value)}
+              onKeyDown={e => e.key === "Enter" && send()}
+              placeholder="Votre message..."
+              style={{ flex: 1, padding: "8px 12px", border: "1.5px solid #d0e8e2", borderRadius: 8, fontSize: 13, fontFamily: "inherit", outline: "none", color: "#1a3030" }}
+            />
+            <button onClick={send}
+              style={{ padding: "8px 14px", borderRadius: 8, background: "#3AA48A", color: "#fff", border: "none", cursor: "pointer", fontSize: 13, fontWeight: 600, fontFamily: "inherit" }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
 export default function AriaApp() {
   const { user, loading, login, logout } = useAuth();
   const [currentPage, setCurrentPage] = useState("questions");
@@ -248,6 +340,9 @@ export default function AriaApp() {
           )}
         </div>
       </div>
+
+      {/* Bot assistance flottant */}
+      <BotAssistance />
     </div>
   );
 }

@@ -392,9 +392,6 @@ export default function Dashboards({ id_magasin, user_id, savedFavoris = [] }: D
             /* Zone drop vide */
             <div
               key={idx}
-              style={{ position: "relative" }}
-            >
-            <div
               onDragOver={e => { e.preventDefault(); (e.currentTarget).style.borderColor = "#3AA48A"; (e.currentTarget).style.background = "#e8f4f1"; (e.currentTarget).style.color = "#3AA48A"; }}
               onDragLeave={e => { (e.currentTarget).style.borderColor = "#d0e8e2"; (e.currentTarget).style.background = "transparent"; (e.currentTarget).style.color = "#8ab8b0"; }}
               onDrop={e => {
@@ -402,34 +399,30 @@ export default function Dashboards({ id_magasin, user_id, savedFavoris = [] }: D
                 (e.currentTarget).style.borderColor = "#d0e8e2";
                 (e.currentTarget).style.background = "transparent";
                 (e.currentTarget).style.color = "#8ab8b0";
-                // Drop d'un favori
                 if (dragFavRef.current) {
                   const fav = allFavoris.find(f => f.question === dragFavRef.current);
                   if (fav) executeInCell(idx, fav.titre, fav.question);
                 }
-                // Drop d'une cellule (swap)
                 if (dragCellRef.current !== null && dragCellRef.current !== idx) {
                   swapCells(dragCellRef.current, idx);
                 }
               }}
               style={{
-                border: "2px dashed #d0e8e2", borderRadius: 12, minHeight: 200,
+                border: "2px dashed #d0e8e2", borderRadius: 12, minHeight: 200, position: "relative",
                 display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
                 gap: 6, color: "#8ab8b0", fontSize: 13, transition: "all .2s", cursor: "default",
               }}
             >
               <Ico d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18" size={28} color="#d0e8e2" />
               Glissez un favori ici
-            </div>
-            {/* Bouton supprimer zone vide */}
-            {db.cells.length > 1 && (
-              <span
-                onClick={() => setDashboards(prev => prev.map(d => d.id !== activeDb ? d : { ...d, cells: d.cells.filter((_, ci) => ci !== idx) }))}
-                style={{ position: "absolute", top: 6, right: 8, fontSize: 12, color: "#d0e8e2", cursor: "pointer", opacity: 0.5, transition: "all .15s" }}
-                onMouseOver={e => { (e.currentTarget).style.opacity = "1"; (e.currentTarget).style.color = "#d94040"; }}
-                onMouseOut={e => { (e.currentTarget).style.opacity = "0.5"; (e.currentTarget).style.color = "#d0e8e2"; }}
-              >✕</span>
-            )}
+              {db.cells.length > 1 && (
+                <span
+                  onClick={() => setDashboards(prev => prev.map(d => d.id !== activeDb ? d : { ...d, cells: d.cells.filter((_, ci) => ci !== idx) }))}
+                  style={{ position: "absolute", top: 6, right: 8, fontSize: 12, color: "#d0e8e2", cursor: "pointer", opacity: 0.5, transition: "all .15s" }}
+                  onMouseOver={e => { (e.currentTarget).style.opacity = "1"; (e.currentTarget).style.color = "#d94040"; }}
+                  onMouseOut={e => { (e.currentTarget).style.opacity = "0.5"; (e.currentTarget).style.color = "#d0e8e2"; }}
+                >✕</span>
+              )}
             </div>
           )
         ))}
