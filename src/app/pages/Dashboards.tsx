@@ -325,8 +325,11 @@ export default function Dashboards({ id_magasin, user_id, savedFavoris = [], onN
               {/* Header cellule */}
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", borderBottom: "1px solid #e8f4f1" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 600, color: "#1a3030" }}>
-                  <span style={{ color: "#8ab8b0", cursor: "grab", fontSize: 12 }}>⠿</span>
+                  <span style={{ color: "#8ab8b0", cursor: "grab", fontSize: 12 }} title="Glisser pour déplacer (Ctrl = déplacer la zone entière)">⠿</span>
                   {cell.titre}
+                  <span style={{ fontSize: 10, color: "#d0e8e2", marginLeft: 4 }}>
+                    {(db.sizes?.[idx] || "medium") === "small" ? "1/4" : (db.sizes?.[idx] || "medium") === "large" ? "100%" : "1/2"}
+                  </span>
                 </div>
                 <button
                   onClick={() => removeCell(idx)}
@@ -408,6 +411,9 @@ export default function Dashboards({ id_magasin, user_id, savedFavoris = [], onN
             /* Zone drop vide */
             <div
               key={idx}
+              draggable
+              onDragStart={(e) => { dragCellRef.current = idx; dragWithZone.current = e.ctrlKey; }}
+              onDragEnd={() => { dragCellRef.current = null; dragWithZone.current = false; }}
               onDragOver={e => { e.preventDefault(); (e.currentTarget).style.borderColor = "#3AA48A"; (e.currentTarget).style.background = "#e8f4f1"; (e.currentTarget).style.color = "#3AA48A"; }}
               onDragLeave={e => { (e.currentTarget).style.borderColor = "#d0e8e2"; (e.currentTarget).style.background = "transparent"; (e.currentTarget).style.color = "#8ab8b0"; }}
               onDrop={e => {
@@ -426,7 +432,7 @@ export default function Dashboards({ id_magasin, user_id, savedFavoris = [], onN
               style={{
                 border: "2px dashed #d0e8e2", borderRadius: 12, minHeight: size === "small" ? 100 : 200, position: "relative",
                 display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-                gap: 6, color: "#8ab8b0", fontSize: 13, transition: "all .2s", cursor: "default",
+                gap: 6, color: "#8ab8b0", fontSize: 13, transition: "all .2s", cursor: "grab",
                 gridColumn: `span ${span}`,
               }}
             >
