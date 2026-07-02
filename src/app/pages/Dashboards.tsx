@@ -344,10 +344,12 @@ export default function Dashboards({ id_magasin, user_id, savedFavoris = [], onN
                 }
               }}
               style={{
-                background: "#fff", border: "1px solid #d0e8e2", borderRadius: 12, overflow: "hidden", cursor: "grab", transition: "border .2s",
+                background: "#fff", border: "1px solid #d0e8e2", borderRadius: 12, cursor: "grab", transition: "all .2s",
                 display: "flex", flexDirection: "column", gridColumn: `span ${span}`, position: "relative",
                 alignSelf: (cell.result?.data?.length === 1 && (cell.result?.columns?.length || 0) <= 2) ? "start" : "stretch",
-                boxShadow: dropIndicator?.idx === idx ? (dropIndicator?.side === "before" ? "inset 4px 0 0 #3AA48A" : "inset -4px 0 0 #3AA48A") : undefined,
+                boxShadow: "0 2px 8px rgba(58,164,138,.08)",
+                borderLeft: dropIndicator?.idx === idx && dropIndicator?.side === "before" ? "4px solid #3AA48A" : "1px solid #d0e8e2",
+                borderRight: dropIndicator?.idx === idx && dropIndicator?.side === "after" ? "4px solid #3AA48A" : "1px solid #d0e8e2",
               }}
             >
               {/* Header cellule */}
@@ -475,7 +477,8 @@ export default function Dashboards({ id_magasin, user_id, savedFavoris = [], onN
                 display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
                 gap: 6, color: "#8ab8b0", fontSize: 13, transition: "all .2s", cursor: "grab",
                 gridColumn: `span ${span}`,
-                boxShadow: dropIndicator?.idx === idx ? (dropIndicator?.side === "before" ? "inset 4px 0 0 #3AA48A" : "inset -4px 0 0 #3AA48A") : undefined,
+                borderLeft: dropIndicator?.idx === idx && dropIndicator?.side === "before" ? "4px solid #3AA48A" : "2px dashed #d0e8e2",
+                borderRight: dropIndicator?.idx === idx && dropIndicator?.side === "after" ? "4px solid #3AA48A" : "2px dashed #d0e8e2",
               }}
             >
               <Ico d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18" size={28} color="#d0e8e2" />
