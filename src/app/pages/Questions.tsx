@@ -232,15 +232,14 @@ function ResultCard({ result, onSaveFavori }: { result: AskResult & { ts: string
 export default function Questions({ id_magasin, user_id, onSaveFavori, questionPrefill, onClearPrefill }: QuestionsProps) {
   const [question, setQuestion] = useState("");
   const [fromFavori, setFromFavori] = useState(false);
+  const [lastPrefill, setLastPrefill] = useState("");
 
   // Pré-remplir la question depuis les dashboards
-  useEffect(() => {
-    if (questionPrefill) {
-      setQuestion(questionPrefill);
-      setFromFavori(true);
-      if (onClearPrefill) onClearPrefill();
-    }
-  }, [questionPrefill]);
+  if (questionPrefill && questionPrefill !== lastPrefill) {
+    setQuestion(questionPrefill);
+    setFromFavori(true);
+    setLastPrefill(questionPrefill);
+  }
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<(AskResult & { ts: string })[]>([]);
   const [error, setError] = useState("");
