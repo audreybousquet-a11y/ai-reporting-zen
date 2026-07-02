@@ -173,11 +173,76 @@ export default function AriaApp() {
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3AA48A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10zM9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></svg>
                 Aide
               </h2>
-              <p style={{ color: "var(--muted)", fontSize: 13, marginBottom: 20 }}>Documentation et tutoriels</p>
-              <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 12, padding: 40, textAlign: "center", color: "var(--dim)" }}>
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.4, marginBottom: 12 }}><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10zM9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></svg>
-                <p style={{ fontSize: 15, fontWeight: 600, color: "var(--muted)", marginBottom: 4 }}>Bientôt disponible</p>
-                <p style={{ fontSize: 13 }}>Vidéos, lexique métier et guides d'utilisation</p>
+              <p style={{ color: "#4a7068", fontSize: 13, marginBottom: 20 }}>Comment utiliser ar.ia</p>
+
+              {/* Vidéo */}
+              <div style={{ background: "#fff", border: "1px solid #d0e8e2", borderRadius: 12, padding: "20px 24px", marginBottom: 16 }}>
+                <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1a3030", marginBottom: 12, display: "flex", alignItems: "center", gap: 8 }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3AA48A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                  Vidéo de présentation
+                </h3>
+                <div style={{ background: "#f0f7f5", borderRadius: 10, height: 280, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
+                  <div style={{ textAlign: "center" }}>
+                    <div style={{ width: 64, height: 64, borderRadius: "50%", background: "#3AA48A", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 12px" }}>
+                      <svg width="28" height="28" viewBox="0 0 24 24" fill="#fff" stroke="none"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                    </div>
+                    <p style={{ fontSize: 14, fontWeight: 600, color: "#1a3030" }}>Découvrir ar.ia en 2 minutes</p>
+                    <p style={{ fontSize: 12, color: "#4a7068", marginTop: 4 }}>Posez des questions, créez des dashboards, exportez vos données</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Guide rapide */}
+              <div style={{ background: "#fff", border: "1px solid #d0e8e2", borderRadius: 12, padding: "20px 24px", marginBottom: 16 }}>
+                <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1a3030", marginBottom: 16, display: "flex", alignItems: "center", gap: 8 }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3AA48A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2zM22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                  Guide rapide
+                </h3>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
+                  {[
+                    { step: "1", titre: "Posez une question", desc: "Tapez votre question en français dans la barre de recherche. ar.ia interroge automatiquement toutes vos sources.", icon: "M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" },
+                    { step: "2", titre: "Sauvegardez en favori", desc: "Cliquez sur l'étoile pour sauvegarder le résultat. Donnez-lui un nom et une catégorie.", icon: "M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" },
+                    { step: "3", titre: "Composez un dashboard", desc: "Glissez vos favoris dans les zones du dashboard. Réorganisez-les par drag & drop.", icon: "M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18" },
+                  ].map((item, i) => (
+                    <div key={i} style={{ background: "#f0f7f5", borderRadius: 10, padding: 20, textAlign: "center" }}>
+                      <div style={{ width: 40, height: 40, borderRadius: 10, background: "#e8f4f1", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 10px" }}>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3AA48A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d={item.icon}/></svg>
+                      </div>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: "#3AA48A", marginBottom: 4 }}>ÉTAPE {item.step}</div>
+                      <div style={{ fontSize: 14, fontWeight: 600, color: "#1a3030", marginBottom: 6 }}>{item.titre}</div>
+                      <div style={{ fontSize: 12, color: "#4a7068", lineHeight: 1.5 }}>{item.desc}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Lexique */}
+              <div style={{ background: "#fff", border: "1px solid #d0e8e2", borderRadius: 12, padding: "20px 24px", marginBottom: 16 }}>
+                <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1a3030", marginBottom: 12, display: "flex", alignItems: "center", gap: 8 }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3AA48A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+                  Lexique par source
+                </h3>
+                {[
+                  { source: "Deytime", termes: "heures travaillées, heures planifiées, heures supplémentaires, cagnotte, absences, congés, indemnités, chantiers, activités" },
+                  { source: "Extrabat", termes: "devis, factures, pièces, articles, clients, fournisseurs, chiffre d'affaires, marge" },
+                  { source: "Pennylane", termes: "écritures comptables, journaux, comptes, factures, trésorerie, charges, produits" },
+                ].map((lex, i) => (
+                  <div key={i} style={{ display: "flex", gap: 12, padding: "10px 0", borderBottom: i < 2 ? "1px solid #e8f4f1" : "none" }}>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: "#1a3030", minWidth: 80 }}>{lex.source}</span>
+                    <span style={{ fontSize: 12, color: "#4a7068", lineHeight: 1.5 }}>{lex.termes}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Contact */}
+              <div style={{ background: "#fff", border: "1px solid #d0e8e2", borderRadius: 12, padding: "20px 24px" }}>
+                <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1a3030", marginBottom: 12, display: "flex", alignItems: "center", gap: 8 }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3AA48A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2zM22 6l-10 7L2 6"/></svg>
+                  Besoin d'aide ?
+                </h3>
+                <p style={{ fontSize: 13, color: "#4a7068", lineHeight: 1.6 }}>
+                  Contactez-nous par email à <a href="mailto:support@ar-ia.fr" style={{ color: "#3AA48A", fontWeight: 600 }}>support@ar-ia.fr</a> ou consultez notre documentation en ligne.
+                </p>
               </div>
             </div>
           )}
