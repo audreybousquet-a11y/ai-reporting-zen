@@ -368,7 +368,7 @@ export default function Dashboards({ id_magasin, user_id, savedFavoris = [] }: D
                           <tr>{cell.result!.columns.map(c => <th key={c} className={typeof cell.result!.data[0]?.[c] === "number" ? "n" : ""}>{c}</th>)}</tr>
                         </thead>
                         <tbody>
-                          {cell.result!.data.slice(0, 8).map((row, ri) => (
+                          {cell.result!.data.map((row, ri) => (
                             <tr key={ri}>
                               {cell.result!.columns.map(c => (
                                 <td key={c} className={typeof row[c] === "number" ? "n" : ""}>

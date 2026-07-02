@@ -170,6 +170,11 @@ function ResultCard({ result, onSaveFavori }: { result: AskResult & { ts: string
         ) : (
           <p style={{ color: "var(--muted)", fontSize: 13 }}>Aucun résultat</p>
         )}
+        {result.data && result.data.length > 0 && (
+          <div style={{ fontSize: 11, color: "#8ab8b0", textAlign: "right", marginTop: 6 }}>
+            {result.data.length} ligne{result.data.length > 1 ? "s" : ""}
+          </div>
+        )}
       </div>
       {result.commentaire && (
         <div className="rcard-comment">
