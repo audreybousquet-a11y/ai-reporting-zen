@@ -209,7 +209,7 @@ function ResultCard({ result, onSaveFavori }: { result: AskResult & { ts: string
       {showSaveModal && (
         <SaveFavoriModal
           question={result.question}
-          isFromFavori={fromFavori}
+          isFromFavori={false}
           onClose={() => setShowSaveModal(false)}
           onSave={(nom, cat) => {
             setSaved(true);
@@ -229,21 +229,8 @@ function ResultCard({ result, onSaveFavori }: { result: AskResult & { ts: string
   );
 }
 
-export default function Questions({ id_magasin, user_id, onSaveFavori, questionPrefill, onClearPrefill }: QuestionsProps) {
+export default function Questions({ id_magasin, user_id, onSaveFavori }: QuestionsProps) {
   const [question, setQuestion] = useState("");
-  const [fromFavori, setFromFavori] = useState(false);
-  const prefillRef = useRef("");
-
-  // Pré-remplir la question depuis les dashboards (via ref pour éviter boucle)
-  if (questionPrefill && questionPrefill !== prefillRef.current) {
-    prefillRef.current = questionPrefill;
-    // On schedule le setState pour le prochain tick
-    setTimeout(() => {
-      setQuestion(questionPrefill);
-      setFromFavori(true);
-    }, 0);
-  }
-
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<(AskResult & { ts: string })[]>([]);
   const [error, setError] = useState("");

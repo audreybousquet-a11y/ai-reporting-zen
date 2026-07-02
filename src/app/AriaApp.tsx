@@ -183,8 +183,7 @@ export default function AriaApp() {
         </div>
         <div className="app-content">
           <div style={{ display: currentPage === "questions" ? "block" : "none" }}>
-            <Questions id_magasin={user.id_magasin} user_id={user.id} onSaveFavori={handleSaveFavori}
-              questionPrefill={questionPrefill} onClearPrefill={() => setQuestionPrefill("")} />
+            <Questions id_magasin={user.id_magasin} user_id={user.id} onSaveFavori={handleSaveFavori} />
           </div>
           <div style={{ display: currentPage === "dashboards" ? "block" : "none" }}>
             <Dashboards id_magasin={user.id_magasin} user_id={user.id} savedFavoris={savedFavoris}
