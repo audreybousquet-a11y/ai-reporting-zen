@@ -1,7 +1,7 @@
 /**
  * Questions.tsx — Page de questions en langage naturel
  */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ask, AskResult } from "../lib/api";
 import Chart from "../components/Chart";
 import logoVert from "../../assets/Logo_vert.png";
@@ -234,11 +234,13 @@ export default function Questions({ id_magasin, user_id, onSaveFavori, questionP
   const [fromFavori, setFromFavori] = useState(false);
 
   // Pré-remplir la question depuis les dashboards
-  if (questionPrefill && question !== questionPrefill) {
-    setQuestion(questionPrefill);
-    setFromFavori(true);
-    if (onClearPrefill) onClearPrefill();
-  }
+  useEffect(() => {
+    if (questionPrefill) {
+      setQuestion(questionPrefill);
+      setFromFavori(true);
+      if (onClearPrefill) onClearPrefill();
+    }
+  }, [questionPrefill]);
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<(AskResult & { ts: string })[]>([]);
   const [error, setError] = useState("");
