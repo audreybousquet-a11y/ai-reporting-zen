@@ -9,6 +9,7 @@ import MentionsLegales from "./pages/MentionsLegales.tsx";
 import PolitiqueConfidentialite from "./pages/PolitiqueConfidentialite.tsx";
 import Tarifs from "./pages/Tarifs.tsx";
 import Souscrire from "./pages/Souscrire.tsx";
+import AriaApp from "./app/AriaApp.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -32,6 +33,7 @@ const App = () => (
           <Route path="/politique-confidentialite" element={<PolitiqueConfidentialite />} />
           <Route path="/tarifs" element={<Tarifs />} />
           <Route path="/souscrire" element={<Souscrire />} />
+          <Route path="/app/*" element={<AriaApp />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
