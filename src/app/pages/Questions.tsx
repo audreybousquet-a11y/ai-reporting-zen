@@ -52,20 +52,36 @@ function ResultCard({ result, onSaveFavori }: { result: AskResult & { ts: string
         {result.data && result.data.length > 0 ? (
           (() => {
             let vt = result.viz_config?.type_viz || "table";
-            // Auto-detect : colonnes texte vs numériques
-            const isNum = (v: any) => typeof v === "number" || (typeof v === "string" && !isNaN(Number(v)) && v.trim() !== "");
             const row0 = result.data[0] || {};
-            const textCols = result.columns.filter(c => !isNum(row0[c]));
-            const numCols = result.columns.filter(c => isNum(row0[c]));
-            // 1 col texte + cols numériques + < 15 lignes → barres
-            if (vt === "table" && textCols.length === 1 && numCols.length >= 1 && result.data.length <= 15) {
-              vt = "bar";
+            // Détecter dimension (texte/catégorie) vs mesure (nombre pur)
+            // "mois" avec valeurs 1,2,3 = dimension, pas mesure
+            const isDimension = (c: string, v: any) => {
+              if (typeof v === "string") return true;
+              const name = c.toLowerCase();
+              if (["mois", "semaine", "annee", "année", "periode", "jour", "trimestre"].includes(name)) return true;
+              if (typeof v === "number" && Number.isInteger(v) && v >= 1 && v <= 53) return name.includes("mois") || name.includes("sem") || name.includes("ann");
+              return false;
+            };
+            const dimCols = result.columns.filter(c => isDimension(c, row0[c]));
+            const numCols = result.columns.filter(c => !isDimension(c, row0[c]) && (typeof row0[c] === "number" || !isNaN(Number(row0[c]))));
+            const n = result.data.length;
+
+            // Pivot → camembert si peu de lignes, sinon barres
+            if (vt === "pivot" && n <= 10) vt = n <= 8 ? "pie" : "bar";
+            // Table avec 1 dimension + mesures → graphique auto
+            if (vt === "table" && dimCols.length === 1 && numCols.length >= 1 && n <= 20) {
+              const dimName = dimCols[0].toLowerCase();
+              // Mois, semaine = évolution → ligne
+              if (["mois", "semaine", "trimestre"].includes(dimName) || dimName.includes("mois") || dimName.includes("date")) {
+                vt = "line";
+              // Peu de catégories → camembert
+              } else if (n <= 8 && numCols.length === 1) {
+                vt = "pie";
+              // Sinon → barres
+              } else {
+                vt = "bar";
+              }
             }
-            // 1 col texte + 1 col num + < 6 lignes → camembert
-            if (vt === "bar" && numCols.length === 1 && result.data.length <= 6) {
-              vt = "pie";
-            }
-            if (vt === "pivot") vt = "bar";
             const isChart = ["bar", "hbar", "line", "pie", "area"].includes(vt);
             return (
               <>
@@ -165,7 +181,7 @@ export default function Questions({ id_magasin, user_id, onSaveFavori }: Questio
         </div>
       )}
 
-      {/* Barre de question */}
+      {/* Barre de question — sans flèche */}
       <div className="qbar" style={{ border: "2px solid #3AA48A" }}>
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3AA48A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
         <input
@@ -176,27 +192,30 @@ export default function Questions({ id_magasin, user_id, onSaveFavori }: Questio
           onKeyDown={e => e.key === "Enter" && handleAsk()}
           disabled={loading}
         />
-        <button className="send" onClick={handleAsk} disabled={loading}>
+      </div>
+
+      {/* Boutons sous la zone question — pleine largeur comme Streamlit */}
+      <div style={{ display: "grid", gridTemplateColumns: "3fr 1fr", gap: 8, marginBottom: 20 }}>
+        <button
+          onClick={handleAsk}
+          disabled={loading || !question.trim()}
+          style={{ padding: "11px 0", borderRadius: 8, fontSize: 14, fontWeight: 600, fontFamily: "inherit", border: "none", background: (!question.trim() || loading) ? "#d0e8e2" : "#3AA48A", color: (!question.trim() || loading) ? "#8ab8b0" : "#fff", cursor: (!question.trim() || loading) ? "default" : "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, transition: "all .15s" }}
+        >
           {loading ? (
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ animation: "spin 1s linear infinite" }}><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
           ) : (
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
           )}
+          {loading ? "Analyse en cours..." : "Analyser"}
+        </button>
+        <button
+          onClick={() => { setQuestion(""); setResults([]); setError(""); }}
+          style={{ padding: "11px 0", borderRadius: 8, fontSize: 14, fontWeight: 600, fontFamily: "inherit", border: "2px solid #d0e8e2", background: "#fff", color: "#4a7068", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, transition: "all .15s" }}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          Effacer
         </button>
       </div>
-
-      {/* Boutons Analyser / Effacer */}
-      {results.length > 0 && (
-        <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
-          <button
-            onClick={() => setResults([])}
-            style={{ padding: "7px 16px", borderRadius: 8, fontSize: 13, fontWeight: 600, fontFamily: "inherit", border: "1px solid #d0e8e2", background: "#fff", color: "#4a7068", cursor: "pointer" }}
-          >
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: "middle", marginRight: 4 }}><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-            Effacer l'historique
-          </button>
-        </div>
-      )}
 
       {/* Erreur */}
       {error && (

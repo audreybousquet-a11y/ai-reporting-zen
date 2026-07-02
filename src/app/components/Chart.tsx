@@ -54,7 +54,7 @@ export default function Chart({ data, columns, vizType, height = 220 }: ChartPro
             ))}
           </Pie>
           <Tooltip formatter={(v: number) => v.toLocaleString("fr-FR")} />
-          <Legend wrapperStyle={{ fontSize: 11 }} />
+          <Legend wrapperStyle={{ fontSize: 11 }} layout="vertical" align="right" verticalAlign="middle" />
         </PieChart>
       </ResponsiveContainer>
     );
@@ -69,7 +69,7 @@ export default function Chart({ data, columns, vizType, height = 220 }: ChartPro
           <XAxis dataKey={xCol} tick={{ fontSize: 11, fill: "#4a7068" }} />
           <YAxis tick={{ fontSize: 11, fill: "#4a7068" }} />
           <Tooltip formatter={(v: number) => v.toLocaleString("fr-FR")} />
-          {valueCols.length > 1 && <Legend wrapperStyle={{ fontSize: 11 }} />}
+          {valueCols.length > 1 && <Legend wrapperStyle={{ fontSize: 11 }} layout="vertical" align="right" verticalAlign="middle" />}
           {valueCols.map((col, i) => (
             <Line key={col} type="monotone" dataKey={col} stroke={COLORS[i % COLORS.length]} strokeWidth={2} dot={{ r: 3 }} />
           ))}
@@ -95,7 +95,7 @@ export default function Chart({ data, columns, vizType, height = 220 }: ChartPro
           </>
         )}
         <Tooltip formatter={(v: number) => v.toLocaleString("fr-FR")} />
-        {valueCols.length > 1 && <Legend wrapperStyle={{ fontSize: 11 }} />}
+        {valueCols.length > 1 && <Legend wrapperStyle={{ fontSize: 11 }} layout="vertical" align="right" verticalAlign="middle" />}
         {valueCols.map((col, i) => (
           <Bar key={col} dataKey={col} fill={COLORS[i % COLORS.length]} radius={[4, 4, 0, 0]} />
         ))}

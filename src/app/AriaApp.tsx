@@ -13,6 +13,8 @@ import "./app.css";
 export default function AriaApp() {
   const { user, loading, login, logout } = useAuth();
   const [currentPage, setCurrentPage] = useState("questions");
+  // Garder les pages montées pour ne pas perdre le state
+  const pages = ["questions", "dashboards", "emails", "alertes", "params", "aide"];
 
   if (loading) {
     return (
@@ -40,12 +42,12 @@ export default function AriaApp() {
           </div>
         </div>
         <div className="app-content">
-          {currentPage === "questions" && (
+          <div style={{ display: currentPage === "questions" ? "block" : "none" }}>
             <Questions id_magasin={user.id_magasin} user_id={user.id} />
-          )}
-          {currentPage === "dashboards" && (
+          </div>
+          <div style={{ display: currentPage === "dashboards" ? "block" : "none" }}>
             <Dashboards id_magasin={user.id_magasin} user_id={user.id} />
-          )}
+          </div>
           {currentPage === "emails" && (
             <div>
               <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 4, display: "flex", alignItems: "center", gap: 8, color: "#3AA48A" }}>

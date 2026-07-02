@@ -27,15 +27,15 @@ const vizIcons: Record<string, string> = {
 
 const DEMO_FAVORIS: (Favori & { cat: string; viz: string })[] = [
   { titre: "Heures par salarié et semaine", question: "heures par salarié et semaine ce mois", sql: "", viz_config: {}, cat: "equipe", viz: "tableau" },
-  { titre: "Heures par activité", question: "heures par activité ce mois", sql: "", viz_config: {}, cat: "equipe", viz: "barres" },
+  { titre: "Heures par activité", question: "heures par activité ce mois", sql: "", viz_config: {}, cat: "equipe", viz: "camembert" },
   { titre: "Cagnotte heures sup", question: "cagnotte heures sup par salarié", sql: "", viz_config: {}, cat: "equipe", viz: "tableau" },
-  { titre: "Coût de revient par salarié", question: "coût de revient par salarié ce mois", sql: "", viz_config: {}, cat: "equipe", viz: "kpi" },
+  { titre: "Coût de revient par salarié", question: "coût de revient par salarié ce mois", sql: "", viz_config: {}, cat: "equipe", viz: "barres" },
   { titre: "Heures par chantier", question: "heures par chantier ce mois", sql: "", viz_config: {}, cat: "chantier", viz: "barres" },
-  { titre: "Top 10 clients", question: "top 10 clients par heures cette année", sql: "", viz_config: {}, cat: "chantier", viz: "tableau" },
-  { titre: "Absences ce mois", question: "absences ce mois par salarié", sql: "", viz_config: {}, cat: "absence", viz: "tableau" },
+  { titre: "Top 10 clients", question: "top 10 clients par heures cette année", sql: "", viz_config: {}, cat: "chantier", viz: "barres" },
+  { titre: "Absences par motif", question: "répartition des absences par motif cette année", sql: "", viz_config: {}, cat: "absence", viz: "camembert" },
   { titre: "Congés par salarié", question: "congés par salarié et par an", sql: "", viz_config: {}, cat: "absence", viz: "barres" },
-  { titre: "Rentabilité chantier", question: "rentabilité par chantier", sql: "", viz_config: {}, cat: "chantier", viz: "camembert" },
-  { titre: "Évolution heures mensuel", question: "heures travaillées par mois cette année", sql: "", viz_config: {}, cat: "equipe", viz: "ligne" },
+  { titre: "Rentabilité chantier", question: "rentabilité par chantier ce mois", sql: "", viz_config: {}, cat: "chantier", viz: "tableau" },
+  { titre: "Évolution heures par mois", question: "heures travaillées par mois cette année", sql: "", viz_config: {}, cat: "equipe", viz: "ligne" },
 ];
 
 const CATEGORIES = [
@@ -292,18 +292,24 @@ export default function Dashboards({ id_magasin, user_id }: DashboardsProps) {
                 ) : cell.result?.data && cell.result.data.length > 0 ? (
                   (() => {
                     let vt = cell.result!.viz_config?.type_viz || "table";
-                    const isNum = (v: any) => typeof v === "number" || (typeof v === "string" && !isNaN(Number(v)) && v.trim() !== "");
                     const row0 = cell.result!.data[0] || {};
                     const cols = cell.result!.columns;
-                    const textCols = cols.filter(c => !isNum(row0[c]));
-                    const numCols = cols.filter(c => isNum(row0[c]));
-                    if (vt === "table" && textCols.length === 1 && numCols.length >= 1 && cell.result!.data.length <= 15) {
-                      vt = "bar";
+                    const isDim = (c: string, v: any) => {
+                      if (typeof v === "string") return true;
+                      const nm = c.toLowerCase();
+                      if (["mois", "semaine", "annee", "année", "periode", "jour", "trimestre"].includes(nm)) return true;
+                      return false;
+                    };
+                    const dimCols = cols.filter(c => isDim(c, row0[c]));
+                    const numCols = cols.filter(c => !isDim(c, row0[c]) && (typeof row0[c] === "number" || !isNaN(Number(row0[c]))));
+                    const n = cell.result!.data.length;
+                    if (vt === "pivot" && n <= 10) vt = n <= 8 ? "pie" : "bar";
+                    if (vt === "table" && dimCols.length === 1 && numCols.length >= 1 && n <= 20) {
+                      const dm = dimCols[0].toLowerCase();
+                      if (["mois", "semaine", "trimestre"].includes(dm) || dm.includes("mois") || dm.includes("date")) vt = "line";
+                      else if (n <= 8 && numCols.length === 1) vt = "pie";
+                      else vt = "bar";
                     }
-                    if (vt === "bar" && numCols.length === 1 && cell.result!.data.length <= 6) {
-                      vt = "pie";
-                    }
-                    if (vt === "pivot") vt = "bar";
                     const isChart = ["bar", "hbar", "line", "pie", "area"].includes(vt);
                     return isChart ? (
                       <Chart data={cell.result!.data} columns={cell.result!.columns} vizType={vt} height={180} />
@@ -365,6 +371,22 @@ export default function Dashboards({ id_magasin, user_id }: DashboardsProps) {
             </div>
           )
         ))}
+        {/* Bouton ajouter une zone */}
+        <div
+          onClick={() => {
+            setDashboards(prev => prev.map(d => d.id !== activeDb ? d : { ...d, cells: [...d.cells, null] }));
+          }}
+          style={{
+            border: "2px dashed #d0e8e2", borderRadius: 12, minHeight: 80,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            gap: 6, color: "#8ab8b0", fontSize: 13, cursor: "pointer", transition: "all .2s",
+          }}
+          onMouseOver={e => { (e.currentTarget).style.borderColor = "#3AA48A"; (e.currentTarget).style.color = "#3AA48A"; }}
+          onMouseOut={e => { (e.currentTarget).style.borderColor = "#d0e8e2"; (e.currentTarget).style.color = "#8ab8b0"; }}
+        >
+          <Ico d="M12 5v14M5 12h14" size={18} color="currentColor" />
+          Ajouter une zone
+        </div>
       </div>
 
       {/* Modal confirmation suppression */}
