@@ -7,6 +7,7 @@ import Sidebar from "./components/Sidebar";
 import Login from "./pages/Login";
 import Questions from "./pages/Questions";
 import Params from "./pages/Params";
+import Dashboards from "./pages/Dashboards";
 import "./app.css";
 
 export default function AriaApp() {
@@ -43,18 +44,7 @@ export default function AriaApp() {
             <Questions id_magasin={user.id_magasin} user_id={user.id} />
           )}
           {currentPage === "dashboards" && (
-            <div>
-              <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 4, display: "flex", alignItems: "center", gap: 8, color: "#3AA48A" }}>
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3AA48A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/></svg>
-                Dashboards
-              </h2>
-              <p style={{ color: "var(--muted)", fontSize: 13, marginBottom: 20 }}>Vos tableaux de bord personnalisés</p>
-              <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 12, padding: 40, textAlign: "center", color: "var(--dim)" }}>
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.4, marginBottom: 12 }}><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/></svg>
-                <p style={{ fontSize: 15, fontWeight: 600, color: "var(--muted)", marginBottom: 4 }}>Bientôt disponible</p>
-                <p style={{ fontSize: 13 }}>Composez vos tableaux de bord en glissant vos favoris</p>
-              </div>
-            </div>
+            <Dashboards id_magasin={user.id_magasin} user_id={user.id} />
           )}
           {currentPage === "emails" && (
             <div>

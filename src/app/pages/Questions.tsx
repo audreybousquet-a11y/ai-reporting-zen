@@ -3,6 +3,7 @@
  */
 import { useState } from "react";
 import { ask, AskResult } from "../lib/api";
+import Chart from "../components/Chart";
 import logoVert from "../../assets/Logo_vert.png";
 
 interface QuestionsProps {
@@ -28,37 +29,68 @@ function ResultCard({ result, onSaveFavori }: { result: AskResult & { ts: string
             <button
               className={`rcard-btn${saved ? " fav" : ""}`}
               onClick={() => { setSaved(!saved); if (!saved && onSaveFavori) onSaveFavori(result); }}
-              title="Sauvegarder en favori"
             >
-              <svg width="12" height="12" viewBox="0 0 24 24" fill={saved ? "#c47a20" : "none"} stroke={saved ? "#c47a20" : "currentColor"} strokeWidth="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill={saved ? "#c47a20" : "none"} stroke={saved ? "#c47a20" : "currentColor"} strokeWidth="2" style={{ verticalAlign: "middle", marginRight: 3 }}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              {saved ? "Sauvegardé" : "Favori"}
             </button>
-            <button className="rcard-btn" title="Exporter">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+            <button className="rcard-btn">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: "middle", marginRight: 3 }}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+              Exporter
             </button>
-            <button className="rcard-btn" title="Ajouter au dashboard">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/></svg>
+            <button className="rcard-btn">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: "middle", marginRight: 3 }}><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/></svg>
+              Dashboard
+            </button>
+            <button className="rcard-btn">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: "middle", marginRight: 3 }}><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              Modifier
             </button>
           </div>
         </div>
       </div>
       <div className="rcard-body">
         {result.data && result.data.length > 0 ? (
-          <table className="dtable">
-            <thead>
-              <tr>{result.columns.map(c => <th key={c} className={typeof result.data[0]?.[c] === "number" ? "n" : ""}>{c}</th>)}</tr>
-            </thead>
-            <tbody>
-              {result.data.map((row, i) => (
-                <tr key={i}>
-                  {result.columns.map(c => (
-                    <td key={c} className={typeof row[c] === "number" ? "n" : ""}>
-                      {typeof row[c] === "number" ? row[c].toLocaleString("fr-FR") : row[c]}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          (() => {
+            let vt = result.viz_config?.type_viz || "table";
+            // Auto-detect : colonnes texte vs numériques
+            const isNum = (v: any) => typeof v === "number" || (typeof v === "string" && !isNaN(Number(v)) && v.trim() !== "");
+            const row0 = result.data[0] || {};
+            const textCols = result.columns.filter(c => !isNum(row0[c]));
+            const numCols = result.columns.filter(c => isNum(row0[c]));
+            // 1 col texte + cols numériques + < 15 lignes → barres
+            if (vt === "table" && textCols.length === 1 && numCols.length >= 1 && result.data.length <= 15) {
+              vt = "bar";
+            }
+            // 1 col texte + 1 col num + < 6 lignes → camembert
+            if (vt === "bar" && numCols.length === 1 && result.data.length <= 6) {
+              vt = "pie";
+            }
+            if (vt === "pivot") vt = "bar";
+            const isChart = ["bar", "hbar", "line", "pie", "area"].includes(vt);
+            return (
+              <>
+                {isChart && <Chart data={result.data} columns={result.columns} vizType={vt} height={280} />}
+                {(!isChart || result.data.length <= 20) && (
+                  <table className="dtable" style={isChart ? { marginTop: 16 } : {}}>
+                    <thead>
+                      <tr>{result.columns.map(c => <th key={c} className={typeof result.data[0]?.[c] === "number" ? "n" : ""}>{c}</th>)}</tr>
+                    </thead>
+                    <tbody>
+                      {result.data.map((row, i) => (
+                        <tr key={i}>
+                          {result.columns.map(c => (
+                            <td key={c} className={typeof row[c] === "number" ? "n" : ""}>
+                              {typeof row[c] === "number" ? row[c].toLocaleString("fr-FR") : row[c]}
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </>
+            );
+          })()
         ) : (
           <p style={{ color: "var(--muted)", fontSize: 13 }}>Aucun résultat</p>
         )}
@@ -152,6 +184,19 @@ export default function Questions({ id_magasin, user_id, onSaveFavori }: Questio
           )}
         </button>
       </div>
+
+      {/* Boutons Analyser / Effacer */}
+      {results.length > 0 && (
+        <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+          <button
+            onClick={() => setResults([])}
+            style={{ padding: "7px 16px", borderRadius: 8, fontSize: 13, fontWeight: 600, fontFamily: "inherit", border: "1px solid #d0e8e2", background: "#fff", color: "#4a7068", cursor: "pointer" }}
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ verticalAlign: "middle", marginRight: 4 }}><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            Effacer l'historique
+          </button>
+        </div>
+      )}
 
       {/* Erreur */}
       {error && (
