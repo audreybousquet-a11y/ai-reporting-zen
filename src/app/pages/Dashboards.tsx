@@ -16,6 +16,7 @@ interface DashboardsProps {
   onEditFavoriInQuestions?: (fav: { question: string; titre: string; cat: string; idx: number }) => void;
   onDeleteFavori?: (idx: number) => void;
   onEditFavori?: (idx: number, titre: string, cat: string) => void;
+  refreshTrigger?: number;
 }
 
 // Icônes SVG
@@ -85,7 +86,7 @@ interface CellData {
   loading?: boolean;
 }
 
-export default function Dashboards({ id_magasin, user_id, savedFavoris = [], onNavigate, onSetQuestion, onDeleteFavori, onEditFavori, onEditFavoriInQuestions }: DashboardsProps) {
+export default function Dashboards({ id_magasin, user_id, savedFavoris = [], onNavigate, onSetQuestion, onDeleteFavori, onEditFavori, onEditFavoriInQuestions, refreshTrigger }: DashboardsProps) {
   const [dashboards, setDashboards] = useState<DashboardData[]>([
     { id: "db1", nom: "Suivi équipe", cells: [null, null, null, null, null, null, null], sizes: ["small", "small", "small", "small", "medium", "medium", "large"] },
   ]);
@@ -102,6 +103,22 @@ export default function Dashboards({ id_magasin, user_id, savedFavoris = [], onN
   const dragWithZone = useRef(false);
   const [dropIndicator, setDropIndicator] = useState<{ idx: number; side: "before" | "after" } | null>(null);
   const [editingFav, setEditingFav] = useState<{ idx: number; question: string; titre: string; cat: string } | null>(null);
+
+  // Re-exécuter les cellules quand un favori est écrasé
+  const lastRefresh = useRef(0);
+  if (refreshTrigger && refreshTrigger > lastRefresh.current) {
+    lastRefresh.current = refreshTrigger;
+    // Re-exécuter toutes les cellules remplies
+    setTimeout(() => {
+      dashboards.forEach(d => {
+        d.cells.forEach((cell, idx) => {
+          if (cell && cell.question) {
+            executeInCell(idx, cell.titre, cell.question);
+          }
+        });
+      });
+    }, 100);
+  }
 
   const db = dashboards.find(d => d.id === activeDb)!;
 

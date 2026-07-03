@@ -127,6 +127,7 @@ export default function AriaApp() {
   const [currentPage, setCurrentPage] = useState("questions");
   const [savedFavoris, setSavedFavoris] = useState<SavedFavori[]>([]);
   const [editingFavori, setEditingFavori] = useState<{ question: string; titre: string; cat: string; idx: number; ts: number } | null>(null);
+  const [dashboardRefresh, setDashboardRefresh] = useState(0);
 
   const handleSaveFavori = useCallback((titre: string, cat: string, result: AskResult) => {
     // Déterminer le type de viz
@@ -192,11 +193,13 @@ export default function AriaApp() {
                 setSavedFavoris(prev => prev.map((f, i) => i === idx ? {
                   ...f, titre, cat, question: result.question, sql: result.sql, viz_config: result.viz_config,
                 } : f));
+                // Déclencher un refresh des dashboards
+                setDashboardRefresh(Date.now());
               }}
               editingFavori={editingFavori} onClearEditing={() => setEditingFavori(null)} />
           </div>
           <div style={{ display: currentPage === "dashboards" ? "block" : "none" }}>
-            <Dashboards id_magasin={user.id_magasin} user_id={user.id} savedFavoris={savedFavoris}
+            <Dashboards id_magasin={user.id_magasin} user_id={user.id} savedFavoris={savedFavoris} refreshTrigger={dashboardRefresh}
               onNavigate={setCurrentPage}
               onSetQuestion={(q) => { setCurrentPage("questions"); }}
               onEditFavoriInQuestions={(fav) => { setEditingFavori({ ...fav, ts: Date.now() }); setCurrentPage("questions"); }}
