@@ -1,7 +1,7 @@
 /**
  * Questions.tsx — Page de questions en langage naturel
  */
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { ask, AskResult } from "../lib/api";
 import Chart from "../components/Chart";
 import logoVert from "../../assets/Logo_vert.png";
@@ -10,8 +10,8 @@ interface QuestionsProps {
   id_magasin: string;
   user_id: string;
   onSaveFavori?: (titre: string, cat: string, result: AskResult) => void;
-  questionPrefill?: string;
-  onClearPrefill?: () => void;
+  editingFavori?: { question: string; titre: string; cat: string; idx: number } | null;
+  onClearEditing?: () => void;
 }
 
 const CATEGORIES = [
@@ -22,15 +22,17 @@ const CATEGORIES = [
   { id: "general", label: "Général" },
 ];
 
-function SaveFavoriModal({ question, isFromFavori, onSave, onOverwrite, onClose }: {
+function SaveFavoriModal({ question, isFromFavori, defaultNom, defaultCat, onSave, onOverwrite, onClose }: {
   question: string;
   isFromFavori?: boolean;
+  defaultNom?: string;
+  defaultCat?: string;
   onSave: (nom: string, cat: string) => void;
   onOverwrite?: () => void;
   onClose: () => void;
 }) {
-  const [nom, setNom] = useState(question);
-  const [cat, setCat] = useState("equipe");
+  const [nom, setNom] = useState(defaultNom || question);
+  const [cat, setCat] = useState(defaultCat || "equipe");
 
   return (
     <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(26,48,48,0.4)", zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center" }}
@@ -93,7 +95,13 @@ function SaveFavoriModal({ question, isFromFavori, onSave, onOverwrite, onClose 
   );
 }
 
-function ResultCard({ result, onSaveFavori }: { result: AskResult & { ts: string }; onSaveFavori?: (titre: string, cat: string, r: AskResult) => void }) {
+function ResultCard({ result, onSaveFavori, isModifying, originalFavori, onModificationDone }: {
+  result: AskResult & { ts: string };
+  onSaveFavori?: (titre: string, cat: string, r: AskResult) => void;
+  isModifying?: boolean;
+  originalFavori?: { question: string; titre: string; cat: string; idx: number } | null;
+  onModificationDone?: () => void;
+}) {
   const [saved, setSaved] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
 
@@ -209,17 +217,21 @@ function ResultCard({ result, onSaveFavori }: { result: AskResult & { ts: string
       {showSaveModal && (
         <SaveFavoriModal
           question={result.question}
-          isFromFavori={false}
+          isFromFavori={!!isModifying}
+          defaultNom={isModifying && originalFavori ? originalFavori.titre : result.question}
+          defaultCat={isModifying && originalFavori ? originalFavori.cat : "equipe"}
           onClose={() => setShowSaveModal(false)}
           onSave={(nom, cat) => {
             setSaved(true);
             setShowSaveModal(false);
             if (onSaveFavori) onSaveFavori(nom, cat, result);
+            if (onModificationDone) onModificationDone();
           }}
           onOverwrite={() => {
             setSaved(true);
             setShowSaveModal(false);
-            if (onSaveFavori) onSaveFavori(result.question, "general", result);
+            if (onSaveFavori && originalFavori) onSaveFavori(originalFavori.titre, originalFavori.cat, result);
+            if (onModificationDone) onModificationDone();
           }}
         />
       )}
@@ -227,9 +239,25 @@ function ResultCard({ result, onSaveFavori }: { result: AskResult & { ts: string
   );
 }
 
-export default function Questions({ id_magasin, user_id, onSaveFavori }: QuestionsProps) {
+export default function Questions({ id_magasin, user_id, onSaveFavori, editingFavori, onClearEditing }: QuestionsProps) {
   const [question, setQuestion] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isModifying, setIsModifying] = useState(false);
+  const [originalFavori, setOriginalFavori] = useState<{ question: string; titre: string; cat: string; idx: number } | null>(null);
+  const lastEditRef = useRef<string>("");
+
+  // Quand on reçoit un favori à modifier depuis Dashboard
+  if (editingFavori && editingFavori.question !== lastEditRef.current) {
+    lastEditRef.current = editingFavori.question;
+    setQuestion(editingFavori.question);
+    setIsModifying(true);
+    setOriginalFavori(editingFavori);
+    // Lancer la question automatiquement
+    setTimeout(() => {
+      const btn = document.getElementById("aria-ask-btn");
+      if (btn) btn.click();
+    }, 100);
+  }
   const [results, setResults] = useState<(AskResult & { ts: string })[]>([]);
   const [error, setError] = useState("");
 
@@ -284,7 +312,13 @@ export default function Questions({ id_magasin, user_id, onSaveFavori }: Questio
           type="text"
           placeholder="Posez votre question en français..."
           value={question}
-          onChange={e => setQuestion(e.target.value)}
+          onChange={e => {
+            setQuestion(e.target.value);
+            // Si l'utilisateur modifie la question, on sort du mode modification
+            if (originalFavori && e.target.value !== originalFavori.question) {
+              setIsModifying(false);
+            }
+          }}
           onKeyDown={e => e.key === "Enter" && handleAsk()}
           disabled={loading}
         />
@@ -293,6 +327,7 @@ export default function Questions({ id_magasin, user_id, onSaveFavori }: Questio
       {/* Boutons sous la zone question — pleine largeur comme Streamlit */}
       <div style={{ display: "grid", gridTemplateColumns: "3fr 1fr", gap: 8, marginBottom: 20 }}>
         <button
+          id="aria-ask-btn"
           onClick={handleAsk}
           disabled={loading || !question.trim()}
           style={{ padding: "11px 0", borderRadius: 8, fontSize: 14, fontWeight: 600, fontFamily: "inherit", border: "none", background: (!question.trim() || loading) ? "#d0e8e2" : "#3AA48A", color: (!question.trim() || loading) ? "#8ab8b0" : "#fff", cursor: (!question.trim() || loading) ? "default" : "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, transition: "all .15s" }}
@@ -313,16 +348,26 @@ export default function Questions({ id_magasin, user_id, onSaveFavori }: Questio
         </button>
       </div>
 
-      {/* Erreur */}
+      {/* Erreur — message utilisateur friendly */}
       {error && (
-        <div style={{ background: "var(--red-bg)", border: "1px solid #f5c6cb", borderRadius: "var(--radius)", padding: 14, marginBottom: 16, fontSize: 13, color: "var(--red)" }}>
-          ❌ {error}
+        <div style={{ background: "#fff3e0", border: "1px solid #d0e8e2", borderRadius: 12, padding: "16px 20px", marginBottom: 16, display: "flex", gap: 12, alignItems: "flex-start" }}>
+          <div style={{ width: 36, height: 36, borderRadius: 10, background: "#e8f4f1", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c47a20" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10zM9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></svg>
+          </div>
+          <div>
+            <div style={{ fontSize: 14, fontWeight: 600, color: "#1a3030", marginBottom: 4 }}>Je n'ai pas compris votre question</div>
+            <div style={{ fontSize: 13, color: "#4a7068", lineHeight: 1.5 }}>
+              Essayez de la formuler différemment ou de la simplifier. Si le problème persiste, notre support a été notifié.
+            </div>
+          </div>
         </div>
       )}
 
       {/* Résultats */}
       {results.map((r, i) => (
-        <ResultCard key={i} result={r} onSaveFavori={onSaveFavori} />
+        <ResultCard key={i} result={r} onSaveFavori={onSaveFavori}
+          isModifying={i === 0 && isModifying} originalFavori={originalFavori}
+          onModificationDone={() => { setIsModifying(false); setOriginalFavori(null); if (onClearEditing) onClearEditing(); }} />
       ))}
     </div>
   );

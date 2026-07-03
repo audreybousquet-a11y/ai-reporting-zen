@@ -13,6 +13,7 @@ interface DashboardsProps {
   savedFavoris?: SavedFavori[];
   onNavigate?: (page: string) => void;
   onSetQuestion?: (question: string) => void;
+  onEditFavoriInQuestions?: (fav: { question: string; titre: string; cat: string; idx: number }) => void;
   onDeleteFavori?: (idx: number) => void;
   onEditFavori?: (idx: number, titre: string, cat: string) => void;
 }
@@ -84,7 +85,7 @@ interface CellData {
   loading?: boolean;
 }
 
-export default function Dashboards({ id_magasin, user_id, savedFavoris = [], onNavigate, onSetQuestion, onDeleteFavori, onEditFavori }: DashboardsProps) {
+export default function Dashboards({ id_magasin, user_id, savedFavoris = [], onNavigate, onSetQuestion, onDeleteFavori, onEditFavori, onEditFavoriInQuestions }: DashboardsProps) {
   const [dashboards, setDashboards] = useState<DashboardData[]>([
     { id: "db1", nom: "Suivi équipe", cells: [null, null, null, null, null, null, null], sizes: ["small", "small", "small", "small", "medium", "medium", "large"] },
   ]);
@@ -617,7 +618,9 @@ export default function Dashboards({ id_magasin, user_id, savedFavoris = [], onN
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 6 }}>
               <button onClick={() => {
-                if (onSetQuestion) onSetQuestion(editingFav.question);
+                if (onEditFavoriInQuestions) onEditFavoriInQuestions({
+                  question: editingFav.question, titre: editingFav.titre, cat: editingFav.cat, idx: editingFav.idx
+                });
                 if (onNavigate) onNavigate("questions");
                 setEditingFav(null);
               }}

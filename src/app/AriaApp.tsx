@@ -126,7 +126,7 @@ export default function AriaApp() {
   const { user, loading, login, logout } = useAuth();
   const [currentPage, setCurrentPage] = useState("questions");
   const [savedFavoris, setSavedFavoris] = useState<SavedFavori[]>([]);
-  const [questionPrefill, setQuestionPrefill] = useState("");
+  const [editingFavori, setEditingFavori] = useState<{ question: string; titre: string; cat: string; idx: number } | null>(null);
 
   const handleSaveFavori = useCallback((titre: string, cat: string, result: AskResult) => {
     // Déterminer le type de viz
@@ -187,12 +187,14 @@ export default function AriaApp() {
         </div>
         <div className="app-content">
           <div style={{ display: currentPage === "questions" ? "block" : "none" }}>
-            <Questions id_magasin={user.id_magasin} user_id={user.id} onSaveFavori={handleSaveFavori} />
+            <Questions id_magasin={user.id_magasin} user_id={user.id} onSaveFavori={handleSaveFavori}
+              editingFavori={editingFavori} onClearEditing={() => setEditingFavori(null)} />
           </div>
           <div style={{ display: currentPage === "dashboards" ? "block" : "none" }}>
             <Dashboards id_magasin={user.id_magasin} user_id={user.id} savedFavoris={savedFavoris}
               onNavigate={setCurrentPage}
-              onSetQuestion={(q) => { setQuestionPrefill(q); setCurrentPage("questions"); }}
+              onSetQuestion={(q) => { setCurrentPage("questions"); }}
+              onEditFavoriInQuestions={(fav) => { setEditingFavori(fav); setCurrentPage("questions"); }}
               onDeleteFavori={(idx) => setSavedFavoris(prev => prev.filter((_, i) => i !== idx))}
               onEditFavori={(idx, titre, cat) => setSavedFavoris(prev => prev.map((f, i) => i === idx ? { ...f, titre, cat } : f))}
             />
