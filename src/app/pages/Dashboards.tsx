@@ -464,7 +464,7 @@ export default function Dashboards({ id_magasin, user_id, savedFavoris = [], onN
                       const numCols = cols.filter(c => !isDim(c, row0[c]) && (typeof row0[c] === "number" || !isNaN(Number(row0[c]))));
                       const n = cell.result!.data.length;
                       if (vt === "pivot" && n <= 10) vt = n <= 8 ? "pie" : "bar";
-                      if (vt === "table" && dimCols.length === 1 && numCols.length >= 1 && n <= 12) {
+                      if (vt === "table" && dimCols.length === 1 && numCols.length >= 1 && n <= 25) {
                         const dm = dimCols[0].toLowerCase();
                         if (["mois", "semaine", "trimestre"].includes(dm) || dm.includes("mois") || dm.includes("date")) vt = "line";
                         else if (n <= 8 && numCols.length === 1) vt = "pie";
