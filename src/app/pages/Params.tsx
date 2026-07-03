@@ -317,10 +317,20 @@ export default function Params({ user }: ParamsProps) {
                 </div>
               )}
 
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 10 }}>
                 <Btn onClick={() => setEditingSource(null)}>Annuler</Btn>
                 <Btn primary>Enregistrer</Btn>
-                <Btn danger onClick={() => { if (window.confirm(`Déconnecter ${editingSource} ? Les données seront supprimées.`)) setEditingSource(null); }}>Déconnecter</Btn>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                <button onClick={() => { setEditingSource(null); }}
+                  style={{ padding: "8px 0", borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", border: "1px solid #c47a20", background: "#fff", color: "#c47a20" }}
+                >Déconnecter</button>
+                <button onClick={() => { if (window.confirm(`Supprimer définitivement ${editingSource} et toutes ses données ?`)) setEditingSource(null); }}
+                  style={{ padding: "8px 0", borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", border: "1px solid #d94040", background: "#fff", color: "#d94040" }}
+                >Supprimer</button>
+              </div>
+              <div style={{ fontSize: 11, color: "#8ab8b0", marginTop: 8, textAlign: "center" }}>
+                Déconnecter = source inactive (réactivable) · Supprimer = suppression définitive des données
               </div>
             </div>
           </div>
