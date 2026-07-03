@@ -242,7 +242,7 @@ export default function Dashboards({ id_magasin, user_id, savedFavoris = [], onN
         </div>
         {/* Boutons catégorie */}
         <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
-          {FILTER_CATEGORIES.map(c => (
+          {FILTER_CATEGORIES.filter(c => !["in_dashboard", "not_in_dashboard"].includes(c.id)).map(c => (
             <button
               key={c.id}
               onClick={() => setCatFilter(c.id)}
@@ -253,9 +253,23 @@ export default function Dashboards({ id_magasin, user_id, savedFavoris = [], onN
                 color: catFilter === c.id ? "#fff" : "#4a7068",
                 cursor: "pointer", transition: "all .15s",
               }}
-            >
-              {c.label}
-            </button>
+            >{c.label}</button>
+          ))}
+          {/* Séparateur */}
+          <div style={{ width: 1, height: 28, background: "#d0e8e2", margin: "0 4px" }} />
+          {/* Filtres dashboard */}
+          {FILTER_CATEGORIES.filter(c => ["in_dashboard", "not_in_dashboard"].includes(c.id)).map(c => (
+            <button
+              key={c.id}
+              onClick={() => setCatFilter(catFilter === c.id ? "all" : c.id)}
+              style={{
+                padding: "7px 16px", borderRadius: 8, fontSize: 12, fontWeight: 500, fontFamily: "inherit",
+                border: `1.5px solid ${catFilter === c.id ? "#c47a20" : "#d0e8e2"}`,
+                background: catFilter === c.id ? "#fff3e0" : "#fff",
+                color: catFilter === c.id ? "#c47a20" : "#8ab8b0",
+                cursor: "pointer", transition: "all .15s", fontStyle: "italic",
+              }}
+            >{c.label}</button>
           ))}
         </div>
         {/* Chips favoris */}
