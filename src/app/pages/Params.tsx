@@ -230,6 +230,8 @@ export default function Params({ user }: ParamsProps) {
 
       {/* Abonnement */}
       {tab === "abonnement" && (
+        <>
+        {/* KPI en haut */}
         <Section>
           <div style={{ display: "flex", gap: 14, marginBottom: 16 }}>
             <div style={{ flex: 1, background: "#e8f4f1", borderRadius: 12, padding: 16, textAlign: "center" }}>
@@ -238,14 +240,87 @@ export default function Params({ user }: ParamsProps) {
             </div>
             <div style={{ flex: 1, background: "#f0f7f5", borderRadius: 12, padding: 16, textAlign: "center" }}>
               <div style={{ fontSize: 24, fontWeight: 800 }}>5</div>
-              <div style={{ fontSize: 11, color: "#4a7068" }}>utilisateurs</div>
+              <div style={{ fontSize: 11, color: "#4a7068" }}>sièges</div>
+            </div>
+            <div style={{ flex: 1, background: "#f0f7f5", borderRadius: 12, padding: 16, textAlign: "center" }}>
+              <div style={{ fontSize: 24, fontWeight: 800 }}>3 / 5</div>
+              <div style={{ fontSize: 11, color: "#4a7068" }}>assignés</div>
             </div>
             <div style={{ flex: 1, background: "#f0f7f5", borderRadius: 12, padding: 16, textAlign: "center" }}>
               <div style={{ fontSize: 24, fontWeight: 800 }}>{user.connecteurs?.length || 0}</div>
               <div style={{ fontSize: 11, color: "#4a7068" }}>connecteurs</div>
             </div>
           </div>
-          <ParamRow label="Formule"><span style={{ fontSize: 13, color: "#4a7068" }}>{user.licences ? Object.entries(user.licences).filter(([,v]) => v > 0).map(([k,v]) => `${v} × ${k.toUpperCase()}`).join(" + ") : user.formule?.toUpperCase()}</span></ParamRow>
+        </Section>
+
+        {/* Sièges par formule — drag & drop */}
+        <Section>
+          <div style={{ fontSize: 15, fontWeight: 700, color: "#1a3030", marginBottom: 14 }}>Sièges par formule</div>
+          <p style={{ fontSize: 12, color: "#4a7068", marginBottom: 16 }}>Glissez les utilisateurs dans les sièges pour les assigner à une formule.</p>
+
+          {/* Utilisateurs non assignés */}
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16, padding: 12, background: "#f0f7f5", borderRadius: 10 }}>
+            <span style={{ fontSize: 11, fontWeight: 700, color: "#8ab8b0", textTransform: "uppercase", letterSpacing: 1, width: "100%", marginBottom: 4 }}>Utilisateurs disponibles</span>
+            {[
+              { initials, name: `${user.prenom} ${user.nom}`, assigned: "max" },
+              { initials: "LD", name: "Laurent Dupont", assigned: "mid" },
+              { initials: "SM", name: "Sophie Martin", assigned: "min" },
+            ].filter(u => !u.assigned).map((u, i) => (
+              <div key={i} draggable style={{ display: "flex", alignItems: "center", gap: 6, padding: "4px 10px", borderRadius: 8, background: "#fff", border: "1.5px solid #d0e8e2", fontSize: 12, fontWeight: 500, cursor: "grab" }}>
+                <div style={{ width: 22, height: 22, borderRadius: 6, background: "#3AA48A", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 700 }}>{u.initials}</div>
+                {u.name}
+              </div>
+            ))}
+            {/* Si tous assignés */}
+            <span style={{ fontSize: 11, color: "#8ab8b0", fontStyle: "italic" }}>Tous les utilisateurs sont assignés</span>
+          </div>
+
+          {/* Zones formules */}
+          {[
+            { formule: "MAX", prix: "39€", seats: 1, users: [{ initials, name: `${user.prenom} ${user.nom}` }] },
+            { formule: "MID", prix: "34€", seats: 2, users: [{ initials: "LD", name: "Laurent Dupont" }] },
+            { formule: "MIN", prix: "29€", seats: 2, users: [{ initials: "SM", name: "Sophie Martin" }] },
+          ].map(f => (
+            <div key={f.formule} style={{ border: "1px solid #d0e8e2", borderRadius: 10, marginBottom: 10, overflow: "hidden" }}>
+              {/* Header formule */}
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 16px", background: "#f0f7f5" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <Badge text={f.formule} />
+                  <span style={{ fontSize: 13, fontWeight: 600, color: "#1a3030" }}>{f.prix}/mois/utilisateur</span>
+                </div>
+                <span style={{ fontSize: 11, color: "#4a7068" }}>{f.users.length} / {f.seats} sièges</span>
+              </div>
+              {/* Sièges */}
+              <div style={{ display: "flex", gap: 8, padding: 12 }}>
+                {Array.from({ length: f.seats }).map((_, i) => {
+                  const u = f.users[i];
+                  return u ? (
+                    <div key={i} style={{ flex: 1, display: "flex", alignItems: "center", gap: 8, padding: "10px 14px", borderRadius: 8, border: "1.5px solid #3AA48A", background: "#e8f4f1", cursor: "grab" }} draggable>
+                      <div style={{ width: 28, height: 28, borderRadius: 8, background: "#3AA48A", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700 }}>{u.initials}</div>
+                      <div>
+                        <div style={{ fontSize: 12, fontWeight: 600, color: "#1a3030" }}>{u.name}</div>
+                        <div style={{ fontSize: 10, color: "#3AA48A" }}>Assigné</div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div key={i}
+                      onDragOver={e => { e.preventDefault(); (e.currentTarget).style.borderColor = "#3AA48A"; (e.currentTarget).style.background = "#e8f4f1"; }}
+                      onDragLeave={e => { (e.currentTarget).style.borderColor = "#d0e8e2"; (e.currentTarget).style.background = "transparent"; }}
+                      onDrop={e => { e.preventDefault(); (e.currentTarget).style.borderColor = "#d0e8e2"; (e.currentTarget).style.background = "transparent"; }}
+                      style={{ flex: 1, padding: "14px", borderRadius: 8, border: "2px dashed #d0e8e2", textAlign: "center", color: "#8ab8b0", fontSize: 12, transition: "all .2s" }}
+                    >
+                      Siège disponible
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </Section>
+
+        {/* Facturation */}
+        <Section>
+          <div style={{ fontSize: 15, fontWeight: 700, color: "#1a3030", marginBottom: 14 }}>Facturation</div>
           <ParamRow label="Connecteurs"><span style={{ fontSize: 13, color: "#4a7068" }}>{user.connecteurs?.join(", ") || "Aucun"}</span></ParamRow>
           <ParamRow label="Prochain prélèvement"><span style={{ fontSize: 13, color: "#4a7068" }}>1er août 2026</span></ParamRow>
           <ParamRow label="Moyen de paiement">
@@ -258,6 +333,7 @@ export default function Params({ user }: ParamsProps) {
             <Btn danger>Résilier</Btn>
           </div>
         </Section>
+        </>
       )}
 
       {/* Sources */}
