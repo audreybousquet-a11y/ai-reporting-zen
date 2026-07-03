@@ -142,6 +142,8 @@ export default function Params({ user }: ParamsProps) {
   const [addingSource, setAddingSource] = useState(false);
   const [addSourceStep, setAddSourceStep] = useState<"choose" | "config">("choose");
   const [addSourceType, setAddSourceType] = useState("");
+  const [excelFileName, setExcelFileName] = useState("suivi_materiel.xlsx");
+  const [excelLastSync, setExcelLastSync] = useState("Importé le 01/07");
   const [theme, setTheme] = useState("light");
   const [aiComment, setAiComment] = useState(true);
   const [showTotals, setShowTotals] = useState(true);
@@ -224,13 +226,13 @@ export default function Params({ user }: ParamsProps) {
             {[
               { id: "deytime", icon: "⏱", name: "Deytime", entreprise: "Art et la Matière", desc: "Gestion du temps & absences", lastSync: "Syncé le 02/07 à 03:15", connected: true, droppable: false },
               { id: "extrabat", icon: "📄", name: "Extrabat", entreprise: "Art et la Matière", desc: "Devis & factures BTP", lastSync: "Syncé le 02/07 à 03:20", connected: true, droppable: false },
-              { id: "excel", icon: "📊", name: "Excel", entreprise: "", desc: "Fichier suivi_materiel.xlsx", lastSync: "Importé le 01/07", connected: true, droppable: true },
+              { id: "excel", icon: "📊", name: "Excel", entreprise: "", desc: `Fichier ${excelFileName}`, lastSync: excelLastSync, connected: true, droppable: true },
               { id: "siren", icon: "🏢", name: "SIRENE / INPI", entreprise: "", desc: "Fiche entreprise, SIRET, dirigeants", lastSync: "API publique", connected: true, droppable: false },
             ].map(src => (
               <div key={src.id} onClick={() => setEditingSource(src.id)}
                 onDragOver={src.droppable ? e => { e.preventDefault(); (e.currentTarget).style.borderColor = "#3AA48A"; (e.currentTarget).style.background = "#e8f4f1"; (e.currentTarget).style.borderStyle = "dashed"; (e.currentTarget).style.borderWidth = "2px"; } : undefined}
                 onDragLeave={src.droppable ? e => { (e.currentTarget).style.borderColor = "#3AA48A"; (e.currentTarget).style.background = "#fff"; (e.currentTarget).style.borderStyle = "solid"; (e.currentTarget).style.borderWidth = "1.5px"; } : undefined}
-                onDrop={src.droppable ? e => { e.preventDefault(); (e.currentTarget).style.borderColor = "#3AA48A"; (e.currentTarget).style.background = "#fff"; (e.currentTarget).style.borderStyle = "solid"; (e.currentTarget).style.borderWidth = "1.5px"; alert(`${e.dataTransfer.files.length} fichier(s) déposé(s) sur ${src.name}`); } : undefined}
+                onDrop={src.droppable ? e => { e.preventDefault(); (e.currentTarget).style.borderColor = "#3AA48A"; (e.currentTarget).style.background = "#fff"; (e.currentTarget).style.borderStyle = "solid"; (e.currentTarget).style.borderWidth = "1.5px"; const f = e.dataTransfer.files[0]; if (f) { setExcelFileName(f.name); const now = new Date(); setExcelLastSync(`Importé le ${now.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit" })} à ${now.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}`); } } : undefined}
                 style={{ border: `1.5px solid ${src.connected ? "#3AA48A" : "#d0e8e2"}`, borderRadius: 12, padding: 16, position: "relative", cursor: "pointer", transition: "all .2s", overflow: "hidden" }}
                 onMouseOver={e => { (e.currentTarget).style.boxShadow = "0 4px 12px rgba(58,164,138,0.12)"; }}
                 onMouseOut={e => { (e.currentTarget).style.boxShadow = "none"; }}
@@ -317,8 +319,8 @@ export default function Params({ user }: ParamsProps) {
                   <div style={{ display: "flex", alignItems: "center", gap: 10, padding: 14, background: "#e8f4f1", borderRadius: 10, marginBottom: 12 }}>
                     <Icon d={icons.file} size={20} color="#3AA48A" />
                     <div>
-                      <div style={{ fontSize: 13, fontWeight: 600, color: "#1a3030" }}>suivi_materiel.xlsx</div>
-                      <div style={{ fontSize: 11, color: "#4a7068" }}>Importé le 01/07/2026 — 245 lignes</div>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: "#1a3030" }}>{excelFileName}</div>
+                      <div style={{ fontSize: 11, color: "#4a7068" }}>{excelLastSync}</div>
                     </div>
                   </div>
                   <div style={{ border: "2px dashed #d0e8e2", borderRadius: 10, padding: 20, textAlign: "center", color: "#8ab8b0", marginBottom: 16, cursor: "pointer" }}>
