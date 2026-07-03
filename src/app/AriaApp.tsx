@@ -1,7 +1,7 @@
 /**
  * AriaApp.tsx — Composant principal de l'application ar.ia
  */
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 
 function Toggle({ initial = false }: { initial?: boolean }) {
   const [on, setOn] = useState(initial);
@@ -125,9 +125,19 @@ function BotAssistance() {
 export default function AriaApp() {
   const { user, loading, login, logout } = useAuth();
   const [currentPage, setCurrentPage] = useState("questions");
-  const [savedFavoris, setSavedFavoris] = useState<SavedFavori[]>([]);
+  // Charger favoris depuis localStorage
+  const [savedFavoris, setSavedFavoris] = useState<SavedFavori[]>(() => {
+    try { return JSON.parse(localStorage.getItem("aria_favoris") || "[]"); } catch { return []; }
+  });
   const [editingFavori, setEditingFavori] = useState<{ question: string; titre: string; cat: string; idx: number; ts: number } | null>(null);
   const [dashboardRefresh, setDashboardRefresh] = useState(0);
+
+  // Sauvegarder favoris dans localStorage à chaque changement
+  const saveFavorisRef = useRef(savedFavoris);
+  if (saveFavorisRef.current !== savedFavoris) {
+    saveFavorisRef.current = savedFavoris;
+    localStorage.setItem("aria_favoris", JSON.stringify(savedFavoris));
+  }
 
   const handleSaveFavori = useCallback((titre: string, cat: string, result: AskResult) => {
     // Déterminer le type de viz

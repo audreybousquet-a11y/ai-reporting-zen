@@ -88,9 +88,20 @@ interface CellData {
 }
 
 export default function Dashboards({ id_magasin, user_id, savedFavoris = [], onNavigate, onSetQuestion, onDeleteFavori, onEditFavori, onEditFavoriInQuestions, refreshTrigger }: DashboardsProps) {
-  const [dashboards, setDashboards] = useState<DashboardData[]>([
-    { id: "db1", nom: "Suivi équipe", cells: [null, null, null, null, null, null, null], sizes: ["small", "small", "small", "small", "medium", "medium", "large"] },
-  ]);
+  // Charger dashboards depuis localStorage (structure uniquement, pas les résultats)
+  const [dashboards, setDashboards] = useState<DashboardData[]>(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem("aria_dashboards") || "null");
+      if (saved && Array.isArray(saved) && saved.length > 0) {
+        // Nettoyer les résultats (pas sérialisables / trop gros)
+        return saved.map((d: any) => ({
+          ...d,
+          cells: (d.cells || []).map((c: any) => c ? { titre: c.titre, question: c.question, loading: false } : null),
+        }));
+      }
+    } catch { /* ignore */ }
+    return [{ id: "db1", nom: "Suivi équipe", cells: [null, null, null, null, null, null, null], sizes: ["small", "small", "small", "small", "medium", "medium", "large"] }];
+  });
   const [showSizeMenu, setShowSizeMenu] = useState(false);
   const [activeDb, setActiveDb] = useState("db1");
   const [catFilter, setCatFilter] = useState("all");
@@ -105,20 +116,32 @@ export default function Dashboards({ id_magasin, user_id, savedFavoris = [], onN
   const [dropIndicator, setDropIndicator] = useState<{ idx: number; side: "before" | "after" } | null>(null);
   const [editingFav, setEditingFav] = useState<{ idx: number; question: string; titre: string; cat: string } | null>(null);
 
-  // Re-exécuter les cellules quand un favori est écrasé
+  // Sauvegarder dashboards dans localStorage (structure, pas résultats)
+  const saveDashRef = useRef(dashboards);
+  if (saveDashRef.current !== dashboards) {
+    saveDashRef.current = dashboards;
+    const toSave = dashboards.map(d => ({
+      id: d.id, nom: d.nom, sizes: d.sizes,
+      cells: d.cells.map(c => c ? { titre: c.titre, question: c.question } : null),
+    }));
+    localStorage.setItem("aria_dashboards", JSON.stringify(toSave));
+  }
+
+  // Re-exécuter les cellules au chargement ou quand un favori est écrasé
   const lastRefresh = useRef(0);
-  if (refreshTrigger && refreshTrigger > lastRefresh.current) {
-    lastRefresh.current = refreshTrigger;
-    // Re-exécuter toutes les cellules remplies
+  const initialLoad = useRef(true);
+  if ((refreshTrigger && refreshTrigger > lastRefresh.current) || initialLoad.current) {
+    if (refreshTrigger) lastRefresh.current = refreshTrigger;
+    if (initialLoad.current) initialLoad.current = false;
     setTimeout(() => {
       dashboards.forEach(d => {
         d.cells.forEach((cell, idx) => {
-          if (cell && cell.question) {
+          if (cell && cell.question && !cell.result && !cell.loading) {
             executeInCell(idx, cell.titre, cell.question);
           }
         });
       });
-    }, 100);
+    }, 200);
   }
 
   const db = dashboards.find(d => d.id === activeDb)!;
