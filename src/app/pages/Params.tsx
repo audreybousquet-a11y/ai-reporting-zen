@@ -224,10 +224,10 @@ export default function Params({ user }: ParamsProps) {
         <Section>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12 }}>
             {[
-              { id: "deytime", icon: "⏱", name: "Deytime", entreprise: "Art et la Matière", desc: "Gestion du temps & absences", lastSync: "Syncé le 02/07 à 03:15", connected: true, droppable: false },
-              { id: "extrabat", icon: "📄", name: "Extrabat", entreprise: "Art et la Matière", desc: "Devis & factures BTP", lastSync: "Syncé le 02/07 à 03:20", connected: true, droppable: false },
-              { id: "excel", icon: "📊", name: "Excel", entreprise: "", desc: `Fichier ${excelFileName}`, lastSync: excelLastSync, connected: true, droppable: true },
-              { id: "siren", icon: "🏢", name: "SIRENE / INPI", entreprise: "", desc: "Fiche entreprise, SIRET, dirigeants", lastSync: "API publique", connected: true, droppable: false },
+              { id: "deytime", svgIcon: "M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71", name: "Deytime", entreprise: "Art et la Matière", desc: "Gestion du temps & absences", lastSync: "Syncé le 02/07 à 03:15", connected: true, droppable: false },
+              { id: "extrabat", svgIcon: "M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71", name: "Extrabat", entreprise: "Art et la Matière", desc: "Devis & factures BTP", lastSync: "Syncé le 02/07 à 03:20", connected: true, droppable: false },
+              { id: "excel", svgIcon: "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M8 13h2M8 17h2M14 13h2M14 17h2", name: "Excel", entreprise: "", desc: `Fichier ${excelFileName}`, lastSync: excelLastSync, connected: true, droppable: true },
+              { id: "siren", svgIcon: "M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3", name: "SIRENE / INPI", entreprise: "", desc: "Fiche entreprise, SIRET, dirigeants", lastSync: "API publique", connected: true, droppable: false },
             ].map(src => (
               <div key={src.id} onClick={() => setEditingSource(src.id)}
                 onDragOver={src.droppable ? e => { e.preventDefault(); (e.currentTarget).style.borderColor = "#3AA48A"; (e.currentTarget).style.background = "#e8f4f1"; (e.currentTarget).style.borderStyle = "dashed"; (e.currentTarget).style.borderWidth = "2px"; } : undefined}
@@ -246,7 +246,9 @@ export default function Params({ user }: ParamsProps) {
                 )}
                 {src.connected && <div style={{ position: "absolute", top: 10, right: 10, width: 10, height: 10, borderRadius: "50%", background: "#3AA48A" }} />}
                 {!src.connected && <div style={{ position: "absolute", top: 10, right: 10, width: 10, height: 10, borderRadius: "50%", background: "#c47a20" }} />}
-                <div style={{ fontSize: 20, marginBottom: 6 }}>{src.icon}</div>
+                <div style={{ width: 36, height: 36, borderRadius: 10, background: "#e8f4f1", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 8 }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3AA48A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d={src.svgIcon} /></svg>
+                </div>
                 <div style={{ fontWeight: 700, fontSize: 14 }}>{src.name}{src.entreprise ? <span style={{ fontWeight: 400, color: "#4a7068" }}> ({src.entreprise})</span> : ""}</div>
                 <div style={{ fontSize: 12, color: "#4a7068", margin: "4px 0 10px" }}>{src.desc}</div>
                 {src.connected ? (
@@ -363,26 +365,30 @@ export default function Params({ user }: ParamsProps) {
 
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10 }}>
                     {[
-                      { id: "excel", icon: "📊", name: "Excel / CSV", desc: "Importez un fichier Excel ou CSV" },
-                      { id: "gsheets", icon: "📋", name: "Google Sheets", desc: "Connectez une feuille Google" },
-                      { id: "deytime", icon: "⏱", name: "Deytime", desc: "Gestion du temps & absences" },
-                      { id: "extrabat", icon: "📄", name: "Extrabat", desc: "Devis & factures BTP" },
-                      { id: "pennylane", icon: "💰", name: "Pennylane", desc: "Comptabilité" },
-                      { id: "siren", icon: "🏢", name: "SIRENE / INPI", desc: "Fiche entreprise, SIRET, dirigeants" },
-                      { id: "meteo", icon: "🌤", name: "Météo", desc: "Historique et prévisions météo" },
-                      { id: "facture_elec", icon: "📑", name: "Facture électronique", desc: "Réception / émission factures" },
-                      { id: "edf", icon: "⚡", name: "Énergie (EDF, Engie)", desc: "Consommation et factures énergie" },
-                      { id: "gmail", icon: "✉", name: "Gmail / Google Drive", desc: "Pièces jointes et documents" },
-                      { id: "api", icon: "🔗", name: "Autre API", desc: "Connectez une API personnalisée" },
+                      { id: "excel", svgd: "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M8 13h2M8 17h2M14 13h2M14 17h2", name: "Excel / CSV", desc: "Importez un fichier Excel ou CSV" },
+                      { id: "gsheets", svgd: "M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18", name: "Google Sheets", desc: "Connectez une feuille Google" },
+                      { id: "deytime", svgd: "M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71", name: "Deytime", desc: "Gestion du temps & absences" },
+                      { id: "extrabat", svgd: "M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71", name: "Extrabat", desc: "Devis & factures BTP" },
+                      { id: "pennylane", svgd: "M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71", name: "Pennylane", desc: "Comptabilité" },
+                      { id: "siren", svgd: "M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3", name: "SIRENE / INPI", desc: "Fiche entreprise, SIRET, dirigeants" },
+                      { id: "meteo", svgd: "M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9zM22 10a4.5 4.5 0 0 0-4.5-4.5", name: "Météo", desc: "Historique et prévisions météo" },
+                      { id: "facture_elec", svgd: "M13 2L3 14h9l-1 8 10-12h-9l1-8", name: "Facture électronique", desc: "Réception / émission factures" },
+                      { id: "edf", svgd: "M13 2L3 14h9l-1 8 10-12h-9l1-8", name: "Énergie (EDF, Engie)", desc: "Consommation et factures énergie" },
+                      { id: "gmail", svgd: "M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2zM22 6l-10 7L2 6", name: "Gmail / Google Drive", desc: "Pièces jointes et documents" },
+                      { id: "api", svgd: "M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71", name: "Autre API", desc: "Connectez une API personnalisée" },
                     ].map(src => (
                       <div key={src.id} onClick={() => { setAddSourceType(src.id); setAddSourceStep("config"); }}
-                        style={{ border: "1.5px solid #d0e8e2", borderRadius: 10, padding: 14, cursor: "pointer", transition: "all .15s" }}
+                        style={{ border: "1.5px solid #d0e8e2", borderRadius: 10, padding: 14, cursor: "pointer", transition: "all .15s", display: "flex", alignItems: "center", gap: 12 }}
                         onMouseOver={e => { (e.currentTarget).style.borderColor = "#3AA48A"; (e.currentTarget).style.background = "#e8f4f1"; }}
                         onMouseOut={e => { (e.currentTarget).style.borderColor = "#d0e8e2"; (e.currentTarget).style.background = "#fff"; }}
                       >
-                        <div style={{ fontSize: 20, marginBottom: 6 }}>{src.icon}</div>
-                        <div style={{ fontWeight: 600, fontSize: 13, color: "#1a3030" }}>{src.name}</div>
-                        <div style={{ fontSize: 11, color: "#4a7068", marginTop: 2 }}>{src.desc}</div>
+                        <div style={{ width: 36, height: 36, borderRadius: 10, background: "#e8f4f1", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3AA48A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d={src.svgd} /></svg>
+                        </div>
+                        <div>
+                          <div style={{ fontWeight: 600, fontSize: 13, color: "#1a3030" }}>{src.name}</div>
+                          <div style={{ fontSize: 11, color: "#4a7068", marginTop: 1 }}>{src.desc}</div>
+                        </div>
                       </div>
                     ))}
                   </div>
