@@ -403,7 +403,7 @@ export default function Dashboards({ id_magasin, user_id, savedFavoris = [], onN
               onDrop={e => {
                 e.preventDefault();
                 setDropIndicator(null);
-                if (dragCellRef.current !== null && dragCellRef.current !== idx) {
+                if (dragCellRef.current !== null && dragCellRef.current !== idx && dragWithZone.current) {
                   const rect = e.currentTarget.getBoundingClientRect();
                   const midX = rect.left + rect.width / 2;
                   const side = e.clientX < midX ? "before" : "after";
@@ -515,7 +515,7 @@ export default function Dashboards({ id_magasin, user_id, savedFavoris = [], onN
                   const fav = allFavoris.find(f => f.question === dragFavRef.current);
                   if (fav) executeInCell(idx, fav.titre, fav.question);
                 }
-                if (dragCellRef.current !== null && dragCellRef.current !== idx) {
+                if (dragCellRef.current !== null && dragCellRef.current !== idx && dragWithZone.current) {
                   const rect = e.currentTarget.getBoundingClientRect();
                   const midX = rect.left + rect.width / 2;
                   insertCellAt(dragCellRef.current, idx, e.clientX < midX ? "before" : "after");
