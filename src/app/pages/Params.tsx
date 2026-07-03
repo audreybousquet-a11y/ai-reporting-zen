@@ -144,6 +144,16 @@ export default function Params({ user }: ParamsProps) {
   const [addSourceType, setAddSourceType] = useState("");
   const [excelFileName, setExcelFileName] = useState("suivi_materiel.xlsx");
   const [excelLastSync, setExcelLastSync] = useState("Importé le 01/07");
+  const [disconnected, setDisconnected] = useState<Set<string>>(new Set());
+  const [expandedSource, setExpandedSource] = useState<string | null>(null);
+
+  const sourceTables: Record<string, { tables: string[]; context: string }> = {
+    deytime: { tables: ["vue_heures", "vue_chantiers", "vue_absences", "vue_cagnotte", "vue_clients", "vue_conges"], context: "Données RH : heures travaillées, absences, congés, chantiers, indemnités" },
+    extrabat: { tables: ["vue_pieces_clients", "vue_lignes", "vue_clients_extrabat"], context: "Données commerciales : devis, factures, articles, clients BTP" },
+    pennylane: { tables: ["vue_transactions", "vue_clients_pennylane", "vue_fournisseurs_pennylane"], context: "Données comptables : écritures, factures, fournisseurs" },
+    excel: { tables: ["données importées"], context: "Fichier Excel importé — colonnes détectées automatiquement" },
+    siren: { tables: ["entreprises"], context: "API publique SIRENE/INPI — recherche par SIRET, nom, dirigeant" },
+  };
   const [theme, setTheme] = useState("light");
   const [aiComment, setAiComment] = useState(true);
   const [showTotals, setShowTotals] = useState(true);
@@ -233,7 +243,7 @@ export default function Params({ user }: ParamsProps) {
                 onDragOver={src.droppable ? e => { e.preventDefault(); (e.currentTarget).style.borderColor = "#3AA48A"; (e.currentTarget).style.background = "#e8f4f1"; (e.currentTarget).style.borderStyle = "dashed"; (e.currentTarget).style.borderWidth = "2px"; } : undefined}
                 onDragLeave={src.droppable ? e => { (e.currentTarget).style.borderColor = "#3AA48A"; (e.currentTarget).style.background = "#fff"; (e.currentTarget).style.borderStyle = "solid"; (e.currentTarget).style.borderWidth = "1.5px"; } : undefined}
                 onDrop={src.droppable ? e => { e.preventDefault(); (e.currentTarget).style.borderColor = "#3AA48A"; (e.currentTarget).style.background = "#fff"; (e.currentTarget).style.borderStyle = "solid"; (e.currentTarget).style.borderWidth = "1.5px"; const f = e.dataTransfer.files[0]; if (f) { setExcelFileName(f.name); const now = new Date(); setExcelLastSync(`Importé le ${now.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit" })} à ${now.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}`); } } : undefined}
-                style={{ border: `1.5px solid ${src.connected ? "#3AA48A" : "#d0e8e2"}`, borderRadius: 12, padding: 16, position: "relative", cursor: "pointer", transition: "all .2s", overflow: "hidden" }}
+                style={{ border: `1.5px solid ${src.connected && !disconnected.has(src.id) ? "#3AA48A" : disconnected.has(src.id) ? "#c47a20" : "#d0e8e2"}`, borderRadius: 12, padding: 16, position: "relative", cursor: "pointer", transition: "all .2s", overflow: "hidden", opacity: disconnected.has(src.id) ? 0.7 : 1 }}
                 onMouseOver={e => { (e.currentTarget).style.boxShadow = "0 4px 12px rgba(58,164,138,0.12)"; }}
                 onMouseOut={e => { (e.currentTarget).style.boxShadow = "none"; }}
               >
@@ -249,19 +259,43 @@ export default function Params({ user }: ParamsProps) {
                 <div style={{ width: 36, height: 36, borderRadius: 10, background: "#e8f4f1", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 8 }}>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3AA48A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d={src.svgIcon} /></svg>
                 </div>
-                <div style={{ fontWeight: 700, fontSize: 14 }}>{src.name}{src.entreprise ? <span style={{ fontWeight: 400, color: "#4a7068" }}> ({src.entreprise})</span> : ""}</div>
+                <div style={{ fontWeight: 700, fontSize: 14, textTransform: "uppercase", letterSpacing: 0.5 }}>{src.name}{src.entreprise ? <span style={{ fontWeight: 400, color: "#4a7068", textTransform: "none" }}> ({src.entreprise})</span> : ""}</div>
                 <div style={{ fontSize: 12, color: "#4a7068", margin: "4px 0 10px" }}>{src.desc}</div>
-                {src.connected ? (
+                {src.connected && !disconnected.has(src.id) ? (
                   <>
                     <div style={{ fontSize: 11, color: "#3AA48A", fontWeight: 600, marginBottom: 8 }}>✓ Connecté{src.lastSync ? ` — ${src.lastSync}` : ""}</div>
-                    <div style={{ display: "flex", gap: 6 }}>
-                      <button onClick={e => { e.stopPropagation(); }}
+                    <div style={{ display: "flex", gap: 6, marginBottom: 8 }}>
+                      <button onClick={e => { e.stopPropagation(); setDisconnected(prev => { const n = new Set(prev); n.add(src.id); return n; }); }}
                         style={{ padding: "4px 10px", borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", border: "1px solid #c47a20", background: "#fff", color: "#c47a20" }}
                       >Déconnecter</button>
                       <button onClick={e => { e.stopPropagation(); if (window.confirm(`Supprimer ${src.name} et toutes ses données ?`)) {} }}
                         style={{ padding: "4px 10px", borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", border: "1px solid #d94040", background: "#fff", color: "#d94040" }}
                       >Supprimer</button>
                     </div>
+                    {/* Tables et contexte */}
+                    <div onClick={e => { e.stopPropagation(); setExpandedSource(expandedSource === src.id ? null : src.id); }}
+                      style={{ fontSize: 11, color: "#3AA48A", cursor: "pointer", display: "flex", alignItems: "center", gap: 4 }}>
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#3AA48A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                        style={{ transform: expandedSource === src.id ? "rotate(90deg)" : "none", transition: "transform .15s" }}><path d="M9 18l6-6-6-6"/></svg>
+                      {sourceTables[src.id]?.tables.length || 0} tables · Voir le détail
+                    </div>
+                    {expandedSource === src.id && sourceTables[src.id] && (
+                      <div style={{ marginTop: 8, padding: 10, background: "#f0f7f5", borderRadius: 8, fontSize: 11 }}>
+                        <div style={{ color: "#4a7068", marginBottom: 6, fontStyle: "italic" }}>{sourceTables[src.id].context}</div>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+                          {sourceTables[src.id].tables.map(t => (
+                            <span key={t} style={{ background: "#e8f4f1", color: "#3AA48A", padding: "2px 8px", borderRadius: 4, fontSize: 10, fontWeight: 600 }}>{t}</span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </>
+                ) : src.connected && disconnected.has(src.id) ? (
+                  <>
+                    <div style={{ fontSize: 11, color: "#c47a20", fontWeight: 600, marginBottom: 8 }}>Déconnecté — source inactive</div>
+                    <button onClick={e => { e.stopPropagation(); setDisconnected(prev => { const n = new Set(prev); n.delete(src.id); return n; }); }}
+                      style={{ padding: "4px 10px", borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", border: "1px solid #3AA48A", background: "#fff", color: "#3AA48A" }}
+                    >Reconnecter</button>
                   </>
                 ) : (
                   <div style={{ fontSize: 11, color: "#c47a20", fontWeight: 600 }}>Non configuré — Cliquez pour configurer</div>
