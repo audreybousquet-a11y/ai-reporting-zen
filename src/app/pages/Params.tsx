@@ -142,6 +142,7 @@ export default function Params({ user }: ParamsProps) {
   const [addingSource, setAddingSource] = useState(false);
   const [addSourceStep, setAddSourceStep] = useState<"choose" | "config">("choose");
   const [addSourceType, setAddSourceType] = useState("");
+  const [sourceFilter, setSourceFilter] = useState<"all" | "active" | "inactive">("all");
   const [excelFileName, setExcelFileName] = useState("suivi_materiel.xlsx");
   const [excelLastSync, setExcelLastSync] = useState("Importé le 01/07");
   const [disconnected, setDisconnected] = useState<Set<string>>(new Set());
@@ -232,13 +233,34 @@ export default function Params({ user }: ParamsProps) {
       {tab === "sources" && (
         <>
         <Section>
+          {/* Filtres sources */}
+          <div style={{ display: "flex", gap: 6, marginBottom: 14 }}>
+            {([
+              { id: "all" as const, label: `Toutes (${4 - disconnected.size + disconnected.size})` },
+              { id: "active" as const, label: `Actives (${4 - disconnected.size})` },
+              { id: "inactive" as const, label: `Déconnectées (${disconnected.size})` },
+            ]).map(f => (
+              <button key={f.id} onClick={() => setSourceFilter(f.id)}
+                style={{
+                  padding: "6px 14px", borderRadius: 8, fontSize: 12, fontWeight: 600, fontFamily: "inherit", cursor: "pointer",
+                  border: `1.5px solid ${sourceFilter === f.id ? "#3AA48A" : "#d0e8e2"}`,
+                  background: sourceFilter === f.id ? "#3AA48A" : "#fff",
+                  color: sourceFilter === f.id ? "#fff" : "#4a7068",
+                }}
+              >{f.label}</button>
+            ))}
+          </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12 }}>
             {[
               { id: "deytime", svgIcon: "M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71", name: "Deytime", entreprise: "Art et la Matière", desc: "Gestion du temps & absences", lastSync: "Syncé le 02/07 à 03:15", connected: true, droppable: false },
               { id: "extrabat", svgIcon: "M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71", name: "Extrabat", entreprise: "Art et la Matière", desc: "Devis & factures BTP", lastSync: "Syncé le 02/07 à 03:20", connected: true, droppable: false },
               { id: "excel", svgIcon: "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M8 13h2M8 17h2M14 13h2M14 17h2", name: "Excel", entreprise: "", desc: `Fichier ${excelFileName}`, lastSync: excelLastSync, connected: true, droppable: true },
               { id: "siren", svgIcon: "M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3", name: "SIRENE / INPI", entreprise: "", desc: "Fiche entreprise, SIRET, dirigeants", lastSync: "API publique", connected: true, droppable: false },
-            ].map(src => (
+            ].filter(src => {
+              if (sourceFilter === "active") return src.connected && !disconnected.has(src.id);
+              if (sourceFilter === "inactive") return disconnected.has(src.id);
+              return true;
+            }).map(src => (
               <div key={src.id} onClick={() => setEditingSource(src.id)}
                 onDragOver={src.droppable ? e => { e.preventDefault(); (e.currentTarget).style.borderColor = "#3AA48A"; (e.currentTarget).style.background = "#e8f4f1"; (e.currentTarget).style.borderStyle = "dashed"; (e.currentTarget).style.borderWidth = "2px"; } : undefined}
                 onDragLeave={src.droppable ? e => { (e.currentTarget).style.borderColor = "#3AA48A"; (e.currentTarget).style.background = "#fff"; (e.currentTarget).style.borderStyle = "solid"; (e.currentTarget).style.borderWidth = "1.5px"; } : undefined}
@@ -254,8 +276,8 @@ export default function Params({ user }: ParamsProps) {
                     <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
                   </svg>
                 )}
-                {src.connected && <div style={{ position: "absolute", top: 10, right: 10, width: 10, height: 10, borderRadius: "50%", background: "#3AA48A" }} />}
-                {!src.connected && <div style={{ position: "absolute", top: 10, right: 10, width: 10, height: 10, borderRadius: "50%", background: "#c47a20" }} />}
+                {src.connected && !disconnected.has(src.id) && <div style={{ position: "absolute", top: 10, right: 10, width: 10, height: 10, borderRadius: "50%", background: "#3AA48A" }} />}
+                {(!src.connected || disconnected.has(src.id)) && <div style={{ position: "absolute", top: 10, right: 10, width: 10, height: 10, borderRadius: "50%", background: "#c47a20" }} />}
                 <div style={{ width: 36, height: 36, borderRadius: 10, background: "#e8f4f1", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 8 }}>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3AA48A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d={src.svgIcon} /></svg>
                 </div>
