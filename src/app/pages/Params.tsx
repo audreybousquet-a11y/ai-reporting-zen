@@ -799,18 +799,9 @@ export default function Params({ user }: ParamsProps) {
                 ))}
               </div>
 
-              <label style={{ fontSize: 12, fontWeight: 600, display: "block", marginBottom: 6, color: "#1a3030" }}>Formule</label>
-              <div style={{ display: "flex", gap: 6, marginBottom: 16 }}>
-                {["min", "mid", "max"].map(f => (
-                  <button key={f}
-                    style={{ padding: "6px 16px", borderRadius: 8, fontSize: 12, fontWeight: 600, fontFamily: "inherit", cursor: "pointer",
-                      border: `2px solid ${editingUser.formule === f ? "#3AA48A" : "#d0e8e2"}`,
-                      background: editingUser.formule === f ? "#3AA48A" : "#fff",
-                      color: editingUser.formule === f ? "#fff" : "#4a7068",
-                    }}
-                    onClick={() => setEditingUser({ ...editingUser, formule: f })}
-                  >{f.toUpperCase()}</button>
-                ))}
+              <div style={{ background: "#f0f7f5", borderRadius: 8, padding: 10, marginBottom: 16, fontSize: 12, color: "#4a7068", display: "flex", alignItems: "center", gap: 6 }}>
+                <Badge text={editingUser.formule.toUpperCase()} />
+                La formule se gère dans l'onglet Abonnement
               </div>
 
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
