@@ -109,6 +109,15 @@ export async function saveDashboards(source_label: string, dashboards: Dashboard
   });
 }
 
+export async function executeSQL(sql: string, id_magasin: string): Promise<AskResult> {
+  const resp = await fetch(`${API_URL}/api/execute-sql`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ sql, id_magasin }),
+  });
+  return resp.json();
+}
+
 export async function getSources(id_magasin: string): Promise<{ label: string; tables: number }[]> {
   const resp = await fetch(`${API_URL}/api/sources/${id_magasin}`);
   const data = await resp.json();

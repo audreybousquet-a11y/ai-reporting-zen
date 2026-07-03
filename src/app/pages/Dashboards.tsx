@@ -2,7 +2,7 @@
  * Dashboards.tsx — Tableaux de bord avec drag & drop
  */
 import { useState, useRef, useEffect } from "react";
-import { Favori, AskResult, ask } from "../lib/api";
+import { Favori, AskResult, ask, executeSQL } from "../lib/api";
 import Chart from "../components/Chart";
 
 import type { SavedFavori } from "../AriaApp";
@@ -152,7 +152,17 @@ export default function Dashboards({ id_magasin, user_id, savedFavoris = [], onN
     }));
 
     try {
-      const result = await ask(question, id_magasin, user_id);
+      // Chercher si le favori a un SQL sauvegardé (écrasé)
+      const fav = allFavoris.find(f => f.question === question || f.titre === titre);
+      let result: AskResult;
+      if (fav?.sql) {
+        // Exécuter le SQL directement
+        result = await executeSQL(fav.sql, id_magasin);
+        result.question = question;
+      } else {
+        // Poser la question normalement
+        result = await ask(question, id_magasin, user_id);
+      }
       setDashboards(prev => prev.map(d => {
         if (d.id !== activeDb) return d;
         const cells = [...d.cells];
