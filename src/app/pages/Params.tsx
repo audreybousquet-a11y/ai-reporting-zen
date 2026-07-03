@@ -219,6 +219,35 @@ export default function Params({ user }: ParamsProps) {
       {/* Sources */}
       {tab === "sources" && (
         <>
+        {/* Zone de drop fichiers */}
+        <div
+          onDragOver={e => { e.preventDefault(); (e.currentTarget).style.borderColor = "#3AA48A"; (e.currentTarget).style.background = "#e8f4f1"; }}
+          onDragLeave={e => { (e.currentTarget).style.borderColor = "#d0e8e2"; (e.currentTarget).style.background = "#fff"; }}
+          onDrop={e => { e.preventDefault(); (e.currentTarget).style.borderColor = "#d0e8e2"; (e.currentTarget).style.background = "#fff"; alert(`${e.dataTransfer.files.length} fichier(s) déposé(s) — import à venir`); }}
+          style={{
+            background: "#fff", border: "2px dashed #d0e8e2", borderRadius: 12,
+            padding: "24px 20px", marginBottom: 16, cursor: "pointer",
+            display: "flex", alignItems: "center", gap: 20, transition: "all .2s",
+            position: "relative", overflow: "hidden",
+          }}
+        >
+          {/* Trombone en filigrane */}
+          <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#e8f4f1" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
+            style={{ position: "absolute", right: 20, top: "50%", transform: "translateY(-50%)", opacity: 0.6 }}
+          >
+            <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+          </svg>
+          <div style={{ width: 48, height: 48, borderRadius: 12, background: "#e8f4f1", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3AA48A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+            </svg>
+          </div>
+          <div>
+            <div style={{ fontSize: 14, fontWeight: 600, color: "#1a3030" }}>Déposez vos fichiers ici</div>
+            <div style={{ fontSize: 12, color: "#4a7068", marginTop: 2 }}>Excel (.xlsx, .xls), CSV, PDF — glissez directement depuis votre ordinateur</div>
+          </div>
+        </div>
+
         <Section>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12 }}>
             {[
