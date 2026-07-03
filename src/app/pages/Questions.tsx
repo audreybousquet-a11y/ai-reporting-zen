@@ -96,9 +96,10 @@ function SaveFavoriModal({ question, isFromFavori, defaultNom, defaultCat, onSav
   );
 }
 
-function ResultCard({ result, onSaveFavori, isModifying, originalFavori, onModificationDone }: {
+function ResultCard({ result, onSaveFavori, onOverwriteFavori, isModifying, originalFavori, onModificationDone }: {
   result: AskResult & { ts: string };
   onSaveFavori?: (titre: string, cat: string, r: AskResult) => void;
+  onOverwriteFavori?: (idx: number, titre: string, cat: string, r: AskResult) => void;
   isModifying?: boolean;
   originalFavori?: { question: string; titre: string; cat: string; idx: number } | null;
   onModificationDone?: () => void;
@@ -388,7 +389,7 @@ export default function Questions({ id_magasin, user_id, onSaveFavori, onOverwri
 
       {/* Résultats */}
       {results.map((r, i) => (
-        <ResultCard key={i} result={r} onSaveFavori={onSaveFavori}
+        <ResultCard key={i} result={r} onSaveFavori={onSaveFavori} onOverwriteFavori={onOverwriteFavori}
           isModifying={i === 0 && isModifying} originalFavori={originalFavori}
           onModificationDone={() => { setIsModifying(false); setOriginalFavori(null); if (onClearEditing) onClearEditing(); }} />
       ))}
