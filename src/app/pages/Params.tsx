@@ -219,48 +219,29 @@ export default function Params({ user }: ParamsProps) {
       {/* Sources */}
       {tab === "sources" && (
         <>
-        {/* Zone de drop fichiers */}
-        <div
-          onDragOver={e => { e.preventDefault(); (e.currentTarget).style.borderColor = "#3AA48A"; (e.currentTarget).style.background = "#e8f4f1"; }}
-          onDragLeave={e => { (e.currentTarget).style.borderColor = "#d0e8e2"; (e.currentTarget).style.background = "#fff"; }}
-          onDrop={e => { e.preventDefault(); (e.currentTarget).style.borderColor = "#d0e8e2"; (e.currentTarget).style.background = "#fff"; alert(`${e.dataTransfer.files.length} fichier(s) déposé(s) — import à venir`); }}
-          style={{
-            background: "#fff", border: "2px dashed #d0e8e2", borderRadius: 12,
-            padding: "24px 20px", marginBottom: 16, cursor: "pointer",
-            display: "flex", alignItems: "center", gap: 20, transition: "all .2s",
-            position: "relative", overflow: "hidden",
-          }}
-        >
-          {/* Trombone en filigrane */}
-          <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#e8f4f1" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
-            style={{ position: "absolute", right: 20, top: "50%", transform: "translateY(-50%)", opacity: 0.6 }}
-          >
-            <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
-          </svg>
-          <div style={{ width: 48, height: 48, borderRadius: 12, background: "#e8f4f1", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3AA48A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
-            </svg>
-          </div>
-          <div>
-            <div style={{ fontSize: 14, fontWeight: 600, color: "#1a3030" }}>Déposez vos fichiers ici</div>
-            <div style={{ fontSize: 12, color: "#4a7068", marginTop: 2 }}>Excel (.xlsx, .xls), CSV, PDF — glissez directement depuis votre ordinateur</div>
-          </div>
-        </div>
-
         <Section>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12 }}>
             {[
-              { id: "deytime", icon: "⏱", name: "Deytime", entreprise: "Art et la Matière", desc: "Gestion du temps & absences", lastSync: "Syncé le 02/07 à 03:15", connected: true },
-              { id: "extrabat", icon: "📄", name: "Extrabat", entreprise: "Art et la Matière", desc: "Devis & factures BTP", lastSync: "Syncé le 02/07 à 03:20", connected: true },
-              { id: "excel", icon: "📊", name: "Excel", entreprise: "", desc: "Fichier suivi_materiel.xlsx", lastSync: "Importé le 01/07", connected: true },
-              { id: "siren", icon: "🏢", name: "SIRENE / INPI", entreprise: "", desc: "Fiche entreprise, SIRET, dirigeants", lastSync: "API publique", connected: true },
+              { id: "deytime", icon: "⏱", name: "Deytime", entreprise: "Art et la Matière", desc: "Gestion du temps & absences", lastSync: "Syncé le 02/07 à 03:15", connected: true, droppable: false },
+              { id: "extrabat", icon: "📄", name: "Extrabat", entreprise: "Art et la Matière", desc: "Devis & factures BTP", lastSync: "Syncé le 02/07 à 03:20", connected: true, droppable: false },
+              { id: "excel", icon: "📊", name: "Excel", entreprise: "", desc: "Fichier suivi_materiel.xlsx", lastSync: "Importé le 01/07", connected: true, droppable: true },
+              { id: "siren", icon: "🏢", name: "SIRENE / INPI", entreprise: "", desc: "Fiche entreprise, SIRET, dirigeants", lastSync: "API publique", connected: true, droppable: false },
             ].map(src => (
               <div key={src.id} onClick={() => setEditingSource(src.id)}
-                style={{ border: `1.5px solid ${src.connected ? "#3AA48A" : "#d0e8e2"}`, borderRadius: 12, padding: 16, position: "relative", cursor: "pointer", transition: "all .2s" }}
+                onDragOver={src.droppable ? e => { e.preventDefault(); (e.currentTarget).style.borderColor = "#3AA48A"; (e.currentTarget).style.background = "#e8f4f1"; (e.currentTarget).style.borderStyle = "dashed"; (e.currentTarget).style.borderWidth = "2px"; } : undefined}
+                onDragLeave={src.droppable ? e => { (e.currentTarget).style.borderColor = "#3AA48A"; (e.currentTarget).style.background = "#fff"; (e.currentTarget).style.borderStyle = "solid"; (e.currentTarget).style.borderWidth = "1.5px"; } : undefined}
+                onDrop={src.droppable ? e => { e.preventDefault(); (e.currentTarget).style.borderColor = "#3AA48A"; (e.currentTarget).style.background = "#fff"; (e.currentTarget).style.borderStyle = "solid"; (e.currentTarget).style.borderWidth = "1.5px"; alert(`${e.dataTransfer.files.length} fichier(s) déposé(s) sur ${src.name}`); } : undefined}
+                style={{ border: `1.5px solid ${src.connected ? "#3AA48A" : "#d0e8e2"}`, borderRadius: 12, padding: 16, position: "relative", cursor: "pointer", transition: "all .2s", overflow: "hidden" }}
                 onMouseOver={e => { (e.currentTarget).style.boxShadow = "0 4px 12px rgba(58,164,138,0.12)"; }}
                 onMouseOut={e => { (e.currentTarget).style.boxShadow = "none"; }}
               >
+                {/* Trombone en filigrane pour les sources fichier */}
+                {src.droppable && (
+                  <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#e8f4f1" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
+                    style={{ position: "absolute", right: 8, bottom: 8, opacity: 0.5 }}>
+                    <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+                  </svg>
+                )}
                 {src.connected && <div style={{ position: "absolute", top: 10, right: 10, width: 10, height: 10, borderRadius: "50%", background: "#3AA48A" }} />}
                 {!src.connected && <div style={{ position: "absolute", top: 10, right: 10, width: 10, height: 10, borderRadius: "50%", background: "#c47a20" }} />}
                 <div style={{ fontSize: 20, marginBottom: 6 }}>{src.icon}</div>
