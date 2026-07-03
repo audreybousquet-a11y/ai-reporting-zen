@@ -222,10 +222,10 @@ export default function Params({ user }: ParamsProps) {
         <Section>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12 }}>
             {[
-              { id: "deytime", icon: "⏱", name: "Deytime", desc: "Gestion du temps & absences", lastSync: "Syncé le 02/07 à 03:15", connected: true },
-              { id: "extrabat", icon: "📄", name: "Extrabat", desc: "Devis & factures BTP", lastSync: "Syncé le 02/07 à 03:20", connected: true },
-              { id: "excel", icon: "📊", name: "Excel", desc: "Fichier suivi_materiel.xlsx", lastSync: "Importé le 01/07", connected: true },
-              { id: "siren", icon: "🏢", name: "SIRENE / INPI", desc: "Fiche entreprise, SIRET, dirigeants", lastSync: "API publique", connected: true },
+              { id: "deytime", icon: "⏱", name: "Deytime", entreprise: "Art et la Matière", desc: "Gestion du temps & absences", lastSync: "Syncé le 02/07 à 03:15", connected: true },
+              { id: "extrabat", icon: "📄", name: "Extrabat", entreprise: "Art et la Matière", desc: "Devis & factures BTP", lastSync: "Syncé le 02/07 à 03:20", connected: true },
+              { id: "excel", icon: "📊", name: "Excel", entreprise: "", desc: "Fichier suivi_materiel.xlsx", lastSync: "Importé le 01/07", connected: true },
+              { id: "siren", icon: "🏢", name: "SIRENE / INPI", entreprise: "", desc: "Fiche entreprise, SIRET, dirigeants", lastSync: "API publique", connected: true },
             ].map(src => (
               <div key={src.id} onClick={() => setEditingSource(src.id)}
                 style={{ border: `1.5px solid ${src.connected ? "#3AA48A" : "#d0e8e2"}`, borderRadius: 12, padding: 16, position: "relative", cursor: "pointer", transition: "all .2s" }}
@@ -235,7 +235,7 @@ export default function Params({ user }: ParamsProps) {
                 {src.connected && <div style={{ position: "absolute", top: 10, right: 10, width: 10, height: 10, borderRadius: "50%", background: "#3AA48A" }} />}
                 {!src.connected && <div style={{ position: "absolute", top: 10, right: 10, width: 10, height: 10, borderRadius: "50%", background: "#c47a20" }} />}
                 <div style={{ fontSize: 20, marginBottom: 6 }}>{src.icon}</div>
-                <div style={{ fontWeight: 700, fontSize: 14 }}>{src.name}</div>
+                <div style={{ fontWeight: 700, fontSize: 14 }}>{src.name}{src.entreprise ? <span style={{ fontWeight: 400, color: "#4a7068" }}> ({src.entreprise})</span> : ""}</div>
                 <div style={{ fontSize: 12, color: "#4a7068", margin: "4px 0 10px" }}>{src.desc}</div>
                 {src.connected ? (
                   <div style={{ fontSize: 11, color: "#3AA48A", fontWeight: 600 }}>✓ Connecté{src.lastSync ? ` — ${src.lastSync}` : ""}</div>
