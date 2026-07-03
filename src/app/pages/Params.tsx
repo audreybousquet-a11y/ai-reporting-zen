@@ -224,7 +224,8 @@ export default function Params({ user }: ParamsProps) {
             {[
               { id: "deytime", icon: "⏱", name: "Deytime", desc: "Gestion du temps & absences", lastSync: "Syncé le 02/07 à 03:15", connected: true },
               { id: "extrabat", icon: "📄", name: "Extrabat", desc: "Devis & factures BTP", lastSync: "Syncé le 02/07 à 03:20", connected: true },
-              { id: "pennylane", icon: "💰", name: "Pennylane", desc: "Comptabilité", lastSync: "", connected: false },
+              { id: "excel", icon: "📊", name: "Excel", desc: "Fichier suivi_materiel.xlsx", lastSync: "Importé le 01/07", connected: true },
+              { id: "siren", icon: "🏢", name: "SIRENE / INPI", desc: "Fiche entreprise, SIRET, dirigeants", lastSync: "API publique", connected: true },
             ].map(src => (
               <div key={src.id} onClick={() => setEditingSource(src.id)}
                 style={{ border: `1.5px solid ${src.connected ? "#3AA48A" : "#d0e8e2"}`, borderRadius: 12, padding: 16, position: "relative", cursor: "pointer", transition: "all .2s" }}
@@ -319,6 +320,11 @@ export default function Params({ user }: ParamsProps) {
                       { id: "deytime", icon: "⏱", name: "Deytime", desc: "Gestion du temps & absences" },
                       { id: "extrabat", icon: "📄", name: "Extrabat", desc: "Devis & factures BTP" },
                       { id: "pennylane", icon: "💰", name: "Pennylane", desc: "Comptabilité" },
+                      { id: "siren", icon: "🏢", name: "SIRENE / INPI", desc: "Fiche entreprise, SIRET, dirigeants" },
+                      { id: "meteo", icon: "🌤", name: "Météo", desc: "Historique et prévisions météo" },
+                      { id: "facture_elec", icon: "📑", name: "Facture électronique", desc: "Réception / émission factures" },
+                      { id: "edf", icon: "⚡", name: "Énergie (EDF, Engie)", desc: "Consommation et factures énergie" },
+                      { id: "gmail", icon: "✉", name: "Gmail / Google Drive", desc: "Pièces jointes et documents" },
                       { id: "api", icon: "🔗", name: "Autre API", desc: "Connectez une API personnalisée" },
                     ].map(src => (
                       <div key={src.id} onClick={() => { setAddSourceType(src.id); setAddSourceStep("config"); }}
