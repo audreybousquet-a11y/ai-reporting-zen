@@ -617,8 +617,10 @@ export default function Dashboards({ id_magasin, user_id, savedFavoris = [], onN
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 6 }}>
               <button onClick={() => {
+                // Passer l'index dans savedFavoris (pas allFavoris)
+                const savedIdx = editingFav.idx - DEMO_FAVORIS.length;
                 if (onEditFavoriInQuestions) onEditFavoriInQuestions({
-                  question: editingFav.question, titre: editingFav.titre, cat: editingFav.cat, idx: editingFav.idx
+                  question: editingFav.question, titre: editingFav.titre, cat: editingFav.cat, idx: savedIdx >= 0 ? savedIdx : editingFav.idx
                 });
                 if (onNavigate) onNavigate("questions");
                 setEditingFav(null);

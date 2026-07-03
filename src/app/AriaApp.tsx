@@ -190,10 +190,13 @@ export default function AriaApp() {
           <div style={{ display: currentPage === "questions" ? "block" : "none" }}>
             <Questions id_magasin={user.id_magasin} user_id={user.id} onSaveFavori={handleSaveFavori}
               onOverwriteFavori={(idx, titre, cat, result) => {
-                setSavedFavoris(prev => prev.map((f, i) => i === idx ? {
-                  ...f, titre, cat, question: result.question, sql: result.sql, viz_config: result.viz_config,
-                } : f));
-                // Déclencher un refresh des dashboards
+                console.log("[ar.ia] Écraser favori idx:", idx, "titre:", titre, "sql:", result.sql?.substring(0, 80), "question:", result.question);
+                setSavedFavoris(prev => {
+                  console.log("[ar.ia] savedFavoris.length:", prev.length, "idx:", idx);
+                  return prev.map((f, i) => i === idx ? {
+                    ...f, titre, cat, question: result.question, sql: result.sql, viz_config: result.viz_config,
+                  } : f);
+                });
                 setDashboardRefresh(Date.now());
               }}
               editingFavori={editingFavori} onClearEditing={() => setEditingFavori(null)} />
