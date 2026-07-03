@@ -148,12 +148,38 @@ export default function Params({ user }: ParamsProps) {
   const [disconnected, setDisconnected] = useState<Set<string>>(new Set());
   const [expandedSource, setExpandedSource] = useState<string | null>(null);
 
-  const sourceTables: Record<string, { tables: string[]; context: string }> = {
-    deytime: { tables: ["vue_heures", "vue_chantiers", "vue_absences", "vue_cagnotte", "vue_clients", "vue_conges"], context: "Données RH : heures travaillées, absences, congés, chantiers, indemnités" },
-    extrabat: { tables: ["vue_pieces_clients", "vue_lignes", "vue_clients_extrabat"], context: "Données commerciales : devis, factures, articles, clients BTP" },
-    pennylane: { tables: ["vue_transactions", "vue_clients_pennylane", "vue_fournisseurs_pennylane"], context: "Données comptables : écritures, factures, fournisseurs" },
-    excel: { tables: ["données importées"], context: "Fichier Excel importé — colonnes détectées automatiquement" },
-    siren: { tables: ["entreprises"], context: "API publique SIRENE/INPI — recherche par SIRET, nom, dirigeant" },
+  const [detailSource, setDetailSource] = useState<string | null>(null);
+
+  const sourceTables: Record<string, { context: string; tables: { name: string; rows: number; cols: string[] }[] }> = {
+    deytime: { context: "Données RH : heures travaillées, absences, congés, chantiers, indemnités",
+      tables: [
+        { name: "vue_heures", rows: 2218, cols: ["employee_id", "prenom", "nom", "date", "heures_travaillees", "heures_planifiees", "heures_sup", "cout_revient", "type_jour", "zone_indemnite", "indemnite_euros"] },
+        { name: "vue_chantiers", rows: 3258, cols: ["date", "prenom", "nom", "chantier_label", "customer_name", "activity_type", "duree"] },
+        { name: "vue_absences", rows: 212, cols: ["prenom", "nom", "type", "motif", "label", "start_date", "end_date", "nb_jours"] },
+        { name: "vue_cagnotte", rows: 1106, cols: ["prenom", "nom", "type", "quantity_heures", "date", "status"] },
+        { name: "vue_clients", rows: 48, cols: ["nom_client", "statut", "telephone", "email", "ville", "nb_chantiers"] },
+        { name: "vue_conges", rows: 348, cols: ["prenom", "nom", "date_conge", "jours_ouvres", "type_conge", "annee_conges"] },
+      ]},
+    extrabat: { context: "Données commerciales : devis, factures, articles, clients BTP",
+      tables: [
+        { name: "vue_pieces_clients", rows: 1850, cols: ["type_piece", "numero", "date", "client_nom", "montant_ht", "montant_ttc", "statut"] },
+        { name: "vue_lignes", rows: 12400, cols: ["piece_id", "code_article", "designation", "quantite", "prix_unitaire", "montant_ht"] },
+        { name: "vue_clients_extrabat", rows: 320, cols: ["nom", "adresse", "ville", "telephone", "email"] },
+      ]},
+    pennylane: { context: "Données comptables : écritures, factures, fournisseurs",
+      tables: [
+        { name: "vue_transactions", rows: 5200, cols: ["date", "journal", "compte", "libelle", "debit", "credit"] },
+        { name: "vue_clients_pennylane", rows: 180, cols: ["nom", "email", "siret"] },
+        { name: "vue_fournisseurs_pennylane", rows: 95, cols: ["nom", "email", "siret"] },
+      ]},
+    excel: { context: "Fichier Excel importé — colonnes détectées automatiquement",
+      tables: [
+        { name: "données importées", rows: 245, cols: ["colonne A", "colonne B", "colonne C"] },
+      ]},
+    siren: { context: "API publique SIRENE/INPI — recherche par SIRET, nom, dirigeant",
+      tables: [
+        { name: "entreprises", rows: 0, cols: ["siret", "siren", "nom", "activite", "adresse", "dirigeant", "forme_juridique"] },
+      ]},
   };
   const [theme, setTheme] = useState("light");
   const [aiComment, setAiComment] = useState(true);
@@ -294,23 +320,12 @@ export default function Params({ user }: ParamsProps) {
                         style={{ padding: "4px 10px", borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", border: "1px solid #d94040", background: "#fff", color: "#d94040" }}
                       >Supprimer</button>
                     </div>
-                    {/* Tables et contexte */}
-                    <div onClick={e => { e.stopPropagation(); setExpandedSource(expandedSource === src.id ? null : src.id); }}
+                    {/* Voir le détail */}
+                    <div onClick={e => { e.stopPropagation(); setDetailSource(src.id); }}
                       style={{ fontSize: 11, color: "#3AA48A", cursor: "pointer", display: "flex", alignItems: "center", gap: 4 }}>
-                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#3AA48A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                        style={{ transform: expandedSource === src.id ? "rotate(90deg)" : "none", transition: "transform .15s" }}><path d="M9 18l6-6-6-6"/></svg>
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#3AA48A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                       {sourceTables[src.id]?.tables.length || 0} tables · Voir le détail
                     </div>
-                    {expandedSource === src.id && sourceTables[src.id] && (
-                      <div style={{ marginTop: 8, padding: 10, background: "#f0f7f5", borderRadius: 8, fontSize: 11 }}>
-                        <div style={{ color: "#4a7068", marginBottom: 6, fontStyle: "italic" }}>{sourceTables[src.id].context}</div>
-                        <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
-                          {sourceTables[src.id].tables.map(t => (
-                            <span key={t} style={{ background: "#e8f4f1", color: "#3AA48A", padding: "2px 8px", borderRadius: 4, fontSize: 10, fontWeight: 600 }}>{t}</span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
                   </>
                 ) : src.connected && disconnected.has(src.id) ? (
                   <>
@@ -335,6 +350,49 @@ export default function Params({ user }: ParamsProps) {
             </div>
           </div>
         </Section>
+
+        {/* Popup détail tables */}
+        {detailSource && sourceTables[detailSource] && (
+          <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(26,48,48,0.4)", zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center" }}
+            onClick={() => setDetailSource(null)}>
+            <div style={{ background: "#fff", borderRadius: 16, padding: 28, width: 600, maxHeight: "80vh", overflow: "auto", boxShadow: "0 20px 60px rgba(0,0,0,.15)" }}
+              onClick={e => e.stopPropagation()}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
+                <div>
+                  <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1a3030", display: "flex", alignItems: "center", gap: 8 }}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3AA48A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/></svg>
+                    {detailSource.toUpperCase()} — Structure des données
+                  </h3>
+                  <p style={{ fontSize: 12, color: "#4a7068", marginTop: 4, fontStyle: "italic" }}>{sourceTables[detailSource].context}</p>
+                </div>
+                <button onClick={() => setDetailSource(null)}
+                  style={{ background: "none", border: "none", fontSize: 18, color: "#8ab8b0", cursor: "pointer" }}>✕</button>
+              </div>
+
+              {sourceTables[detailSource].tables.map(table => (
+                <div key={table.name} style={{ border: "1px solid #d0e8e2", borderRadius: 10, marginBottom: 12, overflow: "hidden" }}>
+                  {/* Header table */}
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 16px", background: "#f0f7f5" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3AA48A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/></svg>
+                      <span style={{ fontWeight: 700, fontSize: 13, color: "#1a3030" }}>{table.name}</span>
+                    </div>
+                    <div style={{ display: "flex", gap: 10, fontSize: 11, color: "#4a7068" }}>
+                      <span>{table.rows.toLocaleString("fr-FR")} lignes</span>
+                      <span>{table.cols.length} colonnes</span>
+                    </div>
+                  </div>
+                  {/* Colonnes */}
+                  <div style={{ padding: "10px 16px", display: "flex", flexWrap: "wrap", gap: 5 }}>
+                    {table.cols.map(col => (
+                      <span key={col} style={{ background: "#e8f4f1", color: "#3AA48A", padding: "3px 10px", borderRadius: 6, fontSize: 11, fontWeight: 500 }}>{col}</span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Popup modifier source */}
         {editingSource && (
