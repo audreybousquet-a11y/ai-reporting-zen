@@ -280,6 +280,8 @@ export default function Questions({ id_magasin, user_id, onSaveFavori, editingFa
       if (result.success) {
         setResults([{ ...result, ts }, ...results]);
         setQuestion("");
+        // Garder isModifying actif tant qu'on a un originalFavori
+        // Il sera reset quand l'utilisateur sauvegarde ou quitte
       } else {
         setError(result.error || "Erreur");
       }
@@ -323,15 +325,24 @@ export default function Questions({ id_magasin, user_id, onSaveFavori, editingFa
           value={question}
           onChange={e => {
             setQuestion(e.target.value);
-            // Si l'utilisateur modifie la question, on sort du mode modification
-            if (originalFavori && e.target.value !== originalFavori.question) {
-              setIsModifying(false);
-            }
           }}
           onKeyDown={e => e.key === "Enter" && handleAsk()}
           disabled={loading}
         />
       </div>
+
+      {/* Bandeau mode modification */}
+      {isModifying && originalFavori && (
+        <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 14px", background: "#fff3e0", border: "1px solid #c47a20", borderRadius: 8, marginBottom: 10, fontSize: 12 }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#c47a20" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          <span style={{ color: "#c47a20", fontWeight: 600 }}>Modification du favori :</span>
+          <span style={{ color: "#4a7068" }}>{originalFavori.titre}</span>
+          <div style={{ flex: 1 }} />
+          <button onClick={() => { setIsModifying(false); setOriginalFavori(null); if (onClearEditing) onClearEditing(); }}
+            style={{ padding: "3px 10px", borderRadius: 6, border: "1px solid #c47a20", background: "#fff", color: "#c47a20", fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}
+          >Quitter la modification</button>
+        </div>
+      )}
 
       {/* Boutons sous la zone question — pleine largeur comme Streamlit */}
       <div style={{ display: "grid", gridTemplateColumns: "3fr 1fr", gap: 8, marginBottom: 20 }}>
