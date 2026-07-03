@@ -84,6 +84,7 @@ interface CellData {
   question: string;
   result?: AskResult;
   loading?: boolean;
+  fromSavedSQL?: boolean; // true = exécuté depuis un SQL sauvegardé → pas d'auto-detect
 }
 
 export default function Dashboards({ id_magasin, user_id, savedFavoris = [], onNavigate, onSetQuestion, onDeleteFavori, onEditFavori, onEditFavoriInQuestions, refreshTrigger }: DashboardsProps) {
@@ -155,18 +156,18 @@ export default function Dashboards({ id_magasin, user_id, savedFavoris = [], onN
       // Chercher si le favori a un SQL sauvegardé (écrasé)
       const fav = allFavoris.find(f => f.question === question || f.titre === titre);
       let result: AskResult;
+      let usedSavedSQL = false;
       if (fav?.sql) {
-        // Exécuter le SQL directement
         result = await executeSQL(fav.sql, id_magasin);
         result.question = question;
+        usedSavedSQL = true;
       } else {
-        // Poser la question normalement
         result = await ask(question, id_magasin, user_id);
       }
       setDashboards(prev => prev.map(d => {
         if (d.id !== activeDb) return d;
         const cells = [...d.cells];
-        cells[cellIdx] = { titre, question, result, loading: false };
+        cells[cellIdx] = { titre, question, result, loading: false, fromSavedSQL: usedSavedSQL };
         return { ...d, cells };
       }));
     } catch {
@@ -451,8 +452,8 @@ export default function Dashboards({ id_magasin, user_id, savedFavoris = [], onN
                     }
                     // Graphique ou tableau
                     let vt = cell.result!.viz_config?.type_viz || "table";
-                    // Auto-detect pour les résultats "table" — comme dans Questions
-                    if (vt === "table" || vt === "pivot") {
+                    // Auto-detect SEULEMENT pour les favoris démo (pas les sauvegardés)
+                    if (!cell.fromSavedSQL && (vt === "table" || vt === "pivot")) {
                       const row0 = cell.result!.data[0] || {};
                       const cols = cell.result!.columns;
                       const isDim = (c: string, v: any) => {
