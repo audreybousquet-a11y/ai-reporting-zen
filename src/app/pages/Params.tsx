@@ -238,7 +238,20 @@ export default function Params({ user }: ParamsProps) {
                 <div style={{ fontWeight: 700, fontSize: 14 }}>{src.name}{src.entreprise ? <span style={{ fontWeight: 400, color: "#4a7068" }}> ({src.entreprise})</span> : ""}</div>
                 <div style={{ fontSize: 12, color: "#4a7068", margin: "4px 0 10px" }}>{src.desc}</div>
                 {src.connected ? (
-                  <div style={{ fontSize: 11, color: "#3AA48A", fontWeight: 600 }}>✓ Connecté{src.lastSync ? ` — ${src.lastSync}` : ""}</div>
+                  <>
+                    <div style={{ fontSize: 11, color: "#3AA48A", fontWeight: 600, marginBottom: 8 }}>✓ Connecté{src.lastSync ? ` — ${src.lastSync}` : ""}</div>
+                    <div style={{ display: "flex", gap: 6 }}>
+                      <button onClick={e => { e.stopPropagation(); }}
+                        style={{ padding: "4px 10px", borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", border: "1px solid #3AA48A", background: "#fff", color: "#3AA48A" }}
+                      >Synchroniser</button>
+                      <button onClick={e => { e.stopPropagation(); }}
+                        style={{ padding: "4px 10px", borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", border: "1px solid #c47a20", background: "#fff", color: "#c47a20" }}
+                      >Déconnecter</button>
+                      <button onClick={e => { e.stopPropagation(); if (window.confirm(`Supprimer ${src.name} et toutes ses données ?`)) {} }}
+                        style={{ padding: "4px 10px", borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", border: "1px solid #d94040", background: "#fff", color: "#d94040" }}
+                      >Supprimer</button>
+                    </div>
+                  </>
                 ) : (
                   <div style={{ fontSize: 11, color: "#c47a20", fontWeight: 600 }}>Non configuré — Cliquez pour configurer</div>
                 )}
