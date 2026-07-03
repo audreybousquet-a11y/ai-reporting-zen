@@ -188,6 +188,11 @@ export default function AriaApp() {
         <div className="app-content">
           <div style={{ display: currentPage === "questions" ? "block" : "none" }}>
             <Questions id_magasin={user.id_magasin} user_id={user.id} onSaveFavori={handleSaveFavori}
+              onOverwriteFavori={(idx, titre, cat, result) => {
+                setSavedFavoris(prev => prev.map((f, i) => i === idx ? {
+                  ...f, titre, cat, question: result.question, sql: result.sql, viz_config: result.viz_config,
+                } : f));
+              }}
               editingFavori={editingFavori} onClearEditing={() => setEditingFavori(null)} />
           </div>
           <div style={{ display: currentPage === "dashboards" ? "block" : "none" }}>

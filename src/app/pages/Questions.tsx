@@ -10,6 +10,7 @@ interface QuestionsProps {
   id_magasin: string;
   user_id: string;
   onSaveFavori?: (titre: string, cat: string, result: AskResult) => void;
+  onOverwriteFavori?: (idx: number, titre: string, cat: string, result: AskResult) => void;
   editingFavori?: { question: string; titre: string; cat: string; idx: number; ts: number } | null;
   onClearEditing?: () => void;
 }
@@ -230,7 +231,9 @@ function ResultCard({ result, onSaveFavori, isModifying, originalFavori, onModif
           onOverwrite={() => {
             setSaved(true);
             setShowSaveModal(false);
-            if (onSaveFavori && originalFavori) onSaveFavori(originalFavori.titre, originalFavori.cat, result);
+            if (onOverwriteFavori && originalFavori) {
+              onOverwriteFavori(originalFavori.idx, originalFavori.titre, originalFavori.cat, result);
+            }
             if (onModificationDone) onModificationDone();
           }}
         />
@@ -239,7 +242,7 @@ function ResultCard({ result, onSaveFavori, isModifying, originalFavori, onModif
   );
 }
 
-export default function Questions({ id_magasin, user_id, onSaveFavori, editingFavori, onClearEditing }: QuestionsProps) {
+export default function Questions({ id_magasin, user_id, onSaveFavori, onOverwriteFavori, editingFavori, onClearEditing }: QuestionsProps) {
   const [question, setQuestion] = useState("");
   const [loading, setLoading] = useState(false);
   const [isModifying, setIsModifying] = useState(false);
