@@ -381,10 +381,10 @@ export default function Params({ user }: ParamsProps) {
                       <input type="password" placeholder="Votre clé secrète..."
                         style={{ width: "100%", padding: "10px 14px", border: "1.5px solid #3AA48A", borderRadius: 10, fontSize: 14, fontFamily: "inherit", outline: "none", marginBottom: 12, color: "#1a3030" }} />
 
-                      {addSourceType === "deytime" && (
+                      {["deytime", "extrabat", "pennylane"].includes(addSourceType) && (
                         <>
-                          <label style={{ fontSize: 13, fontWeight: 600, display: "block", marginBottom: 6, color: "#1a3030" }}>Slug entreprise</label>
-                          <input type="text" placeholder="mon-entreprise"
+                          <label style={{ fontSize: 13, fontWeight: 600, display: "block", marginBottom: 6, color: "#1a3030" }}>Nom de l'entreprise</label>
+                          <input type="text" placeholder="Mon entreprise"
                             style={{ width: "100%", padding: "10px 14px", border: "1.5px solid #3AA48A", borderRadius: 10, fontSize: 14, fontFamily: "inherit", outline: "none", marginBottom: 12, color: "#1a3030" }} />
                         </>
                       )}
