@@ -143,6 +143,11 @@ export default function Params({ user }: ParamsProps) {
   const [addSourceStep, setAddSourceStep] = useState<"choose" | "config">("choose");
   const [addSourceType, setAddSourceType] = useState("");
   const [sourceFilter, setSourceFilter] = useState<"all" | "active" | "inactive">("all");
+  const [editingUser, setEditingUser] = useState<any | null>(null);
+  const [showInvite, setShowInvite] = useState(false);
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteRole, setInviteRole] = useState("user");
+  const [inviteFormule, setInviteFormule] = useState("mid");
   const [excelFileName, setExcelFileName] = useState("suivi_materiel.xlsx");
   const [excelLastSync, setExcelLastSync] = useState("Importé le 01/07");
   const [disconnected, setDisconnected] = useState<Set<string>>(new Set());
@@ -634,24 +639,172 @@ export default function Params({ user }: ParamsProps) {
 
       {/* Profils */}
       {tab === "profils" && (
+        <>
         <Section>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
             <div>
               <span style={{ fontWeight: 700, fontSize: 15, color: "#1a3030" }}>Profils</span>
               <span style={{ fontSize: 13, color: "#4a7068", marginLeft: 8 }}>3 utilisateurs sur 5 sièges</span>
             </div>
-            <Btn primary>+ Inviter un utilisateur</Btn>
+            <Btn primary onClick={() => setShowInvite(true)}>+ Inviter un utilisateur</Btn>
           </div>
-          {/* Barre de progression */}
           <div style={{ background: "#e8f4f1", borderRadius: 6, height: 8, marginBottom: 16, overflow: "hidden" }}>
             <div style={{ background: "#3AA48A", height: "100%", width: "60%", borderRadius: 6 }} />
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
-            <UserCard initials={initials} name={`${user.prenom} ${user.nom}`} email={user.email} role="admin" formule={user.formule || "mid"} color="#3AA48A" isSelf={false} />
-            <UserCard initials="LD" name="Laurent Dupont" email="laurent@artetlamatiere.fr" role="user" formule="mid" color="#2a7ab0" />
-            <UserCard initials="SM" name="Sophie Martin" email="sophie@artetlamatiere.fr" role="user" formule="min" color="#c47a20" />
+            {[
+              { initials, name: `${user.prenom} ${user.nom}`, email: user.email, role: "admin", formule: user.formule || "mid", color: "#3AA48A", phone: user.telephone || "" },
+              { initials: "LD", name: "Laurent Dupont", email: "laurent@artetlamatiere.fr", role: "user", formule: "mid", color: "#2a7ab0", phone: "06 11 22 33 44" },
+              { initials: "SM", name: "Sophie Martin", email: "sophie@artetlamatiere.fr", role: "user", formule: "min", color: "#c47a20", phone: "06 55 66 77 88" },
+            ].map((u, i) => (
+              <div key={i} onClick={() => setEditingUser(u)}
+                style={{ border: "1px solid #d0e8e2", borderRadius: 12, padding: 16, textAlign: "center", cursor: "pointer", transition: "all .2s" }}
+                onMouseOver={e => { (e.currentTarget).style.boxShadow = "0 4px 12px rgba(58,164,138,0.12)"; }}
+                onMouseOut={e => { (e.currentTarget).style.boxShadow = "none"; }}
+              >
+                <div style={{ width: 44, height: 44, borderRadius: 12, background: u.color, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 16, margin: "0 auto 8px" }}>{u.initials}</div>
+                <div style={{ fontWeight: 600, fontSize: 13 }}>{u.name}</div>
+                <div style={{ fontSize: 11, color: "#4a7068", margin: "2px 0 8px" }}>{u.email}</div>
+                <div style={{ display: "flex", gap: 4, justifyContent: "center" }}>
+                  <Badge text={u.role.toUpperCase()} color={u.role === "admin" ? "#3AA48A" : "#4a7068"} bg={u.role === "admin" ? "#e8f4f1" : "#f0f7f5"} />
+                  <Badge text={u.formule.toUpperCase()} />
+                </div>
+              </div>
+            ))}
           </div>
         </Section>
+
+        {/* Popup modifier profil */}
+        {editingUser && (
+          <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(26,48,48,0.4)", zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center" }}
+            onClick={() => setEditingUser(null)}>
+            <div style={{ background: "#fff", borderRadius: 16, padding: 28, width: 460, boxShadow: "0 20px 60px rgba(0,0,0,.15)" }}
+              onClick={e => e.stopPropagation()}>
+              <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 20 }}>
+                <div style={{ width: 48, height: 48, borderRadius: 12, background: editingUser.color, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 18 }}>{editingUser.initials}</div>
+                <div>
+                  <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1a3030" }}>{editingUser.name}</h3>
+                  <p style={{ fontSize: 12, color: "#4a7068" }}>{editingUser.email}</p>
+                </div>
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
+                <div>
+                  <label style={{ fontSize: 12, fontWeight: 600, display: "block", marginBottom: 4, color: "#1a3030" }}>Prénom</label>
+                  <input type="text" defaultValue={editingUser.name.split(" ")[0]}
+                    style={{ width: "100%", padding: "8px 12px", border: "1.5px solid #3AA48A", borderRadius: 8, fontSize: 13, fontFamily: "inherit", outline: "none", color: "#1a3030" }} />
+                </div>
+                <div>
+                  <label style={{ fontSize: 12, fontWeight: 600, display: "block", marginBottom: 4, color: "#1a3030" }}>Nom</label>
+                  <input type="text" defaultValue={editingUser.name.split(" ").slice(1).join(" ")}
+                    style={{ width: "100%", padding: "8px 12px", border: "1.5px solid #3AA48A", borderRadius: 8, fontSize: 13, fontFamily: "inherit", outline: "none", color: "#1a3030" }} />
+                </div>
+              </div>
+
+              <label style={{ fontSize: 12, fontWeight: 600, display: "block", marginBottom: 4, color: "#1a3030" }}>Email</label>
+              <input type="email" defaultValue={editingUser.email}
+                style={{ width: "100%", padding: "8px 12px", border: "1.5px solid #3AA48A", borderRadius: 8, fontSize: 13, fontFamily: "inherit", outline: "none", marginBottom: 12, color: "#1a3030" }} />
+
+              <label style={{ fontSize: 12, fontWeight: 600, display: "block", marginBottom: 4, color: "#1a3030" }}>Téléphone</label>
+              <input type="text" defaultValue={editingUser.phone}
+                style={{ width: "100%", padding: "8px 12px", border: "1.5px solid #3AA48A", borderRadius: 8, fontSize: 13, fontFamily: "inherit", outline: "none", marginBottom: 12, color: "#1a3030" }} />
+
+              <label style={{ fontSize: 12, fontWeight: 600, display: "block", marginBottom: 6, color: "#1a3030" }}>Rôle</label>
+              <div style={{ display: "flex", gap: 6, marginBottom: 12 }}>
+                {["admin", "user"].map(r => (
+                  <button key={r}
+                    style={{ padding: "6px 16px", borderRadius: 8, fontSize: 12, fontWeight: 600, fontFamily: "inherit", cursor: "pointer",
+                      border: `2px solid ${editingUser.role === r ? "#3AA48A" : "#d0e8e2"}`,
+                      background: editingUser.role === r ? "#3AA48A" : "#fff",
+                      color: editingUser.role === r ? "#fff" : "#4a7068",
+                    }}
+                    onClick={() => setEditingUser({ ...editingUser, role: r })}
+                  >{r === "admin" ? "Administrateur" : "Utilisateur"}</button>
+                ))}
+              </div>
+
+              <label style={{ fontSize: 12, fontWeight: 600, display: "block", marginBottom: 6, color: "#1a3030" }}>Formule</label>
+              <div style={{ display: "flex", gap: 6, marginBottom: 16 }}>
+                {["min", "mid", "max"].map(f => (
+                  <button key={f}
+                    style={{ padding: "6px 16px", borderRadius: 8, fontSize: 12, fontWeight: 600, fontFamily: "inherit", cursor: "pointer",
+                      border: `2px solid ${editingUser.formule === f ? "#3AA48A" : "#d0e8e2"}`,
+                      background: editingUser.formule === f ? "#3AA48A" : "#fff",
+                      color: editingUser.formule === f ? "#fff" : "#4a7068",
+                    }}
+                    onClick={() => setEditingUser({ ...editingUser, formule: f })}
+                  >{f.toUpperCase()}</button>
+                ))}
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
+                <Btn onClick={() => setEditingUser(null)}>Annuler</Btn>
+                <Btn primary onClick={() => setEditingUser(null)}>Enregistrer</Btn>
+                <Btn danger onClick={() => { if (window.confirm(`Supprimer ${editingUser.name} ?`)) setEditingUser(null); }}>Supprimer</Btn>
+              </div>
+
+              <div style={{ marginTop: 12, borderTop: "1px solid #e8f4f1", paddingTop: 12 }}>
+                <Btn onClick={() => {}}>Réinitialiser le mot de passe</Btn>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Popup inviter */}
+        {showInvite && (
+          <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(26,48,48,0.4)", zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center" }}
+            onClick={() => setShowInvite(false)}>
+            <div style={{ background: "#fff", borderRadius: 16, padding: 28, width: 440, boxShadow: "0 20px 60px rgba(0,0,0,.15)" }}
+              onClick={e => e.stopPropagation()}>
+              <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1a3030", marginBottom: 20, display: "flex", alignItems: "center", gap: 8 }}>
+                <Icon d={icons.users} size={18} color="#3AA48A" />
+                Inviter un utilisateur
+              </h3>
+
+              <label style={{ fontSize: 12, fontWeight: 600, display: "block", marginBottom: 4, color: "#1a3030" }}>Email</label>
+              <input type="email" value={inviteEmail} onChange={e => setInviteEmail(e.target.value)} placeholder="collegue@entreprise.fr"
+                style={{ width: "100%", padding: "10px 14px", border: "1.5px solid #3AA48A", borderRadius: 10, fontSize: 14, fontFamily: "inherit", outline: "none", marginBottom: 12, color: "#1a3030" }} />
+
+              <label style={{ fontSize: 12, fontWeight: 600, display: "block", marginBottom: 6, color: "#1a3030" }}>Rôle</label>
+              <div style={{ display: "flex", gap: 6, marginBottom: 12 }}>
+                {["admin", "user"].map(r => (
+                  <button key={r}
+                    style={{ padding: "6px 16px", borderRadius: 8, fontSize: 12, fontWeight: 600, fontFamily: "inherit", cursor: "pointer",
+                      border: `2px solid ${inviteRole === r ? "#3AA48A" : "#d0e8e2"}`,
+                      background: inviteRole === r ? "#3AA48A" : "#fff",
+                      color: inviteRole === r ? "#fff" : "#4a7068",
+                    }}
+                    onClick={() => setInviteRole(r)}
+                  >{r === "admin" ? "Administrateur" : "Utilisateur"}</button>
+                ))}
+              </div>
+
+              <label style={{ fontSize: 12, fontWeight: 600, display: "block", marginBottom: 6, color: "#1a3030" }}>Formule</label>
+              <div style={{ display: "flex", gap: 6, marginBottom: 16 }}>
+                {["min", "mid", "max"].map(f => (
+                  <button key={f}
+                    style={{ padding: "6px 16px", borderRadius: 8, fontSize: 12, fontWeight: 600, fontFamily: "inherit", cursor: "pointer",
+                      border: `2px solid ${inviteFormule === f ? "#3AA48A" : "#d0e8e2"}`,
+                      background: inviteFormule === f ? "#3AA48A" : "#fff",
+                      color: inviteFormule === f ? "#fff" : "#4a7068",
+                    }}
+                    onClick={() => setInviteFormule(f)}
+                  >{f.toUpperCase()}</button>
+                ))}
+              </div>
+
+              <div style={{ background: "#f0f7f5", borderRadius: 10, padding: 12, marginBottom: 16, fontSize: 12, color: "#4a7068" }}>
+                Un email d'invitation sera envoyé avec les identifiants de connexion.
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                <Btn onClick={() => setShowInvite(false)}>Annuler</Btn>
+                <Btn primary onClick={() => { setShowInvite(false); setInviteEmail(""); }}>Envoyer l'invitation</Btn>
+              </div>
+            </div>
+          </div>
+        )}
+        </>
       )}
 
       {/* Apparence */}
