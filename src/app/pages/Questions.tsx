@@ -10,7 +10,7 @@ interface QuestionsProps {
   id_magasin: string;
   user_id: string;
   onSaveFavori?: (titre: string, cat: string, result: AskResult) => void;
-  editingFavori?: { question: string; titre: string; cat: string; idx: number } | null;
+  editingFavori?: { question: string; titre: string; cat: string; idx: number; ts: number } | null;
   onClearEditing?: () => void;
 }
 
@@ -244,19 +244,22 @@ export default function Questions({ id_magasin, user_id, onSaveFavori, editingFa
   const [loading, setLoading] = useState(false);
   const [isModifying, setIsModifying] = useState(false);
   const [originalFavori, setOriginalFavori] = useState<{ question: string; titre: string; cat: string; idx: number } | null>(null);
-  const lastEditRef = useRef<string>("");
+  const lastEditTs = useRef(0);
 
   // Quand on reçoit un favori à modifier depuis Dashboard
-  if (editingFavori && editingFavori.question !== lastEditRef.current) {
-    lastEditRef.current = editingFavori.question;
-    setQuestion(editingFavori.question);
-    setIsModifying(true);
-    setOriginalFavori(editingFavori);
-    // Lancer la question automatiquement
+  if (editingFavori && editingFavori.ts > lastEditTs.current) {
+    lastEditTs.current = editingFavori.ts;
+    // Différer les setState pour éviter le render loop
     setTimeout(() => {
-      const btn = document.getElementById("aria-ask-btn");
-      if (btn) btn.click();
-    }, 100);
+      setQuestion(editingFavori.question);
+      setIsModifying(true);
+      setOriginalFavori(editingFavori);
+      // Lancer la question automatiquement après que l'input est rempli
+      setTimeout(() => {
+        const btn = document.getElementById("aria-ask-btn");
+        if (btn) btn.click();
+      }, 200);
+    }, 50);
   }
   const [results, setResults] = useState<(AskResult & { ts: string })[]>([]);
   const [error, setError] = useState("");
