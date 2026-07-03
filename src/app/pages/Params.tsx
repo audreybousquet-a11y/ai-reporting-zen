@@ -349,29 +349,19 @@ export default function Params({ user }: ParamsProps) {
                 <>
                   <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1a3030", marginBottom: 20, display: "flex", alignItems: "center", gap: 8 }}>
                     <Icon d={icons.folder} size={18} color="#3AA48A" />
-                    Configurer {addSourceType === "excel" ? "l'import Excel" : addSourceType === "gsheets" ? "Google Sheets" : addSourceType}
+                    Configurer {addSourceType === "excel" ? "l'import Excel" : addSourceType === "gsheets" ? "Google Sheets" : addSourceType === "meteo" ? "la Météo" : addSourceType}
                   </h3>
 
+                  {/* Excel / CSV — upload fichier */}
                   {addSourceType === "excel" && (
-                    <div style={{ border: "2px dashed #d0e8e2", borderRadius: 12, padding: 40, textAlign: "center", color: "#8ab8b0", marginBottom: 16 }}>
+                    <div style={{ border: "2px dashed #d0e8e2", borderRadius: 12, padding: 40, textAlign: "center", color: "#8ab8b0", marginBottom: 16, cursor: "pointer" }}>
                       <Icon d={icons.file} size={32} color="#d0e8e2" />
                       <p style={{ marginTop: 10, fontSize: 14, fontWeight: 600 }}>Glissez votre fichier ici</p>
                       <p style={{ fontSize: 12, marginTop: 4 }}>ou cliquez pour parcourir (.xlsx, .xls, .csv)</p>
                     </div>
                   )}
 
-                  {["deytime", "extrabat", "pennylane", "api"].includes(addSourceType) && (
-                    <>
-                      <label style={{ fontSize: 13, fontWeight: 600, display: "block", marginBottom: 6, color: "#1a3030" }}>Clé API</label>
-                      <input type="text" placeholder="Votre clé API..."
-                        style={{ width: "100%", padding: "10px 14px", border: "1.5px solid #3AA48A", borderRadius: 10, fontSize: 14, fontFamily: "inherit", outline: "none", marginBottom: 12, color: "#1a3030" }} />
-
-                      <label style={{ fontSize: 13, fontWeight: 600, display: "block", marginBottom: 6, color: "#1a3030" }}>Clé secrète</label>
-                      <input type="password" placeholder="Votre clé secrète..."
-                        style={{ width: "100%", padding: "10px 14px", border: "1.5px solid #3AA48A", borderRadius: 10, fontSize: 14, fontFamily: "inherit", outline: "none", marginBottom: 16, color: "#1a3030" }} />
-                    </>
-                  )}
-
+                  {/* Google Sheets — URL */}
                   {addSourceType === "gsheets" && (
                     <>
                       <label style={{ fontSize: 13, fontWeight: 600, display: "block", marginBottom: 6, color: "#1a3030" }}>URL de la feuille Google Sheets</label>
@@ -380,9 +370,91 @@ export default function Params({ user }: ParamsProps) {
                     </>
                   )}
 
+                  {/* API avec clés — Deytime, Extrabat, Pennylane, Autre API */}
+                  {["deytime", "extrabat", "pennylane", "api"].includes(addSourceType) && (
+                    <>
+                      <label style={{ fontSize: 13, fontWeight: 600, display: "block", marginBottom: 6, color: "#1a3030" }}>Clé API</label>
+                      <input type="text" placeholder="Votre clé API..."
+                        style={{ width: "100%", padding: "10px 14px", border: "1.5px solid #3AA48A", borderRadius: 10, fontSize: 14, fontFamily: "inherit", outline: "none", marginBottom: 12, color: "#1a3030" }} />
+
+                      <label style={{ fontSize: 13, fontWeight: 600, display: "block", marginBottom: 6, color: "#1a3030" }}>Clé secrète</label>
+                      <input type="password" placeholder="Votre clé secrète..."
+                        style={{ width: "100%", padding: "10px 14px", border: "1.5px solid #3AA48A", borderRadius: 10, fontSize: 14, fontFamily: "inherit", outline: "none", marginBottom: 12, color: "#1a3030" }} />
+
+                      {addSourceType === "deytime" && (
+                        <>
+                          <label style={{ fontSize: 13, fontWeight: 600, display: "block", marginBottom: 6, color: "#1a3030" }}>Slug entreprise</label>
+                          <input type="text" placeholder="mon-entreprise"
+                            style={{ width: "100%", padding: "10px 14px", border: "1.5px solid #3AA48A", borderRadius: 10, fontSize: 14, fontFamily: "inherit", outline: "none", marginBottom: 12, color: "#1a3030" }} />
+                        </>
+                      )}
+
+                      {addSourceType === "api" && (
+                        <>
+                          <label style={{ fontSize: 13, fontWeight: 600, display: "block", marginBottom: 6, color: "#1a3030" }}>URL de l'API</label>
+                          <input type="text" placeholder="https://api.exemple.com/v1"
+                            style={{ width: "100%", padding: "10px 14px", border: "1.5px solid #3AA48A", borderRadius: 10, fontSize: 14, fontFamily: "inherit", outline: "none", marginBottom: 12, color: "#1a3030" }} />
+                        </>
+                      )}
+                    </>
+                  )}
+
+                  {/* SIREN — rien à configurer */}
+                  {addSourceType === "siren" && (
+                    <div style={{ background: "#e8f4f1", borderRadius: 10, padding: 20, marginBottom: 16, textAlign: "center" }}>
+                      <Icon d={icons.user} size={24} color="#3AA48A" />
+                      <p style={{ fontSize: 14, fontWeight: 600, color: "#1a3030", marginTop: 8 }}>Aucune configuration nécessaire</p>
+                      <p style={{ fontSize: 12, color: "#4a7068", marginTop: 4 }}>ar.ia se connecte automatiquement à l'API publique SIRENE / INPI pour enrichir vos données entreprise.</p>
+                    </div>
+                  )}
+
+                  {/* Météo — choix ville */}
+                  {addSourceType === "meteo" && (
+                    <>
+                      <label style={{ fontSize: 13, fontWeight: 600, display: "block", marginBottom: 6, color: "#1a3030" }}>Ville</label>
+                      <input type="text" placeholder="Ex: Nantes, Paris, Lyon..."
+                        style={{ width: "100%", padding: "10px 14px", border: "1.5px solid #3AA48A", borderRadius: 10, fontSize: 14, fontFamily: "inherit", outline: "none", marginBottom: 12, color: "#1a3030" }} />
+                      <div style={{ background: "#f0f7f5", borderRadius: 10, padding: 12, marginBottom: 16, fontSize: 12, color: "#4a7068" }}>
+                        Historique et prévisions météo pour votre localisation. Croisez avec vos heures travaillées pour analyser l'impact de la météo sur votre activité.
+                      </div>
+                    </>
+                  )}
+
+                  {/* Facture électronique — info */}
+                  {addSourceType === "facture_elec" && (
+                    <div style={{ background: "#fff3e0", borderRadius: 10, padding: 20, marginBottom: 16, textAlign: "center" }}>
+                      <p style={{ fontSize: 14, fontWeight: 600, color: "#c47a20", marginBottom: 4 }}>Bientôt disponible</p>
+                      <p style={{ fontSize: 12, color: "#4a7068" }}>La réception et l'émission de factures électroniques (CII, UBL, Factur-X) seront disponibles à partir de septembre 2026.</p>
+                    </div>
+                  )}
+
+                  {/* EDF — numéro de contrat */}
+                  {addSourceType === "edf" && (
+                    <>
+                      <label style={{ fontSize: 13, fontWeight: 600, display: "block", marginBottom: 6, color: "#1a3030" }}>Fournisseur</label>
+                      <select style={{ width: "100%", padding: "10px 14px", border: "1.5px solid #3AA48A", borderRadius: 10, fontSize: 14, fontFamily: "inherit", outline: "none", marginBottom: 12, color: "#1a3030", background: "#fff" }}>
+                        <option>EDF</option>
+                        <option>Engie</option>
+                        <option>TotalEnergies</option>
+                        <option>Autre</option>
+                      </select>
+                      <label style={{ fontSize: 13, fontWeight: 600, display: "block", marginBottom: 6, color: "#1a3030" }}>Numéro de contrat ou identifiant client</label>
+                      <input type="text" placeholder="Votre numéro de contrat..."
+                        style={{ width: "100%", padding: "10px 14px", border: "1.5px solid #3AA48A", borderRadius: 10, fontSize: 14, fontFamily: "inherit", outline: "none", marginBottom: 16, color: "#1a3030" }} />
+                    </>
+                  )}
+
+                  {/* Gmail — OAuth */}
+                  {addSourceType === "gmail" && (
+                    <div style={{ textAlign: "center", marginBottom: 16 }}>
+                      <p style={{ fontSize: 13, color: "#4a7068", marginBottom: 12 }}>Connectez votre compte Google pour accéder à vos pièces jointes et documents Drive.</p>
+                      <Btn primary>Se connecter avec Google</Btn>
+                    </div>
+                  )}
+
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
                     <Btn onClick={() => setAddSourceStep("choose")}>Retour</Btn>
-                    <Btn primary>Connecter</Btn>
+                    <Btn primary>{addSourceType === "siren" ? "Activer" : addSourceType === "facture_elec" ? "Me prévenir" : "Connecter"}</Btn>
                   </div>
                 </>
               )}
