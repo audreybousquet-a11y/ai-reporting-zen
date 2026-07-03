@@ -242,9 +242,6 @@ export default function Params({ user }: ParamsProps) {
                     <div style={{ fontSize: 11, color: "#3AA48A", fontWeight: 600, marginBottom: 8 }}>✓ Connecté{src.lastSync ? ` — ${src.lastSync}` : ""}</div>
                     <div style={{ display: "flex", gap: 6 }}>
                       <button onClick={e => { e.stopPropagation(); }}
-                        style={{ padding: "4px 10px", borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", border: "1px solid #3AA48A", background: "#fff", color: "#3AA48A" }}
-                      >Synchroniser</button>
-                      <button onClick={e => { e.stopPropagation(); }}
                         style={{ padding: "4px 10px", borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", border: "1px solid #c47a20", background: "#fff", color: "#c47a20" }}
                       >Déconnecter</button>
                       <button onClick={e => { e.stopPropagation(); if (window.confirm(`Supprimer ${src.name} et toutes ses données ?`)) {} }}
@@ -330,20 +327,9 @@ export default function Params({ user }: ParamsProps) {
                 </div>
               )}
 
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 10 }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
                 <Btn onClick={() => setEditingSource(null)}>Annuler</Btn>
                 <Btn primary>Enregistrer</Btn>
-              </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-                <button onClick={() => { setEditingSource(null); }}
-                  style={{ padding: "8px 0", borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", border: "1px solid #c47a20", background: "#fff", color: "#c47a20" }}
-                >Déconnecter</button>
-                <button onClick={() => { if (window.confirm(`Supprimer définitivement ${editingSource} et toutes ses données ?`)) setEditingSource(null); }}
-                  style={{ padding: "8px 0", borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", border: "1px solid #d94040", background: "#fff", color: "#d94040" }}
-                >Supprimer</button>
-              </div>
-              <div style={{ fontSize: 11, color: "#8ab8b0", marginTop: 8, textAlign: "center" }}>
-                Déconnecter = source inactive (réactivable) · Supprimer = suppression définitive des données
               </div>
             </div>
           </div>
