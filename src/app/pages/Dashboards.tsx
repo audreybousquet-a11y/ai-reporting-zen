@@ -93,10 +93,10 @@ export default function Dashboards({ id_magasin, user_id, savedFavoris = [], onN
     try {
       const saved = JSON.parse(localStorage.getItem("aria_dashboards") || "null");
       if (saved && Array.isArray(saved) && saved.length > 0) {
-        // Nettoyer les résultats (pas sérialisables / trop gros)
+        // Garder les résultats cachés pour affichage instantané
         return saved.map((d: any) => ({
           ...d,
-          cells: (d.cells || []).map((c: any) => c ? { titre: c.titre, question: c.question, loading: false } : null),
+          cells: (d.cells || []).map((c: any) => c ? { titre: c.titre, question: c.question, result: c.result || undefined, loading: false, fromSavedSQL: c.fromSavedSQL } : null),
         }));
       }
     } catch { /* ignore */ }
@@ -122,21 +122,19 @@ export default function Dashboards({ id_magasin, user_id, savedFavoris = [], onN
     saveDashRef.current = dashboards;
     const toSave = dashboards.map(d => ({
       id: d.id, nom: d.nom, sizes: d.sizes,
-      cells: d.cells.map(c => c ? { titre: c.titre, question: c.question } : null),
+      cells: d.cells.map(c => c ? { titre: c.titre, question: c.question, result: c.result, fromSavedSQL: c.fromSavedSQL } : null),
     }));
     localStorage.setItem("aria_dashboards", JSON.stringify(toSave));
   }
 
-  // Re-exécuter les cellules au chargement ou quand un favori est écrasé
+  // Re-exécuter seulement quand un favori est écrasé (pas au chargement — on a le cache)
   const lastRefresh = useRef(0);
-  const initialLoad = useRef(true);
-  if ((refreshTrigger && refreshTrigger > lastRefresh.current) || initialLoad.current) {
-    if (refreshTrigger) lastRefresh.current = refreshTrigger;
-    if (initialLoad.current) initialLoad.current = false;
+  if (refreshTrigger && refreshTrigger > lastRefresh.current) {
+    lastRefresh.current = refreshTrigger;
     setTimeout(() => {
       dashboards.forEach(d => {
         d.cells.forEach((cell, idx) => {
-          if (cell && cell.question && !cell.result && !cell.loading) {
+          if (cell && cell.question) {
             executeInCell(idx, cell.titre, cell.question);
           }
         });
