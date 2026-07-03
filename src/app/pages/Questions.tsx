@@ -1,7 +1,7 @@
 /**
  * Questions.tsx — Page de questions en langage naturel
  */
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { ask, AskResult } from "../lib/api";
 import Chart from "../components/Chart";
 import logoVert from "../../assets/Logo_vert.png";
@@ -214,14 +214,12 @@ function ResultCard({ result, onSaveFavori }: { result: AskResult & { ts: string
           onSave={(nom, cat) => {
             setSaved(true);
             setShowSaveModal(false);
-            setFromFavori(false);
             if (onSaveFavori) onSaveFavori(nom, cat, result);
           }}
           onOverwrite={() => {
             setSaved(true);
             setShowSaveModal(false);
-            setFromFavori(false);
-            if (onSaveFavori) onSaveFavori(result.question, "", result);
+            if (onSaveFavori) onSaveFavori(result.question, "general", result);
           }}
         />
       )}

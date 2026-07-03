@@ -56,6 +56,8 @@ const FILTER_CATEGORIES = [
   { id: "absence", label: "Absences" },
   { id: "finance", label: "Finances" },
   { id: "general", label: "Général" },
+  { id: "in_dashboard", label: "Dans un dashboard" },
+  { id: "not_in_dashboard", label: "Disponibles" },
 ];
 
 const EDIT_CATEGORIES = [
@@ -107,7 +109,20 @@ export default function Dashboards({ id_magasin, user_id, savedFavoris = [], onN
     ...DEMO_FAVORIS,
     ...savedFavoris.map(f => ({ titre: f.titre, question: f.question, sql: f.sql, viz_config: f.viz_config, cat: f.cat, viz: f.viz })),
   ];
-  const filteredFavs = allFavoris.filter(f => catFilter === "all" || f.cat === catFilter);
+
+  // Tracker les favoris déjà dans un dashboard (tous les dashboards)
+  const favsInDashboards = new Set<string>();
+  dashboards.forEach(d => {
+    d.cells.forEach(cell => {
+      if (cell) favsInDashboards.add(cell.question);
+    });
+  });
+
+  const filteredFavs = allFavoris.filter(f => {
+    if (catFilter === "in_dashboard") return favsInDashboards.has(f.question);
+    if (catFilter === "not_in_dashboard") return !favsInDashboards.has(f.question);
+    return catFilter === "all" || f.cat === catFilter;
+  });
 
   // Exécuter un favori et mettre le résultat dans une cellule
   const executeInCell = async (cellIdx: number, titre: string, question: string) => {
@@ -247,6 +262,7 @@ export default function Dashboards({ id_magasin, user_id, savedFavoris = [], onN
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           {filteredFavs.map((fav, i) => {
             const realIdx = allFavoris.indexOf(fav);
+            const inDash = favsInDashboards.has(fav.question);
             return (
             <div
               key={i}
@@ -256,13 +272,16 @@ export default function Dashboards({ id_magasin, user_id, savedFavoris = [], onN
               onDoubleClick={() => setEditingFav({ idx: realIdx, question: fav.question, titre: fav.titre, cat: fav.cat })}
               style={{
                 display: "flex", alignItems: "center", gap: 6, padding: "6px 14px", borderRadius: 8,
-                background: "#f0f7f5", border: "1.5px solid #d0e8e2", fontSize: 12, fontWeight: 500,
+                background: inDash ? "#e8f4f1" : "#f0f7f5",
+                border: inDash ? "1.5px solid #3AA48A" : "1.5px solid #d0e8e2",
+                fontSize: 12, fontWeight: inDash ? 600 : 500,
                 color: "#1a3030", cursor: "grab", transition: "all .15s", whiteSpace: "nowrap",
               }}
               onMouseOver={e => { (e.currentTarget).style.borderColor = "#3AA48A"; (e.currentTarget).style.background = "#e8f4f1"; }}
-              onMouseOut={e => { (e.currentTarget).style.borderColor = "#d0e8e2"; (e.currentTarget).style.background = "#f0f7f5"; }}
+              onMouseOut={e => { (e.currentTarget).style.borderColor = inDash ? "#3AA48A" : "#d0e8e2"; (e.currentTarget).style.background = inDash ? "#e8f4f1" : "#f0f7f5"; }}
             >
-              <Ico d={vizIcons[fav.viz] || vizIcons.tableau} size={13} color="#3AA48A" />
+              {inDash && <Ico d="M20 6L9 17l-5-5" size={12} color="#3AA48A" />}
+              <Ico d={vizIcons[fav.viz] || vizIcons.tableau} size={13} color={inDash ? "#2d8270" : "#3AA48A"} />
               {fav.titre}
             </div>
             );
