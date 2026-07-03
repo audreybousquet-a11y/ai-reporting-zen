@@ -150,16 +150,16 @@ function ResultCard({ result, onSaveFavori, isModifying, originalFavori, onModif
             // Pivot → camembert si peu de lignes, sinon barres
             if (vt === "pivot" && n <= 10) vt = n <= 8 ? "pie" : "bar";
             // Table avec 1 dimension + mesures → graphique auto
-            if (vt === "table" && dimCols.length === 1 && numCols.length >= 1 && n <= 20) {
+            // Mais seulement si c'est pertinent (pas une "liste de")
+            const qLower = result.question.toLowerCase();
+            const isListe = qLower.includes("liste") || qLower.includes("fiche") || n > 15;
+            if (vt === "table" && dimCols.length === 1 && numCols.length >= 1 && n <= 20 && !isListe) {
               const dimName = dimCols[0].toLowerCase();
-              // Mois, semaine = évolution → ligne
               if (["mois", "semaine", "trimestre"].includes(dimName) || dimName.includes("mois") || dimName.includes("date")) {
                 vt = "line";
-              // Peu de catégories → camembert
               } else if (n <= 8 && numCols.length === 1) {
                 vt = "pie";
-              // Sinon → barres
-              } else {
+              } else if (n <= 12) {
                 vt = "bar";
               }
             }
@@ -269,7 +269,13 @@ export default function Questions({ id_magasin, user_id, onSaveFavori, editingFa
     setLoading(true);
     setError("");
     try {
-      const result = await ask(question, id_magasin, user_id);
+      // Si on a un résultat précédent, passer le contexte pour les modifications
+      const previous = results.length > 0 ? {
+        sql: results[0].sql,
+        viz_config: results[0].viz_config,
+        columns: results[0].columns,
+      } : undefined;
+      const result = await ask(question, id_magasin, user_id, previous);
       const ts = new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
       if (result.success) {
         setResults([{ ...result, ts }, ...results]);

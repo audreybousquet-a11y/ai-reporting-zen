@@ -64,11 +64,19 @@ export async function login(username: string, password: string): Promise<{ succe
   return resp.json();
 }
 
-export async function ask(question: string, id_magasin: string, user_id: string = ""): Promise<AskResult> {
+export async function ask(
+  question: string,
+  id_magasin: string,
+  user_id: string = "",
+  previous?: { sql: string; viz_config: Record<string, any>; columns: string[] }
+): Promise<AskResult> {
   const resp = await fetch(`${API_URL}/api/ask`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ question, id_magasin, user_id }),
+    body: JSON.stringify({
+      question, id_magasin, user_id,
+      ...(previous ? { previous_sql: previous.sql, previous_viz: previous.viz_config, previous_columns: previous.columns } : {}),
+    }),
   });
   return resp.json();
 }
