@@ -164,6 +164,11 @@ export default function Dashboards({ id_magasin, user_id, savedFavoris = [], onN
       } else {
         result = await ask(question, id_magasin, user_id);
       }
+      // Appliquer le type de viz du favori s'il en a un
+      const favVizMap: Record<string, string> = { barres: "bar", ligne: "line", camembert: "pie", kpi: "kpi", tableau: "table" };
+      if (fav?.viz && favVizMap[fav.viz]) {
+        result.viz_config = { ...result.viz_config, type_viz: favVizMap[fav.viz] };
+      }
       setDashboards(prev => prev.map(d => {
         if (d.id !== activeDb) return d;
         const cells = [...d.cells];
@@ -451,27 +456,7 @@ export default function Dashboards({ id_magasin, user_id, savedFavoris = [], onN
                       );
                     }
                     // Graphique ou tableau
-                    let vt = cell.result!.viz_config?.type_viz || "table";
-                    // Auto-detect SEULEMENT pour les favoris démo (pas les sauvegardés)
-                    if (!cell.fromSavedSQL && (vt === "table" || vt === "pivot")) {
-                      const row0 = cell.result!.data[0] || {};
-                      const cols = cell.result!.columns;
-                      const isDim = (c: string, v: any) => {
-                        if (typeof v === "string") return true;
-                        const nm = c.toLowerCase();
-                        return ["mois", "semaine", "annee", "année", "periode", "jour", "trimestre"].includes(nm);
-                      };
-                      const dimCols = cols.filter(c => isDim(c, row0[c]));
-                      const numCols = cols.filter(c => !isDim(c, row0[c]) && (typeof row0[c] === "number" || !isNaN(Number(row0[c]))));
-                      const n = cell.result!.data.length;
-                      if (vt === "pivot" && n <= 10) vt = n <= 8 ? "pie" : "bar";
-                      if (vt === "table" && dimCols.length === 1 && numCols.length >= 1 && n <= 25) {
-                        const dm = dimCols[0].toLowerCase();
-                        if (["mois", "semaine", "trimestre"].includes(dm) || dm.includes("mois") || dm.includes("date")) vt = "line";
-                        else if (n <= 8 && numCols.length === 1) vt = "pie";
-                        else vt = "bar";
-                      }
-                    }
+                    const vt = cell.result!.viz_config?.type_viz || "table";
                     const isChart = ["bar", "hbar", "line", "pie", "area"].includes(vt);
                     return isChart ? (
                       <Chart data={cell.result!.data} columns={cell.result!.columns} vizType={vt} height={180} />
