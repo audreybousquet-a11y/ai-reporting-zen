@@ -138,6 +138,10 @@ function UserCard({ initials, name, email, role, formule, color, isSelf }: { ini
 
 export default function Params({ user }: ParamsProps) {
   const [tab, setTab] = useState<Tab>("sources");
+  const [editingSource, setEditingSource] = useState<string | null>(null);
+  const [addingSource, setAddingSource] = useState(false);
+  const [addSourceStep, setAddSourceStep] = useState<"choose" | "config">("choose");
+  const [addSourceType, setAddSourceType] = useState("");
   const [theme, setTheme] = useState("light");
   const [aiComment, setAiComment] = useState(true);
   const [showTotals, setShowTotals] = useState(true);
@@ -214,19 +218,35 @@ export default function Params({ user }: ParamsProps) {
 
       {/* Sources */}
       {tab === "sources" && (
+        <>
         <Section>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12 }}>
-            <SourceCard icon="⏱" name="Deytime" desc="Gestion du temps & absences" status="connected" lastSync="Syncé le 02/07 à 03:15" connected={true} />
-            <SourceCard icon="📄" name="Extrabat" desc="Devis & factures BTP" status="connected" lastSync="Syncé le 02/07 à 03:20" connected={true} />
-            <SourceCard icon="💰" name="Pennylane" desc="Comptabilité" status="disconnected" connected={false} />
-            <div
-              style={{
-                border: "2px dashed #d0e8e2", borderRadius: 12, padding: 16,
-                display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-                gap: 8, cursor: "pointer", color: "#8ab8b0", transition: "all .2s",
-              }}
-              onMouseOver={e => { (e.currentTarget as HTMLElement).style.borderColor = "#3AA48A"; (e.currentTarget as HTMLElement).style.color = "#3AA48A"; }}
-              onMouseOut={e => { (e.currentTarget as HTMLElement).style.borderColor = "#d0e8e2"; (e.currentTarget as HTMLElement).style.color = "#8ab8b0"; }}
+            {[
+              { id: "deytime", icon: "⏱", name: "Deytime", desc: "Gestion du temps & absences", lastSync: "Syncé le 02/07 à 03:15", connected: true },
+              { id: "extrabat", icon: "📄", name: "Extrabat", desc: "Devis & factures BTP", lastSync: "Syncé le 02/07 à 03:20", connected: true },
+              { id: "pennylane", icon: "💰", name: "Pennylane", desc: "Comptabilité", lastSync: "", connected: false },
+            ].map(src => (
+              <div key={src.id} onClick={() => setEditingSource(src.id)}
+                style={{ border: `1.5px solid ${src.connected ? "#3AA48A" : "#d0e8e2"}`, borderRadius: 12, padding: 16, position: "relative", cursor: "pointer", transition: "all .2s" }}
+                onMouseOver={e => { (e.currentTarget).style.boxShadow = "0 4px 12px rgba(58,164,138,0.12)"; }}
+                onMouseOut={e => { (e.currentTarget).style.boxShadow = "none"; }}
+              >
+                {src.connected && <div style={{ position: "absolute", top: 10, right: 10, width: 10, height: 10, borderRadius: "50%", background: "#3AA48A" }} />}
+                {!src.connected && <div style={{ position: "absolute", top: 10, right: 10, width: 10, height: 10, borderRadius: "50%", background: "#c47a20" }} />}
+                <div style={{ fontSize: 20, marginBottom: 6 }}>{src.icon}</div>
+                <div style={{ fontWeight: 700, fontSize: 14 }}>{src.name}</div>
+                <div style={{ fontSize: 12, color: "#4a7068", margin: "4px 0 10px" }}>{src.desc}</div>
+                {src.connected ? (
+                  <div style={{ fontSize: 11, color: "#3AA48A", fontWeight: 600 }}>✓ Connecté{src.lastSync ? ` — ${src.lastSync}` : ""}</div>
+                ) : (
+                  <div style={{ fontSize: 11, color: "#c47a20", fontWeight: 600 }}>Non configuré — Cliquez pour configurer</div>
+                )}
+              </div>
+            ))}
+            <div onClick={() => { setAddingSource(true); setAddSourceStep("choose"); }}
+              style={{ border: "2px dashed #d0e8e2", borderRadius: 12, padding: 16, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8, cursor: "pointer", color: "#8ab8b0", transition: "all .2s" }}
+              onMouseOver={e => { (e.currentTarget).style.borderColor = "#3AA48A"; (e.currentTarget).style.color = "#3AA48A"; }}
+              onMouseOut={e => { (e.currentTarget).style.borderColor = "#d0e8e2"; (e.currentTarget).style.color = "#8ab8b0"; }}
             >
               <div style={{ fontSize: 28 }}>+</div>
               <div style={{ fontWeight: 600, fontSize: 13 }}>Ajouter une source</div>
@@ -234,6 +254,136 @@ export default function Params({ user }: ParamsProps) {
             </div>
           </div>
         </Section>
+
+        {/* Popup modifier source */}
+        {editingSource && (
+          <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(26,48,48,0.4)", zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center" }}
+            onClick={() => setEditingSource(null)}>
+            <div style={{ background: "#fff", borderRadius: 16, padding: 28, width: 460, boxShadow: "0 20px 60px rgba(0,0,0,.15)" }}
+              onClick={e => e.stopPropagation()}>
+              <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1a3030", marginBottom: 20, display: "flex", alignItems: "center", gap: 8 }}>
+                <Icon d={icons.folder} size={18} color="#3AA48A" />
+                Configurer la source
+              </h3>
+
+              <label style={{ fontSize: 13, fontWeight: 600, display: "block", marginBottom: 6, color: "#1a3030" }}>Clé API (Client ID)</label>
+              <input type="text" placeholder="Votre clé API..." defaultValue={editingSource === "pennylane" ? "" : "••••••••••••"}
+                style={{ width: "100%", padding: "10px 14px", border: "1.5px solid #3AA48A", borderRadius: 10, fontSize: 14, fontFamily: "inherit", outline: "none", marginBottom: 12, color: "#1a3030" }} />
+
+              <label style={{ fontSize: 13, fontWeight: 600, display: "block", marginBottom: 6, color: "#1a3030" }}>Clé secrète</label>
+              <input type="password" placeholder="Votre clé secrète..." defaultValue={editingSource === "pennylane" ? "" : "••••••••••••"}
+                style={{ width: "100%", padding: "10px 14px", border: "1.5px solid #3AA48A", borderRadius: 10, fontSize: 14, fontFamily: "inherit", outline: "none", marginBottom: 12, color: "#1a3030" }} />
+
+              {editingSource === "deytime" && (
+                <>
+                  <label style={{ fontSize: 13, fontWeight: 600, display: "block", marginBottom: 6, color: "#1a3030" }}>Slug entreprise</label>
+                  <input type="text" placeholder="mon-entreprise" defaultValue="art_et_la_matiere"
+                    style={{ width: "100%", padding: "10px 14px", border: "1.5px solid #3AA48A", borderRadius: 10, fontSize: 14, fontFamily: "inherit", outline: "none", marginBottom: 12, color: "#1a3030" }} />
+                </>
+              )}
+
+              <div style={{ background: "#f0f7f5", borderRadius: 10, padding: 14, marginBottom: 16, fontSize: 12, color: "#4a7068", lineHeight: 1.6 }}>
+                <Icon d={icons.lightbulb} size={13} color="#3AA48A" />
+                {editingSource === "deytime" && " La clé API est configurée par votre partenaire Deytime. Contactez-le pour obtenir vos identifiants."}
+                {editingSource === "extrabat" && " Demandez votre clé API à Extrabat. Un utilisateur dédié sera créé pour ar.ia."}
+                {editingSource === "pennylane" && " Vous pouvez générer votre clé API directement dans votre espace Pennylane → Paramètres → API."}
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
+                <Btn onClick={() => setEditingSource(null)}>Annuler</Btn>
+                <Btn primary>Enregistrer</Btn>
+                {editingSource !== "pennylane" && <Btn danger>Déconnecter</Btn>}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Popup ajouter source */}
+        {addingSource && (
+          <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(26,48,48,0.4)", zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center" }}
+            onClick={() => setAddingSource(false)}>
+            <div style={{ background: "#fff", borderRadius: 16, padding: 28, width: 520, boxShadow: "0 20px 60px rgba(0,0,0,.15)" }}
+              onClick={e => e.stopPropagation()}>
+
+              {addSourceStep === "choose" && (
+                <>
+                  <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1a3030", marginBottom: 20, display: "flex", alignItems: "center", gap: 8 }}>
+                    <Icon d={icons.plus} size={18} color="#3AA48A" />
+                    Ajouter une source de données
+                  </h3>
+
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10 }}>
+                    {[
+                      { id: "excel", icon: "📊", name: "Excel / CSV", desc: "Importez un fichier Excel ou CSV" },
+                      { id: "gsheets", icon: "📋", name: "Google Sheets", desc: "Connectez une feuille Google" },
+                      { id: "deytime", icon: "⏱", name: "Deytime", desc: "Gestion du temps & absences" },
+                      { id: "extrabat", icon: "📄", name: "Extrabat", desc: "Devis & factures BTP" },
+                      { id: "pennylane", icon: "💰", name: "Pennylane", desc: "Comptabilité" },
+                      { id: "api", icon: "🔗", name: "Autre API", desc: "Connectez une API personnalisée" },
+                    ].map(src => (
+                      <div key={src.id} onClick={() => { setAddSourceType(src.id); setAddSourceStep("config"); }}
+                        style={{ border: "1.5px solid #d0e8e2", borderRadius: 10, padding: 14, cursor: "pointer", transition: "all .15s" }}
+                        onMouseOver={e => { (e.currentTarget).style.borderColor = "#3AA48A"; (e.currentTarget).style.background = "#e8f4f1"; }}
+                        onMouseOut={e => { (e.currentTarget).style.borderColor = "#d0e8e2"; (e.currentTarget).style.background = "#fff"; }}
+                      >
+                        <div style={{ fontSize: 20, marginBottom: 6 }}>{src.icon}</div>
+                        <div style={{ fontWeight: 600, fontSize: 13, color: "#1a3030" }}>{src.name}</div>
+                        <div style={{ fontSize: 11, color: "#4a7068", marginTop: 2 }}>{src.desc}</div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 16 }}>
+                    <Btn onClick={() => setAddingSource(false)}>Annuler</Btn>
+                  </div>
+                </>
+              )}
+
+              {addSourceStep === "config" && (
+                <>
+                  <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1a3030", marginBottom: 20, display: "flex", alignItems: "center", gap: 8 }}>
+                    <Icon d={icons.folder} size={18} color="#3AA48A" />
+                    Configurer {addSourceType === "excel" ? "l'import Excel" : addSourceType === "gsheets" ? "Google Sheets" : addSourceType}
+                  </h3>
+
+                  {addSourceType === "excel" && (
+                    <div style={{ border: "2px dashed #d0e8e2", borderRadius: 12, padding: 40, textAlign: "center", color: "#8ab8b0", marginBottom: 16 }}>
+                      <Icon d={icons.file} size={32} color="#d0e8e2" />
+                      <p style={{ marginTop: 10, fontSize: 14, fontWeight: 600 }}>Glissez votre fichier ici</p>
+                      <p style={{ fontSize: 12, marginTop: 4 }}>ou cliquez pour parcourir (.xlsx, .xls, .csv)</p>
+                    </div>
+                  )}
+
+                  {["deytime", "extrabat", "pennylane", "api"].includes(addSourceType) && (
+                    <>
+                      <label style={{ fontSize: 13, fontWeight: 600, display: "block", marginBottom: 6, color: "#1a3030" }}>Clé API</label>
+                      <input type="text" placeholder="Votre clé API..."
+                        style={{ width: "100%", padding: "10px 14px", border: "1.5px solid #3AA48A", borderRadius: 10, fontSize: 14, fontFamily: "inherit", outline: "none", marginBottom: 12, color: "#1a3030" }} />
+
+                      <label style={{ fontSize: 13, fontWeight: 600, display: "block", marginBottom: 6, color: "#1a3030" }}>Clé secrète</label>
+                      <input type="password" placeholder="Votre clé secrète..."
+                        style={{ width: "100%", padding: "10px 14px", border: "1.5px solid #3AA48A", borderRadius: 10, fontSize: 14, fontFamily: "inherit", outline: "none", marginBottom: 16, color: "#1a3030" }} />
+                    </>
+                  )}
+
+                  {addSourceType === "gsheets" && (
+                    <>
+                      <label style={{ fontSize: 13, fontWeight: 600, display: "block", marginBottom: 6, color: "#1a3030" }}>URL de la feuille Google Sheets</label>
+                      <input type="text" placeholder="https://docs.google.com/spreadsheets/d/..."
+                        style={{ width: "100%", padding: "10px 14px", border: "1.5px solid #3AA48A", borderRadius: 10, fontSize: 14, fontFamily: "inherit", outline: "none", marginBottom: 16, color: "#1a3030" }} />
+                    </>
+                  )}
+
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                    <Btn onClick={() => setAddSourceStep("choose")}>Retour</Btn>
+                    <Btn primary>Connecter</Btn>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        )}
+        </>
       )}
 
       {/* Profils */}
