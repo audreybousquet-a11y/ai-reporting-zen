@@ -392,22 +392,26 @@ export default function Dashboards({ id_magasin, user_id, savedFavoris = [], onN
               onDragEnd={() => { dragCellRef.current = null; dragWithZone.current = false; }}
               onDragOver={e => {
                 e.preventDefault();
-                if (dragCellRef.current !== null && dragCellRef.current !== idx) {
+                if (dragCellRef.current !== null && dragCellRef.current !== idx && dragWithZone.current) {
                   const rect = e.currentTarget.getBoundingClientRect();
                   const midX = rect.left + rect.width / 2;
-                  const side = e.clientX < midX ? "before" : "after";
-                  setDropIndicator({ idx, side });
+                  setDropIndicator({ idx, side: e.clientX < midX ? "before" : "after" });
                 }
               }}
               onDragLeave={() => { setDropIndicator(null); }}
               onDrop={e => {
                 e.preventDefault();
                 setDropIndicator(null);
-                if (dragCellRef.current !== null && dragCellRef.current !== idx && dragWithZone.current) {
-                  const rect = e.currentTarget.getBoundingClientRect();
-                  const midX = rect.left + rect.width / 2;
-                  const side = e.clientX < midX ? "before" : "after";
-                  insertCellAt(dragCellRef.current, idx, side);
+                if (dragCellRef.current !== null && dragCellRef.current !== idx) {
+                  if (dragWithZone.current) {
+                    // Ctrl+drag : déplacer la zone
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    const midX = rect.left + rect.width / 2;
+                    insertCellAt(dragCellRef.current, idx, e.clientX < midX ? "before" : "after");
+                  } else {
+                    // Drag normal : permuter les contenus
+                    swapCells(dragCellRef.current, idx);
+                  }
                 }
               }}
               style={{
@@ -498,7 +502,7 @@ export default function Dashboards({ id_magasin, user_id, savedFavoris = [], onN
                 (e.currentTarget).style.borderColor = "#3AA48A";
                 (e.currentTarget).style.background = "#e8f4f1";
                 (e.currentTarget).style.color = "#3AA48A";
-                if (dragCellRef.current !== null && dragCellRef.current !== idx) {
+                if (dragCellRef.current !== null && dragCellRef.current !== idx && dragWithZone.current) {
                   const rect = e.currentTarget.getBoundingClientRect();
                   const midX = rect.left + rect.width / 2;
                   setDropIndicator({ idx, side: e.clientX < midX ? "before" : "after" });
