@@ -267,33 +267,60 @@ export default function Params({ user }: ParamsProps) {
                 Configurer la source
               </h3>
 
-              <label style={{ fontSize: 13, fontWeight: 600, display: "block", marginBottom: 6, color: "#1a3030" }}>Clé API (Client ID)</label>
-              <input type="text" placeholder="Votre clé API..." defaultValue={editingSource === "pennylane" ? "" : "••••••••••••"}
-                style={{ width: "100%", padding: "10px 14px", border: "1.5px solid #3AA48A", borderRadius: 10, fontSize: 14, fontFamily: "inherit", outline: "none", marginBottom: 12, color: "#1a3030" }} />
-
-              <label style={{ fontSize: 13, fontWeight: 600, display: "block", marginBottom: 6, color: "#1a3030" }}>Clé secrète</label>
-              <input type="password" placeholder="Votre clé secrète..." defaultValue={editingSource === "pennylane" ? "" : "••••••••••••"}
-                style={{ width: "100%", padding: "10px 14px", border: "1.5px solid #3AA48A", borderRadius: 10, fontSize: 14, fontFamily: "inherit", outline: "none", marginBottom: 12, color: "#1a3030" }} />
-
-              {editingSource === "deytime" && (
+              {/* Sources API — clés */}
+              {["deytime", "extrabat", "pennylane"].includes(editingSource) && (
                 <>
-                  <label style={{ fontSize: 13, fontWeight: 600, display: "block", marginBottom: 6, color: "#1a3030" }}>Slug entreprise</label>
-                  <input type="text" placeholder="mon-entreprise" defaultValue="art_et_la_matiere"
+                  <label style={{ fontSize: 13, fontWeight: 600, display: "block", marginBottom: 6, color: "#1a3030" }}>Clé API</label>
+                  <input type="text" placeholder="Votre clé API..." defaultValue="••••••••••••"
                     style={{ width: "100%", padding: "10px 14px", border: "1.5px solid #3AA48A", borderRadius: 10, fontSize: 14, fontFamily: "inherit", outline: "none", marginBottom: 12, color: "#1a3030" }} />
+
+                  <label style={{ fontSize: 13, fontWeight: 600, display: "block", marginBottom: 6, color: "#1a3030" }}>Clé secrète</label>
+                  <input type="password" placeholder="Votre clé secrète..." defaultValue="••••••••••••"
+                    style={{ width: "100%", padding: "10px 14px", border: "1.5px solid #3AA48A", borderRadius: 10, fontSize: 14, fontFamily: "inherit", outline: "none", marginBottom: 12, color: "#1a3030" }} />
+
+                  <label style={{ fontSize: 13, fontWeight: 600, display: "block", marginBottom: 6, color: "#1a3030" }}>Nom de l'entreprise</label>
+                  <input type="text" placeholder="Mon entreprise" defaultValue="Art et la Matière"
+                    style={{ width: "100%", padding: "10px 14px", border: "1.5px solid #3AA48A", borderRadius: 10, fontSize: 14, fontFamily: "inherit", outline: "none", marginBottom: 12, color: "#1a3030" }} />
+
+                  <div style={{ background: "#f0f7f5", borderRadius: 10, padding: 14, marginBottom: 16, fontSize: 12, color: "#4a7068", lineHeight: 1.6 }}>
+                    <Icon d={icons.lightbulb} size={13} color="#3AA48A" />
+                    {editingSource === "deytime" && " La clé API est configurée par votre partenaire Deytime. Contactez-le pour obtenir vos identifiants."}
+                    {editingSource === "extrabat" && " Demandez votre clé API à Extrabat. Un utilisateur dédié sera créé pour ar.ia."}
+                    {editingSource === "pennylane" && " Vous pouvez générer votre clé API directement dans votre espace Pennylane → Paramètres → API."}
+                  </div>
                 </>
               )}
 
-              <div style={{ background: "#f0f7f5", borderRadius: 10, padding: 14, marginBottom: 16, fontSize: 12, color: "#4a7068", lineHeight: 1.6 }}>
-                <Icon d={icons.lightbulb} size={13} color="#3AA48A" />
-                {editingSource === "deytime" && " La clé API est configurée par votre partenaire Deytime. Contactez-le pour obtenir vos identifiants."}
-                {editingSource === "extrabat" && " Demandez votre clé API à Extrabat. Un utilisateur dédié sera créé pour ar.ia."}
-                {editingSource === "pennylane" && " Vous pouvez générer votre clé API directement dans votre espace Pennylane → Paramètres → API."}
-              </div>
+              {/* Excel — fichier */}
+              {editingSource === "excel" && (
+                <>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, padding: 14, background: "#e8f4f1", borderRadius: 10, marginBottom: 12 }}>
+                    <Icon d={icons.file} size={20} color="#3AA48A" />
+                    <div>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: "#1a3030" }}>suivi_materiel.xlsx</div>
+                      <div style={{ fontSize: 11, color: "#4a7068" }}>Importé le 01/07/2026 — 245 lignes</div>
+                    </div>
+                  </div>
+                  <div style={{ border: "2px dashed #d0e8e2", borderRadius: 10, padding: 20, textAlign: "center", color: "#8ab8b0", marginBottom: 16, cursor: "pointer" }}>
+                    <p style={{ fontSize: 13, fontWeight: 600 }}>Remplacer par un nouveau fichier</p>
+                    <p style={{ fontSize: 11 }}>Glissez ou cliquez (.xlsx, .xls, .csv)</p>
+                  </div>
+                </>
+              )}
+
+              {/* SIREN — rien à configurer */}
+              {editingSource === "siren" && (
+                <div style={{ background: "#e8f4f1", borderRadius: 10, padding: 20, marginBottom: 16, textAlign: "center" }}>
+                  <Icon d={icons.user} size={24} color="#3AA48A" />
+                  <p style={{ fontSize: 14, fontWeight: 600, color: "#1a3030", marginTop: 8 }}>Connexion automatique</p>
+                  <p style={{ fontSize: 12, color: "#4a7068", marginTop: 4 }}>ar.ia se connecte à l'API publique SIRENE / INPI. Aucune configuration nécessaire.</p>
+                </div>
+              )}
 
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
                 <Btn onClick={() => setEditingSource(null)}>Annuler</Btn>
                 <Btn primary>Enregistrer</Btn>
-                {editingSource !== "pennylane" && <Btn danger>Déconnecter</Btn>}
+                <Btn danger onClick={() => { if (window.confirm(`Déconnecter ${editingSource} ? Les données seront supprimées.`)) setEditingSource(null); }}>Déconnecter</Btn>
               </div>
             </div>
           </div>
