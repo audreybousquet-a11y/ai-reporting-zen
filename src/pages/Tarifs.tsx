@@ -96,31 +96,31 @@ const Tarifs = () => {
 
       {/* -- Layout 3 colonnes : licences | sources | devis -- */}
       <section className="pb-16 md:pb-24">
-        <div className="container mx-auto px-4 max-w-7xl">
-          <div className="grid lg:grid-cols-3 gap-6">
+        <div className="container mx-auto px-4" style={{ maxWidth: "1400px" }}>
+          <div className="grid lg:grid-cols-3 gap-8">
 
             {/* === GAUCHE : Licences === */}
             <div>
-              <div className="bg-card border rounded-2xl p-6">
-                <div className="flex items-center gap-3 mb-5">
-                  <div className="h-9 w-9 rounded-xl hero-gradient flex items-center justify-center">
-                    <Calculator className="h-4 w-4 text-white" />
+              <div className="bg-card border rounded-2xl p-8">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="h-11 w-11 rounded-xl hero-gradient flex items-center justify-center">
+                    <Calculator className="h-5 w-5 text-white" />
                   </div>
-                  <h2 className="text-lg font-bold text-foreground">1. Licences</h2>
+                  <h2 className="text-xl font-bold text-foreground">1. Licences</h2>
                 </div>
 
-                {/* Tableau comparatif compact */}
-                <div className="mb-5 overflow-x-auto">
-                  <table className="w-full text-sm">
+                {/* Tableau comparatif */}
+                <div className="mb-6 overflow-x-auto">
+                  <table className="w-full">
                     <thead>
                       <tr>
-                        <th className="text-left py-1.5 text-muted-foreground font-medium text-xs"></th>
+                        <th className="text-left py-2 text-muted-foreground font-medium text-sm"></th>
                         {FORMULES.map(f => (
-                          <th key={f.id} className="text-center py-1.5">
-                            <span className={`text-xs font-bold uppercase ${f.recommended ? "text-primary" : "text-foreground"}`}>
+                          <th key={f.id} className="text-center py-2">
+                            <span className={`text-sm font-bold uppercase ${f.recommended ? "text-primary" : "text-foreground"}`}>
                               {f.nom}
                             </span>
-                            <div className="text-[10px] text-muted-foreground">{PRIX[f.id]} EUR</div>
+                            <div className="text-xs text-muted-foreground mt-0.5">{PRIX[f.id]} EUR HT/mois</div>
                           </th>
                         ))}
                       </tr>
@@ -128,17 +128,17 @@ const Tarifs = () => {
                     <tbody>
                       {FEATURES.map(feat => (
                         <tr key={feat.nom} className="border-t border-border/50">
-                          <td className="py-1.5 text-muted-foreground text-[11px]">{feat.nom}</td>
+                          <td className="py-2.5 text-muted-foreground text-sm">{feat.nom}</td>
                           {(["min", "mid", "max"] as const).map(fid => {
                             const val = feat[fid];
                             return (
-                              <td key={fid} className="text-center py-1.5">
+                              <td key={fid} className="text-center py-2.5">
                                 {typeof val === "string" ? (
-                                  <span className="font-semibold text-primary text-[11px]">{val}</span>
+                                  <span className="font-semibold text-primary text-sm">{val}</span>
                                 ) : val ? (
-                                  <Check className="h-3.5 w-3.5 text-primary mx-auto" />
+                                  <Check className="h-5 w-5 text-primary mx-auto" />
                                 ) : (
-                                  <Minus className="h-3.5 w-3.5 text-muted-foreground/30 mx-auto" />
+                                  <Minus className="h-4 w-4 text-muted-foreground/30 mx-auto" />
                                 )}
                               </td>
                             );
@@ -154,31 +154,31 @@ const Tarifs = () => {
                   {lignes.map((ligne, idx) => {
                     const pu = prixUnitaire(ligne.nb, ligne.formule);
                     return (
-                      <div key={idx} className="flex items-center gap-2 p-3 rounded-xl border border-border bg-background">
-                        <div className="flex-1 grid grid-cols-3 gap-1.5">
+                      <div key={idx} className="flex items-center gap-3 p-4 rounded-xl border border-border bg-background">
+                        <div className="flex-1 grid grid-cols-3 gap-2">
                           {(["min", "mid", "max"] as const).map(f => (
                             <button key={f} onClick={() => updateLigne(idx, "formule", f)}
-                              className={`py-1.5 rounded-lg text-xs font-bold uppercase transition-all ${
+                              className={`py-2 rounded-lg text-sm font-bold uppercase transition-all ${
                                 ligne.formule === f ? "hero-gradient text-white shadow-sm" : "bg-muted text-muted-foreground"
                               }`}>{f}</button>
                           ))}
                         </div>
-                        <div className="flex items-center gap-1.5">
+                        <div className="flex items-center gap-2">
                           <button onClick={() => updateLigne(idx, "nb", Math.max(1, ligne.nb - 1))}
-                            className="w-7 h-7 rounded-lg bg-muted text-muted-foreground font-bold text-sm flex items-center justify-center hover:bg-muted/80">-</button>
-                          <span className="w-5 text-center font-bold text-foreground text-sm">{ligne.nb}</span>
+                            className="w-8 h-8 rounded-lg bg-muted text-muted-foreground font-bold text-base flex items-center justify-center hover:bg-muted/80">-</button>
+                          <span className="w-7 text-center font-bold text-foreground text-base">{ligne.nb}</span>
                           <button onClick={() => updateLigne(idx, "nb", Math.min(20, ligne.nb + 1))}
-                            className="w-7 h-7 rounded-lg bg-muted text-muted-foreground font-bold text-sm flex items-center justify-center hover:bg-muted/80">+</button>
+                            className="w-8 h-8 rounded-lg bg-muted text-muted-foreground font-bold text-base flex items-center justify-center hover:bg-muted/80">+</button>
                         </div>
                         {lignes.length > 1 && (
                           <button onClick={() => removeLigne(idx)}
-                            className="text-muted-foreground/40 hover:text-red-500 transition-colors text-lg leading-none">&times;</button>
+                            className="text-muted-foreground/40 hover:text-red-500 transition-colors text-xl leading-none">&times;</button>
                         )}
                       </div>
                     );
                   })}
                   <button onClick={addLigne}
-                    className="w-full py-2 rounded-xl border border-dashed border-primary/30 text-primary text-sm font-medium hover:bg-primary/5 transition-colors">
+                    className="w-full py-3 rounded-xl border border-dashed border-primary/30 text-primary text-sm font-medium hover:bg-primary/5 transition-colors">
                     + Ajouter une formule
                   </button>
                 </div>
@@ -187,14 +187,14 @@ const Tarifs = () => {
 
             {/* === MILIEU : Sources === */}
             <div>
-              <div className="bg-card border rounded-2xl p-6">
-                <h2 className="text-lg font-bold text-foreground mb-2">2. Sources de données</h2>
-                <p className="text-xs text-muted-foreground mb-4">Prix fixe par entreprise.</p>
+              <div className="bg-card border rounded-2xl p-8">
+                <h2 className="text-xl font-bold text-foreground mb-2">2. Sources de données</h2>
+                <p className="text-sm text-muted-foreground mb-5">Prix fixe par entreprise.</p>
 
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {SOURCES.map(s => (
                     <label key={s.id}
-                      className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
+                      className={`flex items-center gap-3 p-4 rounded-xl border cursor-pointer transition-all ${
                         s.inclus
                           ? "border-primary bg-primary/5"
                           : selectedSources.includes(s.id)
@@ -211,10 +211,10 @@ const Tarifs = () => {
                         className="accent-primary h-4 w-4 shrink-0"
                       />
                       <div className="flex-1 min-w-0">
-                        <div className="text-sm font-medium text-foreground">{s.nom}</div>
-                        <div className="text-[11px] text-muted-foreground truncate">{s.desc}</div>
+                        <div className="text-sm font-semibold text-foreground">{s.nom}</div>
+                        <div className="text-xs text-muted-foreground">{s.desc}</div>
                       </div>
-                      <span className={`text-xs font-semibold whitespace-nowrap ${s.prix === 0 ? "hero-gradient text-white px-2 py-0.5 rounded-full" : "text-primary"}`}>
+                      <span className={`text-sm font-semibold whitespace-nowrap ${s.prix === 0 ? "hero-gradient text-white px-2.5 py-1 rounded-full" : "text-primary"}`}>
                         {s.prix > 0 ? `+${s.prix} EUR` : "Inclus"}
                       </span>
                     </label>
@@ -225,8 +225,8 @@ const Tarifs = () => {
 
             {/* === DROITE : Devis live === */}
             <div>
-              <div className="bg-card border rounded-2xl p-6 md:p-8 lg:sticky lg:top-24">
-                <h2 className="text-lg font-bold text-foreground mb-5 flex items-center gap-2">
+              <div className="bg-card border rounded-2xl p-8 lg:sticky lg:top-24">
+                <h2 className="text-xl font-bold text-foreground mb-6 flex items-center gap-2">
                   <Star className="h-5 w-5 text-primary" />
                   Votre devis
                 </h2>
