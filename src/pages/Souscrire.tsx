@@ -7,7 +7,7 @@ import Footer from "@/components/Footer";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
 
-const API_URL = import.meta.env.DEV ? "https://dev.ar-ia.fr" : "/v2";
+const API_URL = import.meta.env.DEV ? "https://dev.ar-ia.fr" : "https://dev.ar-ia.fr";
 let stripePromise: ReturnType<typeof loadStripe> | null = null;
 
 async function getStripe() {
