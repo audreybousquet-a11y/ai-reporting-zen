@@ -435,7 +435,8 @@ const Souscrire = () => {
 
               <p className="text-sm text-muted-foreground mt-6">
                 <Mail className="h-4 w-4 inline mr-1" />
-                Un email de confirmation a été envoyé à <strong>{result.email}</strong>
+                Un email avec vos identifiants a été envoyé à <strong>{result.email}</strong>.
+                <br />Si vous ne le recevez pas dans les prochaines minutes, pensez à vérifier vos courriers indésirables (spams).
               </p>
 
               {options.length > 0 && (
