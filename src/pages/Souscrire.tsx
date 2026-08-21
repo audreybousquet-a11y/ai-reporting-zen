@@ -317,27 +317,20 @@ const Souscrire = () => {
                   </div>
                 </div>
 
-                {/* Options sources — par entreprise */}
+                {/* Connecteurs choisis (depuis la page Tarifs, non modifiables ici) */}
                 <div>
-                  <label className="block text-sm font-semibold text-foreground mb-2">Connecteurs</label>
-                  <p className="text-xs text-muted-foreground mb-3">Prix fixe par entreprise, quel que soit le nombre d'utilisateurs.</p>
-                  <label className="flex items-center justify-between p-3 rounded-xl border border-primary bg-primary/5 mb-2">
+                  <label className="block text-sm font-semibold text-foreground mb-2">Connecteurs choisis</label>
+                  <div className="flex items-center justify-between p-3 rounded-xl border border-primary bg-primary/5 mb-2">
                     <div className="flex items-center gap-3">
-                      <input type="checkbox" checked={true} disabled className="accent-primary h-4 w-4" />
                       <span className="text-sm font-medium text-foreground">Excel / Google Sheets</span>
                     </div>
                     <span className="text-sm font-semibold hero-gradient text-white px-2 py-0.5 rounded-full">Inclus</span>
-                  </label>
-                  {SOURCES_OPTIONS.map(s => (
-                    <label key={s.id} className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all mb-2 ${
-                      options.includes(s.id) ? "border-primary bg-primary/5" : "border-border hover:border-primary/30"
-                    }`}>
-                      <div className="flex items-center gap-3">
-                        <input type="checkbox" checked={options.includes(s.id)} onChange={() => toggleOption(s.id)} className="accent-primary h-4 w-4" />
-                        <span className="text-sm font-medium">{s.nom}</span>
-                      </div>
-                      <span className="text-sm font-semibold text-primary">+ {s.prix} EUR HT / mois</span>
-                    </label>
+                  </div>
+                  {SOURCES_OPTIONS.filter(s => options.includes(s.id)).map(s => (
+                    <div key={s.id} className="flex items-center justify-between p-3 rounded-xl border border-primary bg-primary/5 mb-2">
+                      <span className="text-sm font-medium">{s.nom}</span>
+                      <span className="text-sm font-semibold text-primary">{s.prix > 0 ? `+ ${s.prix} EUR HT / mois` : "Inclus"}</span>
+                    </div>
                   ))}
                 </div>
 
