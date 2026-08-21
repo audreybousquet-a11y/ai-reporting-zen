@@ -440,12 +440,10 @@ const Souscrire = () => {
               </p>
 
               {options.length > 0 && (
-                <div className="text-sm text-primary mt-2">
-                  {options.map(optId => {
-                    const src = SOURCES_OPTIONS.find(s => s.id === optId);
-                    return src ? <p key={optId} className="mb-1">Connecteur {src.nom} : activation sous 24-48h. Vous recevrez un email de confirmation lorsque le connecteur sera correctement installe.</p> : null;
-                  })}
-                </div>
+                <p className="text-sm text-primary mt-2">
+                  Les connecteurs {options.map(id => SOURCES_OPTIONS.find(s => s.id === id)?.nom).filter(Boolean).join(", ")} seront
+                  activés sous 24-48h. Vous recevrez un email de confirmation lorsque chaque connecteur sera opérationnel.
+                </p>
               )}
             </div>
           )}
