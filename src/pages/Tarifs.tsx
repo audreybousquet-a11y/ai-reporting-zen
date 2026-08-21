@@ -35,7 +35,7 @@ const SOURCES = [
   { id: "deytime", nom: "DeyTime", prix: 5, desc: "Connecteur ERP DeyTime", inclus: false },
   { id: "extrabat", nom: "Extrabat", prix: 10, desc: "Connecteur ERP Extrabat", inclus: false },
   { id: "pennylane", nom: "Pennylane", prix: 10, desc: "Connecteur comptabilité Pennylane", inclus: false },
-  { id: "meteo", nom: "Open Météo", prix: 0, desc: "Données météo pour corréler avec votre activité", inclus: false },
+  { id: "meteo", nom: "Open Météo", prix: 2, desc: "Données météo pour corréler avec votre activité", inclus: false },
   { id: "edf", nom: "EDF", prix: 2, desc: "Suivi de vos consommations et factures EDF", inclus: false },
   { id: "gmail", nom: "Gmail", prix: 2, desc: "Analyse et suivi de vos emails professionnels", inclus: false },
   { id: "facture_elec", nom: "Facture électronique", prix: 2, desc: "Import de factures XML (Factur-X, CII, UBL)", inclus: false },
