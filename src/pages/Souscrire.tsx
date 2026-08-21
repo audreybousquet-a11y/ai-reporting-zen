@@ -438,10 +438,13 @@ const Souscrire = () => {
                 Un email de confirmation a été envoyé à <strong>{result.email}</strong>
               </p>
 
-              {options.includes("deytime") && (
-                <p className="text-sm text-primary mt-2">
-                  🔗 Le connecteur Deytime sera activé sous 24-48h. Vous recevrez un email de confirmation.
-                </p>
+              {options.length > 0 && (
+                <div className="text-sm text-primary mt-2">
+                  {options.map(optId => {
+                    const src = SOURCES_OPTIONS.find(s => s.id === optId);
+                    return src ? <p key={optId} className="mb-1">Connecteur {src.nom} : activation sous 24-48h. Vous recevrez un email de confirmation lorsque le connecteur sera correctement installe.</p> : null;
+                  })}
+                </div>
               )}
             </div>
           )}
