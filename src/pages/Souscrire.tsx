@@ -105,7 +105,6 @@ function prixUnitaire(nb: number, formule: FormulaId) {
 const SOURCES_OPTIONS = [
   { id: "deytime", nom: "DeyTime", prix: 5 },
   { id: "extrabat", nom: "Extrabat", prix: 10 },
-  { id: "pennylane", nom: "Pennylane", prix: 10 },
   { id: "meteo", nom: "Open Météo", prix: 2 },
 ];
 
