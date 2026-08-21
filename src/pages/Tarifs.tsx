@@ -173,7 +173,6 @@ const Tarifs = () => {
   };
 
   return (
-    <PasswordGate>
     <div className="min-h-screen bg-background">
       <Navbar />
 
@@ -491,7 +490,6 @@ const Tarifs = () => {
 
       <Footer />
     </div>
-    </PasswordGate>
   );
 };
 

@@ -7,7 +7,7 @@ import Footer from "@/components/Footer";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
 
-const API_URL = "https://dev.ar-ia.fr";
+const API_URL = import.meta.env.DEV ? "https://dev.ar-ia.fr" : "/v2";
 let stripePromise: ReturnType<typeof loadStripe> | null = null;
 
 async function getStripe() {
@@ -106,6 +106,7 @@ const SOURCES_OPTIONS = [
   { id: "deytime", nom: "DeyTime", prix: 5 },
   { id: "extrabat", nom: "Extrabat", prix: 10 },
   { id: "pennylane", nom: "Pennylane", prix: 10 },
+  { id: "meteo", nom: "Open Météo", prix: 0 },
 ];
 
 /* ── Composant formulaire Stripe Elements ─────────────────────────────── */
@@ -265,7 +266,6 @@ const Souscrire = () => {
   };
 
   return (
-    <PasswordGate>
     <div className="min-h-screen bg-background">
       <Navbar />
 
@@ -469,7 +469,7 @@ const Souscrire = () => {
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-muted-foreground">Adresse</span>
-                    <a href="https://dev.ar-ia.fr" className="text-sm font-semibold text-primary">dev.ar-ia.fr</a>
+                    <a href="https://app.ar-ia.fr/v2/app" className="text-sm font-semibold text-primary">app.ar-ia.fr/v2</a>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-muted-foreground">Identifiant</span>
@@ -486,7 +486,7 @@ const Souscrire = () => {
 
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Button size="lg" asChild>
-                  <a href="https://dev.ar-ia.fr">Se connecter à ar.ia</a>
+                  <a href="https://app.ar-ia.fr/v2/app">Se connecter à ar.ia</a>
                 </Button>
                 <Button size="lg" variant="outline" asChild>
                   <Link to="/tarifs">Retour aux tarifs</Link>
@@ -511,7 +511,6 @@ const Souscrire = () => {
 
       <Footer />
     </div>
-    </PasswordGate>
   );
 };
 
