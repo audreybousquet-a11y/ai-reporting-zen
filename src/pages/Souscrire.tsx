@@ -282,59 +282,33 @@ const Souscrire = () => {
               <p className="text-muted-foreground mb-8">Créez votre compte en quelques minutes.</p>
 
               <div className="space-y-6">
-                {/* Licences */}
-                <div>
-                  <label className="block text-sm font-semibold text-foreground mb-2">Vos licences</label>
-                  <div className="space-y-2">
-                    {lignes.map((ligne, idx) => (
-                      <div key={idx} className="flex items-center gap-2 p-3 rounded-xl border border-border bg-background">
-                        <div className="flex-1 grid grid-cols-3 gap-1">
-                          {(["min", "mid", "max"] as const).map(f => (
-                            <button key={f} onClick={() => setLignes(prev => prev.map((l, i) => i === idx ? { ...l, formule: f } : l))}
-                              className={`py-1.5 rounded-lg text-xs font-bold uppercase ${
-                                ligne.formule === f ? "hero-gradient text-white" : "bg-muted text-muted-foreground"
-                              }`}>{f}</button>
-                          ))}
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <button onClick={() => setLignes(prev => prev.map((l, i) => i === idx ? { ...l, nb: Math.max(1, l.nb - 1) } : l))}
-                            className="w-7 h-7 rounded-lg bg-muted text-muted-foreground font-bold text-sm flex items-center justify-center">-</button>
-                          <span className="w-6 text-center font-bold text-sm">{ligne.nb}</span>
-                          <button onClick={() => setLignes(prev => prev.map((l, i) => i === idx ? { ...l, nb: l.nb + 1 } : l))}
-                            className="w-7 h-7 rounded-lg bg-muted text-muted-foreground font-bold text-sm flex items-center justify-center">+</button>
-                        </div>
-                        <span className="w-16 text-right font-semibold text-sm">{prixUnitaire(ligne.nb, ligne.formule) * ligne.nb} EUR HT</span>
-                        {lignes.length > 1 && (
-                          <button onClick={() => setLignes(prev => prev.filter((_, i) => i !== idx))}
-                            className="text-muted-foreground/40 hover:text-red-500 text-lg">&times;</button>
-                        )}
+                {/* Récap commande en haut */}
+                <div className="bg-card border rounded-2xl p-5">
+                  {lignes.map((l, i) => {
+                    const lpu = prixUnitaire(l.nb, l.formule);
+                    return (
+                      <div key={i} className="flex justify-between text-sm mb-1">
+                        <span className="text-muted-foreground">{l.nb} utilisateur{l.nb > 1 ? "s" : ""} {l.formule.toUpperCase()} x {lpu} EUR HT</span>
+                        <span className="font-semibold">{lpu * l.nb} EUR HT</span>
                       </div>
-                    ))}
-                    <button onClick={() => setLignes(prev => [...prev, { formule: "min", nb: 1 }])}
-                      className="w-full py-2 rounded-xl border border-dashed border-primary/30 text-primary text-sm font-medium hover:bg-primary/5">
-                      + Ajouter une formule
-                    </button>
-                  </div>
-                </div>
-
-                {/* Connecteurs choisis (depuis la page Tarifs, non modifiables ici) */}
-                <div>
-                  <label className="block text-sm font-semibold text-foreground mb-2">Connecteurs choisis</label>
-                  <div className="flex items-center justify-between p-3 rounded-xl border border-primary bg-primary/5 mb-2">
-                    <div className="flex items-center gap-3">
-                      <span className="text-sm font-medium text-foreground">Excel / Google Sheets</span>
-                    </div>
-                    <span className="text-sm font-semibold hero-gradient text-white px-2 py-0.5 rounded-full">Inclus</span>
+                    );
+                  })}
+                  <div className="flex justify-between text-sm mb-1">
+                    <span className="text-muted-foreground">Excel / Google Sheets</span>
+                    <span className="font-semibold text-green-600">Inclus</span>
                   </div>
                   {SOURCES_OPTIONS.filter(s => options.includes(s.id)).map(s => (
-                    <div key={s.id} className="flex items-center justify-between p-3 rounded-xl border border-primary bg-primary/5 mb-2">
-                      <span className="text-sm font-medium">{s.nom}</span>
-                      <span className="text-sm font-semibold text-primary">{s.prix > 0 ? `+ ${s.prix} EUR HT / mois` : "Inclus"}</span>
+                    <div key={s.id} className="flex justify-between text-sm mb-1">
+                      <span className="text-muted-foreground">{s.nom}</span>
+                      <span className="font-semibold text-primary">+ {s.prix} EUR HT</span>
                     </div>
                   ))}
+                  <hr className="my-3 border-border" />
+                  <div className="flex justify-between">
+                    <span className="font-semibold text-foreground">Total mensuel</span>
+                    <span className="text-2xl font-extrabold text-primary">{totalMois} EUR HT</span>
+                  </div>
                 </div>
-
-                <hr className="border-border" />
 
                 {/* Informations personnelles */}
                 <div className="grid grid-cols-2 gap-4">
@@ -363,31 +337,6 @@ const Souscrire = () => {
                   <label className="block text-sm font-medium text-foreground mb-1">Téléphone</label>
                   <input value={telephone} onChange={e => setTelephone(e.target.value)}
                     className="w-full rounded-lg border border-input px-3 py-2.5 text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none" />
-                </div>
-
-                {/* Récap */}
-                <div className="bg-card border rounded-2xl p-5">
-                  <h3 className="font-semibold text-foreground mb-3">Récapitulatif</h3>
-                  {lignes.map((l, i) => {
-                    const lpu = prixUnitaire(l.nb, l.formule);
-                    return (
-                      <div key={i} className="flex justify-between text-sm mb-1">
-                        <span className="text-muted-foreground">{l.nb} utilisateur{l.nb > 1 ? "s" : ""} {l.formule.toUpperCase()} x {lpu} EUR HT</span>
-                        <span className="font-semibold">{lpu * l.nb} EUR HT</span>
-                      </div>
-                    );
-                  })}
-                  {SOURCES_OPTIONS.filter(s => options.includes(s.id)).map(s => (
-                    <div key={s.id} className="flex justify-between text-sm mb-1">
-                      <span className="text-muted-foreground">{s.nom}</span>
-                      <span className="font-semibold text-primary">+ {s.prix} EUR HT</span>
-                    </div>
-                  ))}
-                  <hr className="my-3 border-border" />
-                  <div className="flex justify-between">
-                    <span className="font-semibold text-foreground">Total mensuel</span>
-                    <span className="text-2xl font-extrabold text-primary">{totalMois} EUR HT</span>
-                  </div>
                 </div>
 
                 <Button size="lg" className="w-full" disabled={!prenom || !nom || !email || !entreprise}
