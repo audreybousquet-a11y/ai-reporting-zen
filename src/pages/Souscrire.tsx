@@ -419,9 +419,7 @@ const Souscrire = () => {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-muted-foreground">Mot de passe</span>
-                    <button onClick={() => {navigator.clipboard.writeText(result.password); alert("Mot de passe copié !")}}
-                      className="text-sm font-semibold bg-primary/10 text-primary px-3 py-1 rounded-lg hover:bg-primary/20 cursor-pointer transition-colors"
-                      title="Cliquer pour copier">{result.password} 📋</button>
+                    <span className="text-sm text-muted-foreground italic">envoyé par email</span>
                   </div>
                 </div>
               </div>
