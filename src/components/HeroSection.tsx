@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, MessageSquare } from "lucide-react";
-import screenshot from "@/assets/localhost_85012_.png";
+import screenshot from "@/assets/aria_v2.png";
 
 const HeroSection = () => (
   <section className="relative pt-32 pb-20 md:pt-40 md:pb-32 overflow-hidden">

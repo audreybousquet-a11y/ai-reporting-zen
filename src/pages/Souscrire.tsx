@@ -438,12 +438,6 @@ const Souscrire = () => {
                 <br />Si vous ne le recevez pas dans les prochaines minutes, pensez à vérifier vos courriers indésirables (spams).
               </p>
 
-              {options.length > 0 && (
-                <p className="text-sm text-primary mt-2">
-                  Les connecteurs {options.map(id => SOURCES_OPTIONS.find(s => s.id === id)?.nom).filter(Boolean).join(", ")} seront
-                  activés sous 24-48h. Vous recevrez un email de confirmation lorsque chaque connecteur sera opérationnel.
-                </p>
-              )}
             </div>
           )}
 

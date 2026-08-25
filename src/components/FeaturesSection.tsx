@@ -1,4 +1,4 @@
-import { Database, BarChart3, Star, LayoutDashboard, Mail, BrainCircuit, Workflow } from "lucide-react";
+import { Database, BarChart3, Star, LayoutDashboard, Mail, BrainCircuit, Workflow, FileText, Bell } from "lucide-react";
 
 const features = [
   { icon: Database, title: "Connexion automatique", desc: "Connectez votre source de données en quelques clics, sans compétence technique." },
@@ -6,6 +6,8 @@ const features = [
   { icon: BarChart3, title: "Visualisations multiples", desc: "KPI, graphiques, tableaux ou fiches récapitulatives avec export Excel." },
   { icon: Star, title: "Favoris & empreinte carbone", desc: "Sauvegardez vos visuels et limitez les requêtes inutiles pour un usage responsable." },
   { icon: LayoutDashboard, title: "Dashboards personnalisés", desc: "Regroupez vos favoris dans des tableaux de bord pour plus de lisibilité." },
+  { icon: FileText, title: "Comptes rendus", desc: "Générez des comptes rendus automatiques à partir de vos données. L'IA analyse vos KPI et rédige une synthèse prête à partager." },
+  { icon: Bell, title: "Alertes intelligentes", desc: "Définissez des seuils sur vos indicateurs et recevez une alerte dès qu'une anomalie est détectée." },
   { icon: Mail, title: "Envoi de mails programmables", desc: "Partagez vos rapports avec vos contacts via des e-mails personnalisables." },
   { icon: Workflow, title: "ETL — Connexion multi-sources", desc: "Rassemblez plusieurs sources de données dans un même espace et interrogez-les ensemble, comme si elles n'en formaient qu'une." },
 ];

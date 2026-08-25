@@ -1,7 +1,6 @@
 const connectors = [
   { name: "Deytime", logo: "/logos/deytime2.webp", desc: "Connectez votre logiciel Deytime pour analyser heures, chantiers, absences et cagnotte de vos salari\u00e9s." },
   { name: "Extrabat", logo: "/logos/Extrabat.png", desc: "Reliez Extrabat pour exploiter vos devis, factures et donn\u00e9es clients du BTP." },
-  { name: "Pennylane", logo: "/logos/pennylane.png", desc: "Importez vos donn\u00e9es comptables Pennylane pour suivre votre tr\u00e9sorerie et vos charges." },
   { name: "Facture \u00e9lectronique", logo: "/logos/facture_electronique.png", desc: "Importez vos factures aux formats CII, UBL et Factur-X (norme EN16931). Analyse automatique de vos achats, fournisseurs et \u00e9ch\u00e9ances." },
   { name: "Excel", logo: "/logos/Microsoft_Excel_2013-2019_logo.svg.png", desc: "Importez n\u2019importe quel fichier Excel et posez vos questions en langage naturel." },
   { name: "Google Sheets", logo: "/logos/google_sheets.svg", desc: "Connectez vos Google Sheets pour des donn\u00e9es toujours \u00e0 jour, synchronis\u00e9es automatiquement." },
