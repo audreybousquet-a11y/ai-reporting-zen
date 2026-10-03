@@ -193,6 +193,7 @@ const Souscrire = () => {
   const [error, setError] = useState("");
   const [clientSecret, setClientSecret] = useState("");
   const [stripeInstance, setStripeInstance] = useState<any>(null);
+  const [acceptCgv, setAcceptCgv] = useState(false);
 
   const nbUsersTotal = lignes.reduce((sum, l) => sum + l.nb, 0);
   // Connecteurs = prix fixe par entreprise
@@ -339,7 +340,15 @@ const Souscrire = () => {
                     className="w-full rounded-lg border border-input px-3 py-2.5 text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none" />
                 </div>
 
-                <Button size="lg" className="w-full" disabled={!prenom || !nom || !email || !entreprise}
+                {/* Acceptation CGV */}
+                <label className="flex items-start gap-3 cursor-pointer">
+                  <input type="checkbox" checked={acceptCgv} onChange={e => setAcceptCgv(e.target.checked)} className="accent-primary h-4 w-4 mt-0.5" />
+                  <span className="text-sm text-muted-foreground">
+                    J'accepte les <a href="/mentions-legales" target="_blank" className="text-primary underline hover:text-primary/80">Conditions Générales de Vente</a> et la <a href="/politique-confidentialite" target="_blank" className="text-primary underline hover:text-primary/80">Politique de Confidentialité</a>
+                  </span>
+                </label>
+
+                <Button size="lg" className="w-full" disabled={!prenom || !nom || !email || !entreprise || !acceptCgv}
                   onClick={handleGoToPayment}>
                   Continuer vers le paiement
                 </Button>
