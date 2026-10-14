@@ -1,7 +1,7 @@
 const connectors = [
   { name: "Deytime", logo: "/logos/deytime2.webp", desc: "Connectez votre logiciel Deytime pour analyser heures, chantiers, absences et cagnotte de vos salari\u00e9s." },
   { name: "Extrabat", logo: "/logos/Extrabat.png", desc: "Reliez Extrabat pour exploiter vos devis, factures et donn\u00e9es clients du BTP." },
-  { name: "Pennylane", logo: "/logos/pennylane.png", desc: "Importez vos données comptables Pennylane : factures clients, devis, fournisseurs et trésorerie." },
+  { name: "Pennylane", logo: "", desc: "Importez vos données comptables Pennylane : factures clients, devis, fournisseurs et trésorerie." },
   { name: "Facture \u00e9lectronique", logo: "/logos/facture_electronique.png", desc: "Importez vos factures aux formats CII, UBL et Factur-X (norme EN16931). Analyse automatique de vos achats, fournisseurs et \u00e9ch\u00e9ances." },
   { name: "Excel", logo: "/logos/Microsoft_Excel_2013-2019_logo.svg.png", desc: "Importez n\u2019importe quel fichier Excel et posez vos questions en langage naturel." },
   { name: "Google Sheets", logo: "/logos/google_sheets.svg", desc: "Connectez vos Google Sheets pour des donn\u00e9es toujours \u00e0 jour, synchronis\u00e9es automatiquement." },
@@ -31,11 +31,15 @@ const ConnectorsSection = () => (
               className="connector-item flex flex-col items-center justify-center min-w-[140px] group relative"
             >
               <div className="h-20 w-20 rounded-xl bg-card border shadow-sm flex items-center justify-center mb-3 group-hover:shadow-md group-hover:scale-110 transition-all duration-300">
-                <img
-                  src={c.logo}
-                  alt={c.name}
-                  className="h-12 w-12 object-contain"
-                />
+                {c.logo ? (
+                  <img
+                    src={c.logo}
+                    alt={c.name}
+                    className="h-12 w-12 object-contain"
+                  />
+                ) : (
+                  <span className="text-xs font-bold text-foreground text-center leading-tight px-1">{c.name}</span>
+                )}
               </div>
               <span className="text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors">
                 {c.name}
