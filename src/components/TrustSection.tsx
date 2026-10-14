@@ -4,7 +4,7 @@ const items = [
   {
     icon: Lock,
     title: "Données non stockées",
-    desc: "Vos données ne transitent par l'IA que le temps d'une requête. Elles ne sont jamais conservées ni utilisées pour entraîner un modèle.",
+    desc: "L'IA ne voit jamais vos données. Elle se contente de transformer votre question en requête technique — vos chiffres restent entre vous et votre base.",
   },
   {
     icon: MapPin,
