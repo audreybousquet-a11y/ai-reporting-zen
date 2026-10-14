@@ -51,6 +51,11 @@ const Footer = () => (
                   Politique de confidentialité
                 </Link>
               </div>
+              <div>
+                <Link to="/conditions-generales" className="hover:text-primary-foreground transition-colors">
+                  Conditions générales d'abonnement
+                </Link>
+              </div>
             </div>
           </div>
 
