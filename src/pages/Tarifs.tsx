@@ -101,7 +101,7 @@ const Tarifs = () => {
 
       {/* -- Bulle citation Audrey -- */}
       <section className="pb-10 md:pb-14">
-        <div className="container mx-auto px-4 max-w-2xl">
+        <div className="container mx-auto px-4" style={{ maxWidth: "1400px" }}>
           <div className="relative bg-primary/5 border border-primary/20 rounded-2xl p-6 md:p-8">
             <div className="absolute -top-5 left-8 h-10 w-10 rounded-full hero-gradient flex items-center justify-center text-white font-bold text-lg shadow-md">A</div>
             <div className="mt-2 space-y-3 text-sm md:text-base text-foreground leading-relaxed">
