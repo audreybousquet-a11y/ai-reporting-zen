@@ -288,7 +288,7 @@ const Tarifs = () => {
                       />
                       <div className="flex-1 min-w-0">
                         <div className="text-sm font-semibold text-foreground flex items-center gap-1.5">
-                          Prise en main (demi-journée)
+                          Prise en main
                           <span className="relative group/tip"
                             onClick={(e) => e.stopPropagation()}
                           >
