@@ -178,12 +178,14 @@ const Souscrire = () => {
     } catch { return [{ formule: "mid" as FormulaId, nb: 1 }]; }
   })();
   const parsedOptions = (qs?.get("options") || "").split(",").filter(Boolean);
+  const parsedFormation = qs?.get("formation") !== "0";
 
   const [step, setStep] = useState<Step>("form");
   useEffect(() => { window.scrollTo(0, 0); }, [step]);
 
   const [lignes, setLignes] = useState<LicenceLine[]>(parsedLignes);
   const [options, setOptions] = useState<string[]>(parsedOptions);
+  const [formation, setFormation] = useState(parsedFormation);
   const [prenom, setPrenom] = useState("");
   const [nom, setNom] = useState("");
   const [email, setEmail] = useState("");
@@ -198,8 +200,10 @@ const Souscrire = () => {
   const nbUsersTotal = lignes.reduce((sum, l) => sum + l.nb, 0);
   // Connecteurs = prix fixe par entreprise
   const sourcesExtra = SOURCES_OPTIONS.filter(s => options.includes(s.id)).reduce((sum, s) => sum + s.prix, 0);
+  const FORMATION_PRIX = 350;
   const totalLicences = lignes.reduce((sum, l) => sum + prixUnitaire(l.nb, l.formule) * l.nb, 0);
   const totalMois = totalLicences + sourcesExtra;
+  const premierMois = totalMois + (formation ? FORMATION_PRIX : 0);
 
   const toggleOption = (id: string) => {
     setOptions(prev => prev.includes(id) ? prev.filter(o => o !== id) : [...prev, id]);
@@ -213,7 +217,7 @@ const Souscrire = () => {
       const resp = await fetch(`${API_URL}/api/create-subscription`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prenom, nom, email, entreprise, telephone, lignes, options }),
+        body: JSON.stringify({ prenom, nom, email, entreprise, telephone, lignes, options, formation }),
       });
       const data = await resp.json();
       if (data.clientSecret) {
@@ -245,6 +249,7 @@ const Souscrire = () => {
           nb_users: nbUsersTotal,
           formule: lignes[0]?.formule || "mid",
           options,
+          formation,
           stripe_payment_intent: data.paymentIntentId,
         }),
       });
@@ -304,11 +309,34 @@ const Souscrire = () => {
                       <span className="font-semibold text-primary">+ {s.prix} EUR HT</span>
                     </div>
                   ))}
+                  {formation && (
+                    <>
+                      <hr className="my-3 border-border" />
+                      <div className="flex justify-between text-sm mb-1">
+                        <span className="text-muted-foreground">Formation prise en main (1 demi-journée)</span>
+                        <span className="font-semibold text-primary">{FORMATION_PRIX} EUR HT</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground/70 italic">Facturée une seule fois, à la 1ère mensualité.</p>
+                    </>
+                  )}
                   <hr className="my-3 border-border" />
-                  <div className="flex justify-between">
-                    <span className="font-semibold text-foreground">Total mensuel</span>
-                    <span className="text-2xl font-extrabold text-primary">{totalMois} EUR HT</span>
-                  </div>
+                  {formation ? (
+                    <>
+                      <div className="flex justify-between mb-1">
+                        <span className="font-semibold text-foreground">1ère facturation</span>
+                        <span className="text-2xl font-extrabold text-primary">{premierMois} EUR HT</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Puis chaque mois</span>
+                        <span className="font-semibold text-foreground">{totalMois} EUR HT</span>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="flex justify-between">
+                      <span className="font-semibold text-foreground">Total mensuel</span>
+                      <span className="text-2xl font-extrabold text-primary">{totalMois} EUR HT</span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Informations personnelles */}
@@ -350,7 +378,10 @@ const Souscrire = () => {
 
                 <Button size="lg" className="w-full" disabled={!prenom || !nom || !email || !entreprise || !acceptCgv}
                   onClick={handleGoToPayment}>
-                  Continuer vers le paiement
+                  {formation
+                    ? `Continuer — ${premierMois} EUR HT (1ère fois)`
+                    : "Continuer vers le paiement"
+                  }
                 </Button>
               </div>
             </div>
@@ -363,7 +394,13 @@ const Souscrire = () => {
                 <ArrowLeft className="h-4 w-4" /> Modifier mes informations
               </button>
               <h1 className="text-3xl font-extrabold text-foreground mb-2">Paiement</h1>
-              <p className="text-muted-foreground mb-8">{totalMois} EUR HT / mois — {nbUsersTotal} utilisateur{nbUsersTotal > 1 ? "s" : ""} ({lignes.map(l => `${l.nb} ${l.formule.toUpperCase()}`).join(" + ")})</p>
+              <p className="text-muted-foreground mb-8">
+                {formation
+                  ? `${premierMois} EUR HT (1ère facturation) puis ${totalMois} EUR HT / mois`
+                  : `${totalMois} EUR HT / mois`
+                }
+                {" — "}{nbUsersTotal} utilisateur{nbUsersTotal > 1 ? "s" : ""} ({lignes.map(l => `${l.nb} ${l.formule.toUpperCase()}`).join(" + ")})
+              </p>
 
               {error && (
                 <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl p-4 mb-6 text-sm">{error}</div>

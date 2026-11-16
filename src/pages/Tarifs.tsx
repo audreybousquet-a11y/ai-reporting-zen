@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Check, Minus, Calculator, Mail, Phone, Zap, Star, Shield } from "lucide-react";
+import { Check, Minus, Calculator, Mail, Phone, Zap, Star, Shield, Info } from "lucide-react";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -49,6 +49,7 @@ type LicenceLine = { formule: FormulaId; nb: number };
 const Tarifs = () => {
   const [lignes, setLignes] = useState<LicenceLine[]>([{ formule: "mid", nb: 1 }]);
   const [selectedSources, setSelectedSources] = useState<string[]>([]);
+  const [formationIncluse, setFormationIncluse] = useState(true);
 
   const nbUsersTotal = lignes.reduce((sum, l) => sum + l.nb, 0);
   const sourcesExtra = SOURCES.filter(s => !s.inclus && s.prix > 0 && selectedSources.includes(s.id)).reduce((sum, s) => sum + s.prix, 0);
@@ -72,8 +73,11 @@ const Tarifs = () => {
     setLignes(prev => prev.length <= 1 ? prev : prev.filter((_, i) => i !== idx));
   };
 
+  const FORMATION_PRIX = 350;
+  const premierMois = totalMois + (formationIncluse ? FORMATION_PRIX : 0);
+
   // Construire le lien vers Souscrire avec les options
-  const souscriptionUrl = `/souscrire?l=${lignes.map(l => l.formule + ":" + l.nb).join(",")}&options=${selectedSources.join(",")}`;
+  const souscriptionUrl = `/souscrire?l=${lignes.map(l => l.formule + ":" + l.nb).join(",")}&options=${selectedSources.join(",")}&formation=${formationIncluse ? "1" : "0"}`;
 
   return (
     <div className="min-h-screen bg-background">
@@ -266,27 +270,87 @@ const Tarifs = () => {
                   </div>
                 )}
 
+                {/* Formation */}
+                <div className="space-y-2 mb-4">
+                  <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Formation</div>
+                  <div className="relative">
+                    <label
+                      className={`flex items-center gap-3 p-4 rounded-xl border cursor-pointer transition-all overflow-visible ${
+                        formationIncluse ? "border-primary bg-primary/5" : "border-border hover:border-primary/30"
+                      }`}
+                      onClick={() => setFormationIncluse(prev => !prev)}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={formationIncluse}
+                        onChange={() => {}}
+                        className="accent-primary h-4 w-4 shrink-0"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-semibold text-foreground flex items-center gap-1.5">
+                          Prise en main (demi-journée)
+                          <span className="relative group/tip"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <Info className="h-4 w-4 text-primary cursor-help" />
+                            <span className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-56 p-2.5 rounded-lg bg-foreground text-background text-xs leading-relaxed opacity-0 pointer-events-none group-hover/tip:opacity-100 transition-opacity z-[100] shadow-lg">
+                              Formation vivement conseillée pour une bonne prise en main de l'outil. Demi-journée en visio, date à convenir ensemble. Facturée uniquement à la 1ère mensualité.
+                            </span>
+                          </span>
+                        </div>
+                        <div className="text-xs text-muted-foreground">1 demi-journée</div>
+                      </div>
+                      <span className="text-sm font-semibold text-primary whitespace-nowrap">{FORMATION_PRIX} EUR HT</span>
+                    </label>
+                  </div>
+                  {formationIncluse && (
+                    <p className="text-xs text-muted-foreground/70 italic pl-1">Facturée une seule fois, à la 1ère mensualité.</p>
+                  )}
+                </div>
+
                 <hr className="border-border my-4" />
 
                 {/* Total */}
                 <div className="space-y-2">
-                  <div className="flex justify-between items-baseline">
-                    <span className="text-sm font-medium text-foreground">{nbUsersTotal} utilisateur{nbUsersTotal > 1 ? "s" : ""}</span>
-                    <div className="text-right">
-                      <span className="text-3xl font-extrabold text-primary">{totalMois} EUR</span>
-                      <span className="text-sm text-muted-foreground"> HT / mois</span>
+                  {formationIncluse ? (
+                    <>
+                      <div className="flex justify-between items-baseline">
+                        <span className="text-sm font-medium text-foreground">1ère mensualité</span>
+                        <div className="text-right">
+                          <span className="text-3xl font-extrabold text-primary">{premierMois} EUR</span>
+                          <span className="text-sm text-muted-foreground"> HT</span>
+                        </div>
+                      </div>
+                      <div className="text-xs text-muted-foreground pl-1">
+                        {totalMois} EUR (abonnement) + {FORMATION_PRIX} EUR (formation)
+                      </div>
+                      <div className="flex justify-between text-sm mt-1">
+                        <span className="text-muted-foreground">Puis chaque mois</span>
+                        <span className="font-bold text-foreground">{totalMois} EUR HT / mois</span>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="flex justify-between items-baseline">
+                      <span className="text-sm font-medium text-foreground">{nbUsersTotal} utilisateur{nbUsersTotal > 1 ? "s" : ""}</span>
+                      <div className="text-right">
+                        <span className="text-3xl font-extrabold text-primary">{totalMois} EUR</span>
+                        <span className="text-sm text-muted-foreground"> HT / mois</span>
+                      </div>
                     </div>
-                  </div>
+                  )}
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Total annuel</span>
-                    <span className="font-bold text-foreground">{totalAn} EUR HT / an</span>
+                    <span className="font-bold text-foreground">{totalAn + (formationIncluse ? FORMATION_PRIX : 0)} EUR HT</span>
                   </div>
                 </div>
 
                 {/* CTA */}
                 <Button className="mt-6 w-full animate-shimmer" size="lg" asChild>
                   <Link to={souscriptionUrl} className="flex items-center justify-center gap-2">
-                    Souscrire — {totalMois} EUR HT / mois
+                    {formationIncluse
+                      ? `Souscrire — ${premierMois} EUR HT la 1ère fois`
+                      : `Souscrire — ${totalMois} EUR HT / mois`
+                    }
                   </Link>
                 </Button>
 
