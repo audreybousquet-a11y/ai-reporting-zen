@@ -118,8 +118,7 @@ const Tarifs = () => {
                 ar.ia fait ce travail en quelques secondes, pour une fraction de ce coût.
               </p>
             </div>
-            <div className="mt-4 flex items-center gap-3">
-              <img src="/logos/Logo_vert.png" alt="ar.ia" className="h-6" />
+            <div className="mt-4">
               <span className="text-xs text-muted-foreground">Audrey Bousquet · Fondatrice ar.ia</span>
             </div>
           </div>
