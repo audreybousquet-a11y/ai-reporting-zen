@@ -338,30 +338,17 @@ const Tarifs = () => {
 
                 {/* Total */}
                 <div className="space-y-2">
-                  {formationIncluse ? (
-                    <>
-                      <div className="flex justify-between items-baseline">
-                        <span className="text-sm font-medium text-foreground">1ère mensualité</span>
-                        <div className="text-right">
-                          <span className="text-3xl font-extrabold text-primary">{premierMois} EUR</span>
-                          <span className="text-sm text-muted-foreground"> HT</span>
-                        </div>
-                      </div>
-                      <div className="text-xs text-muted-foreground pl-1">
-                        {totalMois} EUR (abonnement) + {FORMATION_PRIX} EUR (formation)
-                      </div>
-                      <div className="flex justify-between text-sm mt-1">
-                        <span className="text-muted-foreground">Puis chaque mois</span>
-                        <span className="font-bold text-foreground">{totalMois} EUR HT / mois</span>
-                      </div>
-                    </>
-                  ) : (
-                    <div className="flex justify-between items-baseline">
-                      <span className="text-sm font-medium text-foreground">{nbUsersTotal} utilisateur{nbUsersTotal > 1 ? "s" : ""}</span>
-                      <div className="text-right">
-                        <span className="text-3xl font-extrabold text-primary">{totalMois} EUR</span>
-                        <span className="text-sm text-muted-foreground"> HT / mois</span>
-                      </div>
+                  <div className="flex justify-between items-baseline">
+                    <span className="text-sm font-medium text-foreground">{nbUsersTotal} utilisateur{nbUsersTotal > 1 ? "s" : ""}</span>
+                    <div className="text-right">
+                      <span className="text-3xl font-extrabold text-primary">{totalMois} EUR</span>
+                      <span className="text-sm text-muted-foreground"> HT / mois</span>
+                    </div>
+                  </div>
+                  {formationIncluse && (
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">1ère mensualité (formation incluse)</span>
+                      <span className="font-semibold text-foreground">{premierMois} EUR HT</span>
                     </div>
                   )}
                   <div className="flex justify-between text-sm">
@@ -373,10 +360,7 @@ const Tarifs = () => {
                 {/* CTA */}
                 <Button className="mt-6 w-full animate-shimmer" size="lg" asChild>
                   <Link to={souscriptionUrl} className="flex items-center justify-center gap-2">
-                    {formationIncluse
-                      ? `Souscrire — ${premierMois} EUR HT la 1ère fois`
-                      : `Souscrire — ${totalMois} EUR HT / mois`
-                    }
+                    Souscrire — {totalMois} EUR HT / mois
                   </Link>
                 </Button>
 
