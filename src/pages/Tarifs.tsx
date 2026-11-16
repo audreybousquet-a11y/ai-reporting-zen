@@ -99,6 +99,33 @@ const Tarifs = () => {
         </div>
       </section>
 
+      {/* -- Bulle citation Audrey -- */}
+      <section className="pb-10 md:pb-14">
+        <div className="container mx-auto px-4 max-w-2xl">
+          <div className="relative bg-primary/5 border border-primary/20 rounded-2xl p-6 md:p-8">
+            <div className="absolute -top-5 left-8 h-10 w-10 rounded-full hero-gradient flex items-center justify-center text-white font-bold text-lg shadow-md">A</div>
+            <div className="mt-2 space-y-3 text-sm md:text-base text-foreground leading-relaxed">
+              <p className="font-semibold text-base md:text-lg text-foreground">
+                Combien vous coûte vraiment votre reporting aujourd'hui ?
+              </p>
+              <p className="text-muted-foreground">
+                Combien de temps passez-vous — vous, votre assistante, vos équipes — à collecter, mettre en forme et vérifier vos chiffres chaque semaine ? 2h ? 5h ? Plus ?
+              </p>
+              <p className="text-muted-foreground">
+                À 35 €/h chargés, 4h par semaine c'est <span className="font-bold text-foreground">560 €/mois</span>… sans compter les erreurs, les retards de décision et le stress.
+              </p>
+              <p className="font-semibold text-primary">
+                ar.ia fait ce travail en quelques secondes, pour une fraction de ce coût.
+              </p>
+            </div>
+            <div className="mt-4 flex items-center gap-3">
+              <img src="/logos/Logo_vert.png" alt="ar.ia" className="h-6" />
+              <span className="text-xs text-muted-foreground">Audrey Bousquet · Fondatrice ar.ia</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* -- Layout 3 colonnes : licences | sources | devis -- */}
       <section className="pb-16 md:pb-24">
         <div className="container mx-auto px-4" style={{ maxWidth: "1400px" }}>
