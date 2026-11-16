@@ -238,7 +238,7 @@ const Tarifs = () => {
 
                 {/* Licences */}
                 <div className="space-y-2 mb-4">
-                  <div className="text-xs font-semibold text-primary uppercase tracking-wider mb-1">Licences</div>
+                  <div className="text-xs font-bold text-primary uppercase tracking-wider mb-1 underline underline-offset-4">Licences</div>
                   {lignes.map((l, i) => {
                     const pu = prixUnitaire(l.nb, l.formule);
                     return (
@@ -253,7 +253,7 @@ const Tarifs = () => {
                 {/* Connecteurs */}
                 {(selectedSources.length > 0 || true) && (
                   <div className="space-y-2 mb-4">
-                    <div className="text-xs font-semibold text-primary uppercase tracking-wider mb-1">Connecteurs</div>
+                    <div className="text-xs font-bold text-primary uppercase tracking-wider mb-1 underline underline-offset-4">Connecteurs</div>
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Excel / Google Sheets</span>
                       <span className="font-semibold text-green-600">Inclus</span>
@@ -272,7 +272,7 @@ const Tarifs = () => {
 
                 {/* Formation */}
                 <div className="space-y-2 mb-4">
-                  <div className="text-xs font-semibold text-primary uppercase tracking-wider mb-1">Formation</div>
+                  <div className="text-xs font-bold text-primary uppercase tracking-wider mb-1 underline underline-offset-4">Formation</div>
                   <div className="relative">
                     <label
                       className={`flex items-center gap-3 p-4 rounded-xl border cursor-pointer transition-all overflow-visible ${
