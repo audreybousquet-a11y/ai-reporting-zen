@@ -320,7 +320,7 @@ const Tarifs = () => {
                           >
                             <Info className="h-4 w-4 text-primary cursor-help" />
                             <span className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-56 p-2.5 rounded-lg bg-foreground text-background text-xs leading-relaxed opacity-0 pointer-events-none group-hover/tip:opacity-100 transition-opacity z-[100] shadow-lg">
-                              Formation vivement conseillée pour une bonne prise en main de l'outil. Demi-journée en visio, date à convenir ensemble. Facturée uniquement à la 1ère mensualité.
+                              Vivement conseillé pour une assistance au paramétrage ainsi qu'une bonne prise en main de l'outil. Demi-journée en visio, date à convenir ensemble. Facturée uniquement à la 1ère mensualité.
                             </span>
                           </span>
                         </div>
